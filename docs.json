@@ -1,68 +1,280 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "WalletConnect Docs",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#0988f0",
+    "light": "#0988f0",
+    "dark": "#0988f0"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.ico",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Network",
         "groups": [
           {
             "group": "Getting started",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "network",
+              "service-nodes",
+              "wallets"
             ]
           },
           {
-            "group": "Customization",
+            "group": "WCT Token",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "token-dynamics/intro",
+              "token-dynamics/fees",
+              "token-dynamics/rewards",
+              "token-dynamics/service-node-rewards",
+              "token-dynamics/wallet-rewards"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "WCT Season 1 Airdrop",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "airdrop-season-1/overview",
+              "airdrop-season-1/how-to-claim",
+              "airdrop-season-1/airdrop-faqs"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "WCT Staking",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "wct-staking/overview",
+              "wct-staking/faq"
+            ]
+          },
+          {
+            "group": "Governance",
+            "pages": [
+              "governance"
+            ]
+          },
+          {
+            "group": "WCT Smart Contracts",
+            "pages": [
+              "contract"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "WalletConnect App SDK",
+        "icon": "layer-group",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Getting Started",
             "pages": [
-              "api-reference/introduction"
+              "app-sdk/overview"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "React",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "app-sdk/react/installation"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "WalletConnect Wallet SDK",
+        "icon": "wallet",
+        "dropdowns": [
+          {
+            "dropdown": "Wallet SDK - Overview",
+            "icon": "wallet",
+            "pages": [
+              {
+                "group": "Getting Started",
+                "pages": ["wallet-sdk/overview"]
+              },
+              {
+                "group": "Features",
+                    "pages": [
+                      "wallet-sdk/features/verify",
+                      "wallet-sdk/features/link-mode",
+                      "wallet-sdk/features/one-click-auth",
+                      "wallet-sdk/features/chain-abstraction"
+                    ]
+                  },
+                  {
+                    "group": "Production",
+                    "pages": ["wallet-sdk/best-practices"]
+                  },
+                  {
+                    "group": "Upgrade",
+                    "pages": [
+                      "wallet-sdk/upgrade/staying-up-to-date",
+                      {
+                        "group": "Web3Wallet to Reown WalletKit",
+                        "pages": [
+                          "wallet-sdk/upgrade/from-web3wallet-to-walletkit",
+                          "wallet-sdk/upgrade/from-web3wallet-web",
+                          "wallet-sdk/upgrade/from-web3wallet-react-native",
+                          "wallet-sdk/upgrade/from-web3wallet-flutter",
+                          "wallet-sdk/upgrade/from-web3wallet-android",
+                          "wallet-sdk/upgrade/from-web3wallet-ios",
+                          "wallet-sdk/upgrade/from-web3wallet-unity"
+                      ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "dropdown": "Web",
+            "icon": "js",
+            "description": "Wallet SDK on Web",
+            "pages": [
+              "wallet-sdk/web/installation",
+              "wallet-sdk/web/usage",
+              "wallet-sdk/web/one-click-auth",
+              "wallet-sdk/web/verify",
+              "wallet-sdk/web/eip5792",
+              "wallet-sdk/web/chain-abstraction",
+              "wallet-sdk/web/best-practices",
+              "wallet-sdk/web/resources",
+              {
+                "group": "Cloud",
+                "pages": [
+                  "wallet-sdk/web/cloud/explorer-submission",
+                  "wallet-sdk/web/cloud/relay",
+                  "wallet-sdk/web/cloud/analytics"
+                ]
+              }
+            ]
+          },
+          {
+            "dropdown": "Android",
+            "icon": "android",
+            "description": "Wallet SDK on Android",
+            "pages": [
+              {
+                "group": "Core",
+                "pages": [
+                  "wallet-sdk/android/installation",
+                  "wallet-sdk/android/usage",
+                  "wallet-sdk/android/one-click-auth",
+                  "wallet-sdk/android/mobile-linking",
+                  "wallet-sdk/android/link-mode",
+                  "wallet-sdk/android/verify",
+                  "wallet-sdk/android/eip5792",
+                  "wallet-sdk/android/chain-abstraction",
+                  "wallet-sdk/android/best-practices",
+                  "wallet-sdk/android/resources"
+                ]
+              },
+              {
+                "group": "Cloud",
+                "pages": [
+                  "wallet-sdk/android/cloud/explorer-submission",
+                  "wallet-sdk/android/cloud/relay",
+                  "wallet-sdk/android/cloud/analytics"
+                ]
+              }
+            ]
+          },
+          {
+            "dropdown": "iOS",
+            "icon": "apple",
+            "description": "Wallet SDK on iOS",
+            "pages": [
+              {
+                "group": "Core",
+                "pages": [
+                  "wallet-sdk/ios/installation",
+                  "wallet-sdk/ios/usage",
+                  "wallet-sdk/ios/one-click-auth",
+                  "wallet-sdk/ios/mobile-linking",
+                  "wallet-sdk/ios/link-mode",
+                  "wallet-sdk/ios/verify",
+                  "wallet-sdk/ios/eip5792",
+                  "wallet-sdk/ios/chain-abstraction",
+                  "wallet-sdk/ios/best-practices",
+                  "wallet-sdk/ios/resources"
+                ]
+              },
+              {
+                "group": "Cloud",
+                "pages": [
+                  "wallet-sdk/ios/cloud/explorer-submission",
+                  "wallet-sdk/ios/cloud/relay",
+                  "wallet-sdk/ios/cloud/analytics"
+                ]
+              }
+            ]
+          },
+          {
+            "dropdown": "Flutter",
+            "icon": "flutter",
+            "description": "Wallet SDK on Flutter",
+            "pages": [
+              "wallet-sdk/flutter/installation",
+              "wallet-sdk/flutter/usage",
+              "wallet-sdk/flutter/one-click-auth",
+              "wallet-sdk/flutter/mobile-linking",
+              "wallet-sdk/flutter/link-mode",
+              "wallet-sdk/flutter/verify",
+              "wallet-sdk/flutter/eip5792",
+              "wallet-sdk/flutter/chain-abstraction",
+              {
+                "group": "Cloud",
+                "pages": [
+                  "wallet-sdk/flutter/cloud/explorer-submission",
+                  "wallet-sdk/flutter/cloud/relay",
+                  "wallet-sdk/flutter/cloud/analytics"
+                ]
+              }
+            ]
+          },
+          {
+            "dropdown": "React Native",
+            "icon": "mobile-screen-button",
+            "description": "Wallet SDK on React Native",
+            "pages": [
+              {
+                "group": "Core",
+                "pages": [
+                  "wallet-sdk/react-native/installation",
+                  "wallet-sdk/react-native/usage",
+                  "wallet-sdk/react-native/one-click-auth",
+                  "wallet-sdk/react-native/mobile-linking",
+                  "wallet-sdk/react-native/link-mode",
+                  "wallet-sdk/react-native/verify",
+                  "wallet-sdk/react-native/eip5792",
+                  "wallet-sdk/react-native/chain-abstraction",
+                  "wallet-sdk/react-native/best-practices",
+                  "wallet-sdk/react-native/resources"
+                ]
+              },
+              {
+                "group": "Cloud",
+                "pages": [
+                  "wallet-sdk/react-native/cloud/explorer-submission",
+                  "wallet-sdk/react-native/cloud/relay",
+                  "wallet-sdk/react-native/cloud/analytics"
+                ]
+              }
+            ]
+          },
+          {
+            "dropdown": ".NET",
+            "icon": "code",
+            "description": "Wallet SDK on .NET",
+            "pages": [
+              "wallet-sdk/c-sharp/installation",
+              "wallet-sdk/c-sharp/usage",
+              "wallet-sdk/c-sharp/verify",
+              {
+                "group": "Cloud",
+                "pages": [
+                  "wallet-sdk/c-sharp/cloud/explorer-submission",
+                  "wallet-sdk/c-sharp/cloud/relay",
+                  "wallet-sdk/c-sharp/cloud/analytics"
+                ]
+              }
             ]
           }
         ]
@@ -71,18 +283,18 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "WalletConnectNetwork",
+          "href": "https://walletconnect.network",
+          "icon": "globe"
         },
         {
           "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
+          "href": "https://discord.walletconnect.network/",
+          "icon": "discord"
         },
         {
           "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
+          "href": "https://walletconnect.network/blog",
           "icon": "newspaper"
         }
       ]
@@ -95,14 +307,14 @@
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "label": "WalletGuide",
+        "href": "https://walletguide.walletconnect.network/"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "href": "https://dashboard.reown.com"
     }
   },
   "contextual": {
@@ -119,9 +331,11 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "website": "https://walletconnect.network",
+      "x": "https://x.com/walletconnect",
+      "discord": "https://discord.walletconnect.network",
+      "github": "https://github.com/WalletConnect",
+      "linkedin": "https://www.linkedin.com/company/walletconnectnetwork/"
     }
   }
 }

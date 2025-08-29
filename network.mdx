@@ -1,0 +1,63 @@
+---
+title: "Network"
+---
+
+## Overview
+
+The WalletConnect Network is the onchain UX ecosystem that facilitates users' use of any wallet across any app and platform. It is chain agnostic, working across ecosystems from EVM and its L2s, to Solana, Cosmos, Polkadot, Bitcoin and more. To date, it has facilitated more than 300+ million connections for 50+ million users between over 700+ different wallets and 70,000+ applications.
+
+The Network's design emphasizes interoperability, connectivity, and composability, creating a user experience (UX) platform that is open and permissionless. This approach is essential for realizing the vision of the "new internet"—a decentralized and user-owned ecosystem.
+
+The next chapter for WalletConnect is the decentralization of the Network, providing for continued resilience, privacy and censorship-resistance, which will be governed by the WalletConnect Token (WCT).
+
+## Technology
+
+The WalletConnect Network's services are more akin to classic web2 offchain infrastructure rather than blockchain. The core technology for the WalletConnect Network is a permissionless rendezvous-hashing based database. Key components include:
+
+1. **Service Nodes**: These are database nodes that form the backbone of the network's storage layer. They operate on a consistent-hashing based distributed database.
+
+2. **Gateway Nodes**: These nodes are responsible for facilitating encrypted communications and data routing between wallets and applications.
+
+3. **Relay Service**: This service, used to connect users' wallets to dapps, is by design end-to-end encrypted. The Relay has no insight into users' addresses, transaction hashes, KYC information, or any other information passed between the dapp and wallet.
+
+4. **End-to-End Encryption**: All messages transmitted through the network are encrypted, ensuring that only the intended recipient can access the information.
+
+The Network is designed to operate in a fully permissionless manner, enabling any participant to run a Service Node or Gateway. It is expected that the Network will transition to a permissionless model following community consultation and technical validation.
+
+## Permissioned Network
+
+Currently, the WalletConnect Network operates in a permissioned environment. This means:
+
+- Specific node operators manage the Service Nodes under service-level agreements.
+- The Gateway Nodes are initially centralized and managed by reown (formerly WalletConnect Inc.).
+- This setup ensures stability and reliability during the Network's early phases.
+
+100% of WalletConnect's production traffic has been served by the Network since early 2024 with Service Nodes operated by reown. In recent months, reown has brought additional entities into the permissioned federation of Service Node operations.
+
+The Network is designed to become more decentralized over time. This process involves a phased approach, gradually transitioning from a permissioned environment to a fully permissionless model. Throughout this evolution, the WalletConnect Network maintains its focus on user empowerment and security.
+
+It is expected that the Network will transition to a permissionless model following community consultation and technical validation to maintain Network integrity and performance. This transition will allow broader participation while ensuring the Network's stability and efficiency.
+
+## Network Participants
+
+<img 
+  src="/images/wk-sdk-graphic.png" 
+  alt="WalletConnect Network Architecture"
+  className="w-full"
+/>
+
+The WalletConnect Network comprises various participants, each playing a crucial role in maintaining functionality and security:
+
+1. **Service Node Operators**: They run the service nodes (database nodes) that form the backbone of the network's storage layer. These nodes operate on a consistent-hashing based distributed database.
+
+2. **Gateway Node Operators**: They manage the gateway nodes, which are the entry points for apps and SDKs. Gateways facilitate encrypted communications and data routing between wallets and applications.
+
+3. **Wallets**: These allow end-users to manage their blockchain keys and interact with apps via the WalletConnect protocol. Most wallets integrate with the network using the WalletKit SDK.
+
+4. **Apps**: These are the products and services in the web3 space that drive traffic to the network. They can integrate directly or via available SDKs.
+
+5. **SDKs**: Software Development Kits that simplify the integration process for apps and wallets.
+
+6. **End Users**: The consumers of all services within the network, from wallets to apps, going through the relay and database nodes.
+
+Each of these participants contributes to the ecosystem in unique ways, ensuring the network's functionality, security, and continued growth. Their roles and interactions form the foundation of the WalletConnect Network's robust and interconnected infrastructure.

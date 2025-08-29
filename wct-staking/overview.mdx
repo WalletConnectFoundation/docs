@@ -1,0 +1,157 @@
+---
+title: WCT Staking
+sidebar_position: 6
+---
+<Warning>
+Staking will be available from November 26, 2024. However, rewards distribution will begin for the week starting December 19, 2024.
+</Warning>
+
+Staking WCT is the primary mechanism through which token holders engage with and support the network by locking their tokens in the protocol's smart contracts. This alignment of interests creates a more secure and participatory ecosystem.
+
+Staking WCT provides three key benefits: voting rights in protocol governance, eligibility for performance rewards programs, and weekly WCT token rewards distributions. These mechanisms allow token holders to participate actively in the protocol while earning additional rewards.
+
+## Stake Weight
+
+Stakeweight is the measure used to determine a staker's position within the network at any given time. It is calculated based on two factors: the amount of WCT tokens staked and the remaining lock time of the position. This combined metric ensures that both the quantity of tokens and commitment duration are valued in the protocol. Rewards are distributed proportionally to each staker's share of the total stakeweight in the network. Additionally, a staker's voting power in governance is directly proportional to their stakeweight.
+
+### Calculating Stake Weight
+
+The stakeweight calculation follows this formula:
+
+$$
+  Stakeweight = (Amount_of_WCT * Remaining_Lock_Time) / 209
+$$
+
+Where:
+
+- Amount of WCT: The number of WCT tokens staked
+- Remaining Lock Time: The number of weeks remaining in the lock period
+- 209: The maximum stakeweight value
+
+For example, if a user stakes 1000 WCT with 40 weeks of lock time, their stakeweight would be:
+
+$$
+  Stakeweight = (1000 * 40) / 209 = 191.3
+$$
+
+<Note>
+While the stakeweight formula uses 209 weeks as the denominator, the current maximum lock time that can be selected when staking is 105 weeks (2 years).
+</Note>
+
+<Note>
+Due to how rounding works using timestamps 105 weeks is used to represent 2 years.
+</Note>
+
+### Decaying Stake weight
+
+A staking position's stakeweight naturally decays each week as the lock time decreases. To maintain or increase their stakeweight, users have two options: they can deposit additional WCT tokens into their existing position, or they can extend their lock time period. Both actions will result in an increased stakeweight, allowing users to maintain or improve their proportional share of rewards.
+
+## How to Stake WCT
+
+To stake WCT, you need to visit your [WalletConnect Profile](https://profile.walletconnect.network) and navigate to the staking section.
+
+<img src="/images/wct-staking.png" className='w-full'/>
+
+The staking process involves two transactions:
+1. First, you'll need to approve the staking contract to use the WCT tokens you want to stake.
+2. Then, you can create your staking position by selecting:
+  - The amount of WCT to stake
+  - The lock duration 
+
+Each step will require a separate transaction signature. Once both transactions are confirmed, you will receive your staking position and begin earning rewards based on your stakeweight.
+
+<Warning>
+Once you stake your WCT tokens, they will be locked for the duration you selected. You will only be able to unstake your tokens after the lock period has ended.
+</Warning>
+
+## Staking Rewards Eligibility
+
+<Warning>
+Staking will be available from November 26, 2024. However, rewards distribution will begin for the week starting 19, 2024.
+</Warning>
+
+Staking rewards are distributed weekly, with each reward period starting and ending on Thursday. To qualify for staking rewards in a given week, your staking position must meet two criteria:
+- Must have started before Thursday 00:00 GMT of that week
+- Must have at least 1 week remaining in the lock period
+
+### Examples
+
+#### Eligible Position
+If you create a staking position on Wednesday at 23:00 GMT with a 4-week lock, you will be eligible for rewards in the following week's distribution because:
+- The position starts before Thursday 00:00 GMT
+- The position has more than 1 week remaining in the lock period
+
+#### Ineligible Position
+If you create a staking position on Thursday at 01:00 GMT with a 1-week lock, you won't be eligible for that week's rewards distribution, as your position started after the cutoff time.
+
+## Expired Positions
+
+When a staking position expires (the lock period ends), two key things happen:
+- The position stops being eligible for rewards.
+- The position can no longer be updated (you cannot add more WCT or extend the lock).
+- The voting power associated with the position is 0.
+
+The only action available for an expired position is to unstake. After unstaking, users can create a new position to continue participating in the protocol.
+
+### Preventing Expiration
+
+To prevent a position from expiring, users can extend their lock period at any time before expiration. The extension can be for any number of weeks up to the difference between the maximum lock time (105 weeks) and the remaining lock time. For example, if your position has 30 weeks remaining, you could extend it by up to 75 additional weeks.
+
+## Updating Your Position
+
+Users can update their active (non-expired) staking positions at any time. There are two types of updates available: adding more WCT tokens and extending the lock period.
+
+### Adding WCT
+
+You can increase your staking position by adding more WCT tokens at any time. The added tokens will be locked for the remaining duration of your position.
+
+<img src="/images/wct-add-tokens.png" className='w-full'/>
+
+### Extending Lock Time
+
+Users can extend their lock period by adding more weeks to their position. As your stakeweight naturally decays over time, extending the lock is an effective way to maintain or increase it.
+
+<img src="/images/wct-extend-lock.png" className='w-full'/>
+
+The maximum number of weeks you can add is calculated as:
+
+$$
+  Max Weeks = 105 - Remaining Lock Time
+$$
+
+For example, if your position has 30 weeks remaining, you can extend it by up to 75 additional weeks.
+
+## Unstaking WCT
+
+Unstaking is the process through which users can claim back their WCT tokens after their lock period has ended.
+
+<img src="/images/wct-unstaking.png" className='w-full'/>
+
+To unstake your WCT:
+1. Visit your [WalletConnect Profile](https://profile.walletconnect.network)
+2. Navigate to the staking section
+3. Click on the unstake button
+
+<Note>
+Partial unstaking is not supported. You must unstake the entire position.
+</Note>
+
+After unstaking, you can immediately create a new staking position with your preferred amount and lock duration.
+
+## Claiming Rewards
+
+Every Thursday, WCT rewards are distributed to eligible stakers based on their proportional share of the total stakeweight in the network. The rewards for each position are calculated by taking their stakeweight divided by the sum of all eligible staking positions' stakeweight. For example, if your stakeweight represents 5% of the total network stakeweight, you will receive aproximatly 5% of that week's reward distribution.
+
+```rewardShare = positionStakeweight / totalNetworkStakeweight```
+
+These rewards can be claimed through your dashboard at any time.
+
+<img src="/images/wct-claiming.png" className='w-full'/>
+
+### Restaking Rewards
+
+When claiming rewards, users have the option to restake them directly into their existing position. This is an effective strategy to maintain and increase your stakeweight over time. 
+
+<Tip>
+Regular weekly visits to your profile keeps the token holder updated on the network and enable you to claim rewards, restake them, and extend your lock period, helping maintain an optimal stakeweight.
+</Tip>
