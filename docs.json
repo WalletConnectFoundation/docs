@@ -283,7 +283,7 @@
     "global": {
       "anchors": [
         {
-          "anchor": "WalletConnectNetwork",
+          "anchor": "WalletConnect",
           "href": "https://walletconnect.network",
           "icon": "globe"
         },
