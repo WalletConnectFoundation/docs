@@ -110,7 +110,7 @@
                       {
                         "group": "Web3Wallet to Reown WalletKit",
                         "pages": [
-                          "wallet-sdk/upgrade/from-web3wallet-to-walletkit",
+                          "wallet-sdk/upgrade/from-web3wallet-to-reown",
                           "wallet-sdk/upgrade/from-web3wallet-web",
                           "wallet-sdk/upgrade/from-web3wallet-react-native",
                           "wallet-sdk/upgrade/from-web3wallet-flutter",
