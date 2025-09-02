@@ -32,14 +32,6 @@
             ]
           },
           {
-            "group": "WCT Season 1 Airdrop",
-            "pages": [
-              "airdrop-season-1/overview",
-              "airdrop-season-1/how-to-claim",
-              "airdrop-season-1/airdrop-faqs"
-            ]
-          },
-          {
             "group": "WCT Staking",
             "pages": [
               "wct-staking/overview",
