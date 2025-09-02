@@ -108,7 +108,7 @@
                     "pages": [
                       "wallet-sdk/upgrade/staying-up-to-date",
                       {
-                        "group": "Web3Wallet to Reown WalletKit",
+                        "group": "Web3Wallet to Wallet SDK",
                         "pages": [
                           "wallet-sdk/upgrade/from-web3wallet-to-reown",
                           "wallet-sdk/upgrade/from-web3wallet-web",
