@@ -60,7 +60,7 @@
         ]
       },
       {
-        "tab": "WalletConnect App SDK",
+        "tab": "App SDK",
         "icon": "layer-group",
         "groups": [
           {
@@ -78,7 +78,7 @@
         ]
       },
       {
-        "tab": "WalletConnect SDK",
+        "tab": "Wallet SDK",
         "icon": "wallet",
         "dropdowns": [
           {
