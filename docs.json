@@ -1,5 +1,5 @@
 {
-  "theme": "mint",
+  "theme": "aspen",
   "name": "WalletConnect Docs",
   "colors": {
     "primary": "#0988f0",
@@ -11,11 +11,18 @@
     "tabs": [
       {
         "tab": "Network",
+        "icon":"globe",
         "groups": [
+          {
+            "group": "WalletConnect Docs",
+            "pages": [
+              "index"
+            ]
+          },
           {
             "group": "Getting started",
             "pages": [
-              "index",
+              "overview",
               "network",
               "service-nodes",
               "wallets"
@@ -29,14 +36,6 @@
               "token-dynamics/rewards",
               "token-dynamics/service-node-rewards",
               "token-dynamics/wallet-rewards"
-            ]
-          },
-          {
-            "group": "WCT Season 1 Airdrop",
-            "pages": [
-              "airdrop-season-1/overview",
-              "airdrop-season-1/how-to-claim",
-              "airdrop-season-1/airdrop-faqs"
             ]
           },
           {
@@ -79,7 +78,7 @@
         ]
       },
       {
-        "tab": "WalletConnect Wallet SDK",
+        "tab": "WalletConnect SDK",
         "icon": "wallet",
         "dropdowns": [
           {
@@ -108,9 +107,9 @@
                     "pages": [
                       "wallet-sdk/upgrade/staying-up-to-date",
                       {
-                        "group": "Web3Wallet to Reown WalletKit",
+                        "group": "Web3Wallet to Wallet SDK",
                         "pages": [
-                          "wallet-sdk/upgrade/from-web3wallet-to-walletkit",
+                          "wallet-sdk/upgrade/from-web3wallet-to-reown",
                           "wallet-sdk/upgrade/from-web3wallet-web",
                           "wallet-sdk/upgrade/from-web3wallet-react-native",
                           "wallet-sdk/upgrade/from-web3wallet-flutter",
@@ -283,7 +282,7 @@
     "global": {
       "anchors": [
         {
-          "anchor": "WalletConnectNetwork",
+          "anchor": "WalletConnect",
           "href": "https://walletconnect.network",
           "icon": "globe"
         },
