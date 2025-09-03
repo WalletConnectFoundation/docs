@@ -1,5 +1,5 @@
 {
-  "theme": "mint",
+  "theme": "aspen",
   "name": "WalletConnect Docs",
   "colors": {
     "primary": "#0988f0",
@@ -11,11 +11,18 @@
     "tabs": [
       {
         "tab": "Network",
+        "icon":"globe",
         "groups": [
+          {
+            "group": "WalletConnect Docs",
+            "pages": [
+              "index"
+            ]
+          },
           {
             "group": "Getting started",
             "pages": [
-              "index",
+              "overview",
               "network",
               "service-nodes",
               "wallets"

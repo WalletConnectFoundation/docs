@@ -1,30 +1,173 @@
 ---
-title: "WalletConnect Network"
-sidebarTitle: "Introduction"
+mode: "frame"
+title: "WalletConnect Documentation"
+sidebarTitle: "Home"
+description: "The Connectivity Layer for the Financial Internet"
 ---
 
-<Card img="/images/WalletConnect-Docs-Image.png" horizontal>
-  WalletConnect Network aims to become a decentralized UX platform that facilitates secure and reliable connections across wallets and applications, promoting interoperability, connectivity, standardization, and consensus.
-</Card>
+import { Container, Title} from '/snippets/home/utility.mdx';
+import { ProductTiles } from '/snippets/home/product-tiles.mdx';
+import { appCategories } from '/snippets/home/data.mdx';
+import { ProductCard } from '/snippets/home/product-cards.mdx';
 
-## Introduction
+<div className="px-5 divide-y divide-gray-100 dark:divide-white/10">
+  <Container>
+    <div className="w-full flex flex-col">
+      <div className="flex flex-col items-start justify-center w-full max-w-4xl text-left">
+        <div
+          className="text-gray-900 dark:text-gray-200 text-4xl tracking-tight"
+        >
+          WalletConnect
+        </div>
+        <p
+          className="text-md text-gray-600 dark:text-gray-400 text-left mt-3 mb-4"
+        >
+        The Connectivity Layer for the Financial Internet
+        </p>
+        <div className="flex flex-row gap-4 mt-5">
+        <a href="/wallet-sdk/overview">
+          <button
+            type="button"
+            className="px-5 flex items-center font-medium text-sm rounded-full py-2 shadow-sm text-white dark:text-gray-900 bg-primary-dark dark:bg-primary-light hover:opacity-[0.9] hover:bg-primary justify-center"
+          >
+            Get started
+            <svg
+              className="size-3 ml-2 bg-white dark:bg-gray-900"
+              style={{
+                maskImage: 'url("https://mintlify.b-cdn.net/solid/arrow-right-long.svg")',
+                maskRepeat: 'no-repeat',
+                maskPosition: 'center center'
+              }}
+            />
+          </button>
+          </a>
+        </div>
+      </div>
+    </div>
 
-The WalletConnect Network is the onchain UX ecosystem that makes web3 work by facilitating users' use of any wallet across any app and platform. As a chain-agnostic infrastructure, it operates across ecosystems from EVM and its L2s, to Solana, Cosmos, Polkadot, Bitcoin and more. The Network has played a crucial role in installing many of web3's UX standards, fostering today's composable and interoperable web3 ecosystem.
+  </Container>
+   <Container>
+    <div className="flex flex-col w-full mb-8">
+      <div className="flex items-center justify-between w-full">
+        <Title>
+          Build with WalletConnect
+        </Title>
+      </div>
+      <p
+        className="text-[#5B616E] dark:text-gray-300 text-md mb-1 mt-3"
+      >
+      WalletConnect powers thousands of onchain projects, driving one of the most active, open ecosystems in crypto.
+      </p>
+      <p>
+      <br />
+      **Check out our quickstart and other resources to get started!**
+      </p>
+    </div>
+    <div className="dark:hidden block">
+    <CardGroup cols={3}>
+        <ProductCard
+        title="WalletConnect SDK"
+        description="Enable your wallets users to securely connect to any app, powered by the WalletConnect Network."
+        href="/wallet-sdk/overview"
+        img="/images/wallet.svg"
+        model="For Wallets"
+        type="Wallet SDK"
+        />
+        <ProductCard
+          title="WalletConnect App SDK"
+          description="Provide wallet connections and user authentication on your Web3 app using WalletConnect."
+          href="/app-sdk/overview"
+          img="/images/app.svg"
+          model="For Apps"
+          type="App SDK"
+        />
+          <ProductCard
+          title="WalletConnect Network"
+          description="The onchain UX ecosystem that makes Web3 work by facilitating users' use of any wallet across any app & platform."
+          href="/overview"
+          img="/images/network.svg"
+          model="Ecosystem"
+          type="Network"
+        />
+    </CardGroup>
+    </div>
+    <div className="dark:block hidden">
+    <CardGroup cols={3}>
+        <ProductCard
+        title="WalletConnect SDK"
+        description="Enable your wallets users to securely connect to any app, powered by the WalletConnect Network."
+        href="/wallet-sdk/overview"
+        img="/images/wallet-dark.svg"
+        model="For Wallets"
+        type="Wallet SDK"
+        />
+        <ProductCard
+          title="WalletConnect App SDK"
+          description="Provide wallet connections and user authentication on your Web3 app using WalletConnect."
+          href="/app-sdk/overview"
+          img="/images/app-dark.svg"
+          model="For Apps"
+          type="Wallet SDK"
+        />
+          <ProductCard
+          title="WalletConnect Network"
+          description="The onchain UX ecosystem that makes Web3 work by facilitating users' use of any wallet across any app & platform."
+          href="/overview"
+          img="/images/network-dark.svg"
+          model="Ecosystem"
+          type="Network"
+        />
+    </CardGroup>
+    </div>
+    <ul class="not-prose pb-[1px] h-1 min-w-full mt-3 overflow-auto" />
+  </Container>
+  <Container>
+    <div className="flex flex-col w-full mb-8">
+      <div className="flex items-center justify-between w-full">
+        <Title>
+          Explore the SDKs
+        </Title>
+      </div>
+      <p
+        className="text-[#5B616E] dark:text-gray-300 text-md mb-1 mt-3"
+      >
+        Use WalletConnect SDKs to integrate WalletConnect into your Web3 apps and to make your wallet WalletConnect-compatible.
+      </p>
+    </div>
+    <ProductTiles categories={appCategories} />
+    <ul class="not-prose pb-[1px] h-1 min-w-full mt-3 overflow-auto" />
+  </Container>
+  
 
-Since its inception in 2018, WalletConnect has established itself as critical infrastructure in the web3 space. The protocol's ability to provide secure, end-to-end encrypted connections has been fundamental in creating interoperability for every wallet, every app, and every chain. Based on this protocol, a network of participants and contributors are creating the WalletConnect Network.
+  <Container>
+    <div className="flex flex-col w-full mb-5">
+    <Title>
+      Resources
+    </Title>
 
-Key milestones include:
-- Expansion to over 70,000+ applications and 700+ wallets
-- Facilitation of more than 300+ million connections
-- Consistent growth in daily remote connections, evidencing widespread adoption
-- Transition to a permissioned decentralized database supported by third-party node operators
-
-The next chapter for WalletConnect is the decentralization of the Network, providing for continued resilience, privacy, and censorship-resistance. This evolution will be governed by the WalletConnect Token (WCT), aligning web3's incentives towards prioritizing UX.
-
-## Resources
-
-<CardGroup columns={3}>
-  <Card title="WalletConnect Whitepaper" href="https://whitepaper.walletconnect.network" horizontal>
-    The WalletConnect Whitepaper outlines the network's design, architecture, and core principles.
-  </Card>
-</CardGroup>
+  </div>
+  <Columns cols={3}>
+    <Card
+      title="WalletConnect Blog"
+      icon="newspaper"
+      href="https://mintlify.com/careers#open-roles"
+    >
+    Read the latest news and updates from the WalletConnect team
+    </Card>
+    <Card
+      title="Join the WalletConnect Community"
+      icon= "discord"
+      href="https://discord.walletconnect.network/"
+    >
+    Discord community for WalletConnect Network and WCT Token
+    </Card>
+    <Card
+      title="Twitter"
+      icon="twitter"
+      href="https://x.com/WalletConnect"
+    >
+    Follow WalletConnect on X (Twitter) to stay updated on the announcements
+    </Card>
+  </Columns>
+  </Container>
+</div>
