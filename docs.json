@@ -94,8 +94,7 @@
                     "pages": [
                       "wallet-sdk/features/verify",
                       "wallet-sdk/features/link-mode",
-                      "wallet-sdk/features/one-click-auth",
-                      "wallet-sdk/features/chain-abstraction"
+                      "wallet-sdk/features/one-click-auth"
                     ]
                   },
                   {
