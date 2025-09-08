@@ -1,5 +1,5 @@
 ---
-title: "WalletConnect App SDK"
+title: "WalletConnect for Apps"
 sidebarTitle: Overview
 ---
 
@@ -13,23 +13,13 @@ The **WalletConnect App SDK** is the foundational gateway for apps to access the
 
 With a single integration, developers can connect to **700+ wallets** and **65,000+ apps** across **EVM, Solana, Bitcoin**, and **any network with a CAIP-25 namespace**, while preserving privacy, composability, and user choice.
 
-Built on open standards and powered by a decentralized relay network, the App SDK unlocks secure, cross-chain wallet connections across devices and platforms.
+**Built on open standards** and powered by a decentralized relay network, WalletConnect unlocks secure and cross-chain wallet connections for apps across devices and platforms.
 
-Whether you’re building for DeFi, gaming, payments, or identity, the App SDK provides the essential building block for trusted wallet-to-app experiences, all backed by the infrastructure that powers the financial internet.
+Whether you’re building for DeFi, gaming, payments, or identity, WalletConnect provides the essential building block for **trusted wallet-to-app experiences**, all backed by the **infrastructure that powers the financial internet**.
 
 ## **Powering leading SDKs across Web3**
 
 The WalletConnect App SDK is already embedded in some of the most widely-used SDKs in the ecosystem - powering everything from onboarding to payments.
-
-## **🛠 SDKs built on top of the App SDK**
-
-- [**Reown AppKit**](https://reown.com/appkit) - A modular UX engine for onboarding, payments, and wallet interaction. Used in 286M+ sessions and 10B+ RPC calls .
-- [**Privy**](https://www.privy.io/) - Secure wallet infrastructure that simplifies identity, session handling, and embedded wallets.
-- [**Dynamic**](https://www.dynamic.xyz/) - All-in-one authentication and wallet SDK for web3 apps across mobile and web.
-- [**ConnectKit**](https://family.co/connectkit) - Beautiful React components built for WalletConnect connections.
-- [**RainbowKit**](https://www.rainbowkit.com/) - Customizable wallet connection UI optimized for Ethereum and WalletConnect.
-
-These SDKs demonstrate what’s possible with the App SDK as a base layer and how it can be extended to suit your product, stack, and user flow.
 
 ## **Who is it for?**
 
@@ -39,9 +29,9 @@ These SDKs demonstrate what’s possible with the App SDK as a base layer and ho
 
 If your product needs to talk to wallets, the App SDK is your starting point.
 
-## **What does the SDK do?**
+## What does WalletConnect have to offer for Apps?
 
-At its core, the WalletConnect App SDK handles the most critical UX layer of any onchain app: **wallet connection**.
+At its core, the WalletConnect handles the most critical UX layer of any onchain app: **wallet connection**.
 
 ✅ **Prebuilt modal UX** for connecting wallets
 
@@ -65,3 +55,68 @@ It’s the fastest way to build reliable wallet connectivity, with none of the v
     src="/images/videos/walletconnect-app-sdk.mp4"
   ></video>
 </Frame>
+
+---
+
+## How to Integrate WalletConnect into your App
+
+There are **two core pathways to integrate WalletConnect** into your app:
+
+1. Via an SDK partner that has already integrated WalletConnect into their SDK.
+2. Standalone integration of WalletConnect.
+
+Below, you can find instructions and information for both pathways.
+
+## Integrate WalletConnect via an SDK Partner
+
+First, we need to cover what exactly is an SDK and how projects can use them to integrate WalletConnect into their app.
+
+### What is an SDK?
+
+An SDK is a software development kit that provides a set of tools, libraries, and documentation for developers to build applications. It is a collection of code, tools, and resources that help developers build applications faster and easier.
+
+In this context, SDKs are pre-packaged developer tools that abstract away the underlying protocol, i.e. WalletConnect, and provide a simplified integration path for apps and wallets, making wallet connectivity fast, reliable, and developer-friendly.
+
+### 🛠 Most Popular SDKs built on top of WalletConnect
+
+- [**Reown AppKit**](https://reown.com/appkit) - A modular UX engine for onboarding, payments, and wallet interaction. Used in 286M+ sessions and 10B+ RPC calls .
+- [**Privy**](https://www.privy.io/) - Secure wallet infrastructure that simplifies identity, session handling, and embedded wallets.
+- [**Dynamic**](https://www.dynamic.xyz/) - All-in-one authentication and wallet SDK for web3 apps across mobile and web.
+- [**ConnectKit**](https://family.co/connectkit) - Beautiful React components built for WalletConnect connections.
+- [**RainbowKit**](https://www.rainbowkit.com/) - Customizable wallet connection UI optimized for Ethereum and WalletConnect.
+
+These SDKs demonstrate what’s possible with the App SDK as a base layer and how it can be extended to suit your product, stack, and user flow.
+
+### SDK Chain Compatibility
+
+Below you can find the chain compatibility for the most popular SDKs built on top of WalletConnect.
+
+| SDK              | Networks / Chains Supported                        |
+|------------------|----------------------------------------------------|
+| **Reown AppKit** | EVM, Solana, Bitcoin, Polkadot, Cosmos and all other networks with a CAIP-25 namespace |
+| **Privy**        | EVM, Solana, Bitcoin                               |
+| **Dynamic**      | EVM, Solana, Bitcoin, Flow, StarkNet, Sui, Cosmos, Algorand, Spark |
+| **ConnectKit**   | EVM                                                |
+| **RainbowKit**   | EVM                                                |
+
+## Standalone Integration of WalletConnect as an App
+
+If you do not wish to use an SDK partner, you can integrate WalletConnect directly into your app. Please refer to the corresponding installation guide for each framework given below.
+
+<CardGroup cols={2}>
+  <Card title="React" icon="react" href="/app-sdk/react/installation">
+    Get started with WalletConnect as an App in React.
+  </Card>
+
+  <Card title="Next.js" icon="apple" href="/app-sdk/next/installation">
+    Get started with WalletConnect as an App in Next.js.
+  </Card>
+
+  <Card title="Vue" icon="vuejs" href="/app-sdk/vue/installation">
+    Get started with WalletConnect as an App in Vue.
+  </Card>
+
+  <Card title="JavaScript" icon="js" href="/app-sdk/javascript/installation">
+    Get started with WalletConnect as an App in JavaScript.
+  </Card>
+</CardGroup>
