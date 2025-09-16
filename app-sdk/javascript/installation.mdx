@@ -17,14 +17,6 @@ Create a new project on WalletConnect Dashboard at https://dashboard.reown.com a
 <CloudBanner />
 
 ## Installation
-
-<Warning>
-  If you are setting up your React app, please **do not use** `npx create-react-app`, as it has been deprecated. Using it may cause dependency
-  issues. Instead, please use [Vite](https://vitejs.dev/guide/#scaffolding-your-first-vite-project) to
-  create your React app. You can set it up by running `npm create vite@latest`.
-</Warning>
-
-
 <CodeGroup>
 
 ```bash npm
@@ -46,13 +38,6 @@ pnpm add @reown/appkit @reown/appkit-universal-connector @reown/appkit-common et
 </CodeGroup>
 
 ## Implementation
-
-Here is a sample implementation of WalletConnect App SDK with React. You can also check the example repository below.
-
-<Card title="AppKit Core Example" icon="github" href="https://github.com/reown-com/appkit-web-examples/tree/main/react/react-core-universal-connector">
-Check the React AppKit Core example
-</Card>
-
 For a quick integration of Appkit Core you can use the `UniversalConnector` class. Which simplifies the integration of Appkit Core by providing a single interface for all the blockchain protocols.
 
 You can configure the Universal Connector with the networks you want to support.
@@ -61,109 +46,121 @@ For more information, please visit [RPC Reference](https://docs.reown.com/advanc
 We recommend creating a config file to establish a singleton instance for the Universal Connector:
 
 ```tsx
-import type { AppKitNetwork } from '@reown/appkit/networks'
-import type { CustomCaipNetwork } from '@reown/appkit-common'
 import { UniversalConnector } from '@reown/appkit-universal-connector'
 
-// Get projectId from https://dashboard.reown.com
 export const projectId = import.meta.env.VITE_PROJECT_ID || "b56e18d47c72ab683b10814fe9495694" // this is a public projectId only to use on localhost
-
 if (!projectId) {
   throw new Error('Project ID is not defined')
 }
 
 // you can configure your own network
-const suiMainnet: CustomCaipNetwork<'sui'> = {
+const suiMainnet = {
   id: 784,
-  chainNamespace: 'sui' as const,
+  chainNamespace: 'sui',
   caipNetworkId: 'sui:mainnet',
   name: 'Sui',
   nativeCurrency: { name: 'SUI', symbol: 'SUI', decimals: 9 },
   rpcUrls: { default: { http: ['https://fullnode.mainnet.sui.io:443'] } }
 }
 
-export const networks = [suiMainnet] as [AppKitNetwork, ...AppKitNetwork[]]
+const stacksMainnet = {
+  id: 1,
+  chainNamespace: 'stacks',
+  caipNetworkId: 'stacks:1',
+  name: 'Stacks',
+  nativeCurrency: { name: 'STX', symbol: 'STX', decimals: 6 },
+  rpcUrls: { default: { http: ['https://stacks-node-mainnet.stacks.co'] } }
+}
+
+
+export const networks = [suiMainnet, stacksMainnet]
+
+export let universalConnector
 
 export async function getUniversalConnector() {
-  const universalConnector = await UniversalConnector.init({
-    projectId,
-    metadata: {
-      name: 'Universal Connector',
-      description: 'Universal Connector',
-      url: 'https://appkit.reown.com',
-      icons: ['https://appkit.reown.com/icon.png']
-    },
-    networks: [
-      {
-        methods: ['sui_signPersonalMessage'],
-        chains: [suiMainnet as CustomCaipNetwork],
-        events: [],
-        namespace: 'sui'
-      }
-    ]
-  })
-
+  if (!universalConnector) {
+    universalConnector = await UniversalConnector.init({
+      projectId,
+      metadata: {
+        name: 'Universal Connector',
+        description: 'Universal Connector',
+        url: 'https://appkit.reown.com',
+        icons: ['https://appkit.reown.com/icon.png']
+      },
+      networks: [
+        {
+          methods: ['sui_signPersonalMessage'],
+          chains: [suiMainnet],
+          events: [],
+          namespace: 'sui'
+        },
+        {
+          methods: ['stx_signMessage'],
+          chains: [stacksMainnet],
+          events: ['stx_chainChanged'],
+          namespace: 'stacks'
+        }
+      ]
+    })
+  }
   return universalConnector
 }
 ```
 
-In de App.tsx file you can add :
+In de main.js file you can add :
 
 ```tsx
-import { useState, useEffect } from 'react'
-import { getUniversalConnector } from './config' // previous config file
-import { UniversalConnector } from '@reown/appkit-universal-connector'
+import { getUniversalConnector } from './config/appKit.js'
 
-export function App() {
-  const [universalConnector, setUniversalConnector] = useState<UniversalConnector>()
-  const [session, setSession] = useState<any>()
+async function setup() {
+  const universalConnector = await getUniversalConnector()
 
-  
-  // Initialize the Universal Connector on component mount
-  useEffect(() => {
-    getUniversalConnector().then(setUniversalConnector)
-  }, [])
+  // check if session is already connected
+  if (universalConnector?.provider.session) {
+    session = universalConnector?.provider.session
+  }
+}
 
-  // Set the session state in case it changes
-  useEffect(() => {
-    setSession(universalConnector?.provider.session)
-  }, [universalConnector?.provider.session])
+setup() 
 ```
 
 
-## Trigger the modal
 
-To open AppKit Core you need to call the `connect` function from the Universal Connector.
+## Trigger the modal
+To open AppKit you need to call the `connect` function from the Provider, sending the namespace, methods, the full chain Namespace and the events available.
+For more information, please visit [RPC Reference](https://docs.reown.com/advanced/multichain/rpc-reference/cosmos-rpc) section from our docs.
 
 ```tsx
-    // get the session from the universal connector
-    const handleConnect = async () => {
+<script>
+    let address = null
+    let addressStacks = null
+    let session = null
+
+    async function handleConnect() {
+      // universalConnector is the universal connector instance from the implementation section
       if (!universalConnector) {
         return
       }
-  
+
       const { session: providerSession } = await universalConnector.connect()
-      setSession(providerSession)
-    };
-
-    // disconnect the universal connector
-    const handleDisconnect = async () => {
-      if (!universalConnector) {
-        return
+      // get the address from the session
+      if (providerSession?.namespaces?.sui?.accounts?.[0]?.split(':')[2]) {
+        address = providerSession?.namespaces?.sui?.accounts?.[0]?.split(':')[2]
+      } else if (providerSession?.namespaces?.stacks?.accounts?.[0]?.split(':')[2]) {
+        addressStacks = providerSession?.namespaces?.stacks?.accounts?.[0]?.split(':')[2]
       }
-      await universalConnector.disconnect()
-      setSession(null)
-    };
+      // update the session
+      session = providerSession;
+    }
 
-    ...
+    document.getElementById('open-connect-modal').addEventListener('click', handleConnect);
+</script>
+.... 
 
-    return (
-    (
-    <div>      
-        <button onClick={handleConnect}>Open AppKit Core</button>
-        <button onClick={handleDisconnect}>Disconnect</button>
-    </div>
-    )
+<div> 
+  <button id="open-connect-modal">Open AppKit Core</button>
+</div>
+
 ```
 
 ## Smart Contract Interaction
