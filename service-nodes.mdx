@@ -1,0 +1,82 @@
+---
+title: Service Nodes
+---
+
+Service nodes form the backbone of the WalletConnect Network, serving as crucial infrastructure for persisting and managing end-to-end encrypted network messages. These nodes employ rendezvous hashing, a sophisticated method that ensures even distribution of data across the network. This approach not only enhances reliability and fault tolerance but also maintains user privacy by design - service nodes cannot decrypt or read the content of the messages they handle.
+
+## Technical Architecture
+
+The network's architecture is built on the premise that clients may be offline for extended periods. To address this, a "mailbox" system persists messages, allowing clients to retrieve data upon reconnection. This system is underpinned by a database utilizing rendezvous hashing, a concept that has proven its scalability in modern databases including Cassandra, DynamoDB, MongoDB, and others.
+
+The nodes are primarily constructed in Rust, chosen for its performance and safety features. For critical lower-level operations such as bloom-filters and I/O, the nodes integrate RocksDB, an industry-standard implementation maintained by Facebook/Meta. This hybrid approach leverages the strengths of custom-built solutions and battle-tested components.
+
+Current research focuses on evolving the rendezvous hashing-based database into a fully permissionless system. The next milestone is to publish a comprehensive technical design for community review, a crucial step before implementation. In the interim, node access to the network remains permissioned to ensure stability and security.
+
+## Service Node Operators
+
+Service Node Operators play a vital role in the WalletConnect ecosystem. Their responsibilities extend beyond mere node management to include proactive maintenance of high uptime and consistent performance optimization. The barrier to entry - staking WCT tokens - serves a dual purpose: it demonstrates the operator's commitment and aligns their interests with the network's success.
+
+The reward structure for operators is carefully designed to promote both long-term commitment and high-quality service. Staking rewards incentivize sustained participation, while performance-based incentives, calculated using key metrics like uptime and latency, encourage continuous improvement and innovation in node operation.
+
+## Node Statuses
+
+The WalletConnect Network implements a dynamic node status system, allowing for flexible and responsive network management:
+
+- **Active**: These nodes are the workhorses of the network, directly processing user requests within their assigned region. The initial target of 15 active nodes balances network robustness with economic efficiency.
+
+- **Reserve**: Operating similarly to active nodes, reserve nodes ensure network resilience. They participate in the replication process and stand ready to step into an active role when needed, maintaining a pool of qualified nodes.
+
+- **Jailed**: This status serves as a temporary penalty for nodes that fail to meet performance standards. The 24-hour exclusion period provides operators time to address issues while protecting the network from underperforming nodes.
+
+- **Standby**: Representing potential capacity, standby nodes have staked tokens but are not actively running. This status allows the network to scale rapidly when demand increases.
+
+- **Deactivated**: This status accommodates operators who choose to cease support, ensuring an orderly exit process that protects both the operator's interests and the network's stability.
+
+| Status      | Target Number  |
+|-------------|----------------|
+| Active      | 15             |
+| Reserve     | 6              |
+| Jailed      | No target      |
+| Standby     | No target      |
+| Deactivated | No target      |
+
+<Note>
+Target numbers are initial values and may be adjusted through governance decisions to optimize network performance and economic sustainability.
+</Note>
+
+## Performance Evaluation
+
+The sophisticated performance evaluation system is a cornerstone of maintaining the WalletConnect Network's high standards. The performance coefficient $U(i,t) \in [0, 1]$ provides a nuanced measure of each node's contribution:
+
+$$\text{Performance} = (W_u \cdot U_i) \cdot (W_l \cdot L_i)$$
+
+Where $U_i$ represents uptime, $L_i$ denotes latency, and $W_u$ and $W_l$ are adjustable weights. This formula allows for fine-tuning of performance priorities as the network evolves.
+
+## Performance Verification
+
+The transition from a permissioned to a permissionless verification system represents a key evolution in the network's maturity:
+
+1. Permissioned Network (Phase 1):
+   * Trusted oracle nodes conduct performance verification, ensuring a controlled and stable initial environment.
+   * The oracle node plays a crucial role within the Network. It functions as both a data collector and a regular service operator.
+
+2. Permissionless Network (Phase 2):
+   * All nodes engage in mutual performance measurement, creating a more decentralized and robust verification system.
+   * Every node pings and reports on every other node operator, replacing the need for a central oracle.
+   * This distributed approach enhances the network's resilience and reduces single points of failure.
+
+Key Transition:
+* Phase 1: Trusted nodes (oracles) verify performance
+* Phase 2: Every node participates in performance measurement
+
+This phased approach allows for gradual decentralization while maintaining network integrity throughout the transition. It enables the network to start with a controlled, easily manageable system and evolve into a more decentralized, robust structure as it matures.
+
+## Slashing Mechanism
+
+The slashing mechanism is a critical component in maintaining high network standards:
+
+1. Performance threshold $\tau$ (where $0 < \tau < 1$) is set through governance.
+2. Nodes with $U(i,t) < \tau$ trigger a slashing event.
+3. The underperforming node is moved to "jailed" status and replaced by a reserve node.
+4. Jailed nodes may face a reduction in staked tokens, with the percentage determined by governance.
+5. After the jailing period, nodes return to standby status, with the opportunity to re-enter active service.

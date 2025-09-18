@@ -1,0 +1,27 @@
+<svg width="280" height="146" viewBox="0 0 280 146" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2344_2738)">
+<mask id="mask0_2344_2738" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="280" height="146">
+<path d="M0 16C0 7.16344 7.16344 0 16 0H264C272.837 0 280 7.16344 280 16V130C280 138.837 272.837 146 264 146H16C7.16344 146 0 138.837 0 130V16Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_2344_2738)">
+<path d="M0 16C0 7.16344 7.16344 0 16 0H264C272.837 0 280 7.16344 280 16V130C280 138.837 272.837 146 264 146H16C7.16344 146 0 138.837 0 130V16Z" fill="#F7F7F8"/>
+<path d="M-26.354 18.5H306.354" stroke="#E9EAEC" stroke-dasharray="5 5"/>
+<path d="M-26.354 45.5H306.354" stroke="#E9EAEC" stroke-dasharray="5 5"/>
+<path d="M-26.354 72.5H140H306.354" stroke="#E9EAEC" stroke-dasharray="5 5"/>
+<path d="M-26.354 99.5H306.354" stroke="#E9EAEC" stroke-dasharray="5 5"/>
+<path d="M-26.354 126.5H306.354" stroke="#E9EAEC" stroke-dasharray="5 5"/>
+<path d="M26.5 239V-93" stroke="#E9EAEC" stroke-dasharray="5 5"/>
+<path d="M83 239V-93" stroke="#E9EAEC" stroke-dasharray="5 5"/>
+<path d="M139.5 239V-93" stroke="#E9EAEC" stroke-dasharray="5 5"/>
+<path d="M196 239V-93" stroke="#E9EAEC" stroke-dasharray="5 5"/>
+<path d="M252.5 239V-93" stroke="#E9EAEC" stroke-dasharray="5 5"/>
+</g>
+<path d="M127.557 69.0461L122.701 64.2055C133.677 53.2648 147.314 53.2648 158.289 64.2055L153.433 69.0461C145.086 60.7254 135.899 60.7254 127.552 69.0461H127.557Z" fill="#202020"/>
+<path d="M129.175 80.3243L140.5 69.0352L151.825 80.3243L163.15 69.0352L168 73.8702L151.825 90L140.5 78.7108L129.175 90L113 73.8702L117.85 69.0352L129.175 80.3243Z" fill="#202020"/>
+</g>
+<defs>
+<clipPath id="clip0_2344_2738">
+<rect width="280" height="146" fill="white"/>
+</clipPath>
+</defs>
+</svg>
