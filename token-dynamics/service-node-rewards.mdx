@@ -1,0 +1,39 @@
+---
+title: Service Node Rewards
+---
+
+The WalletConnect Network implements a carefully structured reward system for node operators, designed to incentivize high performance and long-term commitment. The node rewards budget is split into two phases, with the first phase addressing the unique challenges of the WCT token non-transferability period.
+
+## Phase 1: Non-Transferability Period
+
+During this initial phase, a fixed-base reward structure is implemented, resulting in the following token-base revenues:
+
+1. **Initial Allocation**: 100,000 WCT are distributed as initial allocation and can be staked. These tokens are locked for the entire period of non-transferability.
+
+2. **Performance Boost (B_n)**: A boost given to nodes to reflect their performance and activity that is not based on WCT price.
+
+### Boost Calculation
+
+The performance boost (B_n) is calculated as follows:
+
+$$B_n = \alpha + (weight \cdot performance score)$$
+
+A multiplicator (M_n) is also applied:
+
+$$M_n = \frac{100000}{T}$$
+
+Where T is the period on which the initial allocation is locked.
+
+### Weight Distribution
+
+The boost is based on the weight of the node relative to other nodes. Initially, if there are 15 nodes, each getting 100,000 WCT, they would each get 6.67% weight. This stake weight evolves if some nodes do not restake their boost.
+
+## Performance-Based Rewards
+
+Individual node rewards are conditional on the performance factor $U(i,t) \in [0, 1]$. In line with the performance factors for other groups, there is a set of KPIs defining this. Initially, it will be based on uptime and latency.
+
+For a detailed explanation of how these factors are calculated and weighted, please refer to the [Performance Evaluation](../service-nodes/#performance-evaluation) section.
+
+<Note>
+The reward structure is subject to adjustment through network governance to ensure it continues to align with the network's goals and economic sustainability.
+</Note>
