@@ -230,6 +230,24 @@
             "pages": [
               "app-sdk/react/installation"
             ]
+          },
+          {
+            "group": "Next.js",
+            "pages": [
+              "app-sdk/next/installation"
+            ]
+          },
+          {
+            "group": "Vue",
+            "pages": [
+              "app-sdk/vue/installation"
+            ]
+          },
+          {
+            "group": "JavaScript",
+            "pages": [
+              "app-sdk/javascript/installation"
+            ]
           }
         ]
       },
