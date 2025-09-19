@@ -10,7 +10,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Wallet SDK",
+        "tab": "Wallets",
         "icon": "wallet",
         "dropdowns": [
           {
@@ -216,7 +216,7 @@
         ]
       },
       {
-        "tab": "App SDK",
+        "tab": "Apps",
         "icon": "layer-group",
         "groups": [
           {
