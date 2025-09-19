@@ -294,6 +294,11 @@
           "anchor": "Blog",
           "href": "https://walletconnect.network/blog",
           "icon": "newspaper"
+        },
+        {
+          "anchor": "Whitepaper",
+          "href": "https://whitepaper.walletconnect.network/",
+          "icon": "book"
         }
       ]
     }
