@@ -8,7 +8,7 @@ WalletConnect App SDK is chain agnostic and provides seamless integration with s
 
 ## Pre-requisites
 
-This section is to inform you about the pre-requisites for integrating WalletConnect as an App with React.
+This section is to inform you about the pre-requisites for integrating WalletConnect as an App with Next.js.
 
 ### Cloud Configuration
 
@@ -17,14 +17,6 @@ Create a new project on WalletConnect Dashboard at https://dashboard.reown.com a
 <CloudBanner />
 
 ## Installation
-
-<Warning>
-  If you are setting up your React app, please **do not use** `npx create-react-app`, as it has been deprecated. Using it may cause dependency
-  issues. Instead, please use [Vite](https://vitejs.dev/guide/#scaffolding-your-first-vite-project) to
-  create your React app. You can set it up by running `npm create vite@latest`.
-</Warning>
-
-
 <CodeGroup>
 
 ```bash npm
@@ -46,12 +38,6 @@ pnpm add @reown/appkit @reown/appkit-universal-connector @reown/appkit-common et
 </CodeGroup>
 
 ## Implementation
-
-Here is a sample implementation of WalletConnect App SDK with React. You can also check the example repository below.
-
-<Card title="AppKit Core Example" icon="github" href="https://github.com/reown-com/appkit-web-examples/tree/main/react/react-core-universal-connector">
-Check the React AppKit Core example
-</Card>
 
 For a quick integration of Appkit Core you can use the `UniversalConnector` class. Which simplifies the integration of Appkit Core by providing a single interface for all the blockchain protocols.
 

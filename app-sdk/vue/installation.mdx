@@ -1,0 +1,345 @@
+---
+title: Installation
+---
+
+import CloudBanner from "/snippets/cloud-banner.mdx";
+
+WalletConnect App SDK is chain agnostic and provides seamless integration with several blockchain ecosystems. WalletConnect App SDK when combined with Universal Provider library enables compatibility across any blockchain protocol.
+
+## Pre-requisites
+
+This section is to inform you about the pre-requisites for integrating WalletConnect as an App with Vue
+
+### Cloud Configuration
+
+Create a new project on WalletConnect Dashboard at https://dashboard.reown.com and obtain a new project ID. You will need this project ID to initialize WalletConnect in your project (app).
+
+<CloudBanner />
+
+## Installation
+
+<CodeGroup>
+
+```bash npm
+npm install @reown/appkit @reown/appkit-universal-connector @reown/appkit-common ethers
+```
+
+```bash Yarn
+yarn add @reown/appkit @reown/appkit-universal-connector @reown/appkit-common ethers
+```
+
+```bash Bun
+bun add @reown/appkit @reown/appkit-universal-connector @reown/appkit-common ethers
+```
+
+```bash pnpm
+pnpm add @reown/appkit @reown/appkit-universal-connector @reown/appkit-common ethers
+```
+
+</CodeGroup>
+
+## Implementation
+
+Here is a sample implementation of WalletConnect App SDK with Vue. You can also check the example repository below.
+
+<Card title="AppKit Core Example" icon="github" href="https://github.com/reown-com/appkit-web-examples/tree/main/vue/vue-universal-connector">
+Check the Vue AppKit Core example
+</Card>
+
+For a quick integration of Appkit Core you can use the `UniversalConnector` class. Which simplifies the integration of Appkit Core by providing a single interface for all the blockchain protocols.
+
+You can configure the Universal Connector with the networks you want to support.
+For more information, please visit [RPC Reference](https://docs.reown.com/advanced/multichain/rpc-reference/cosmos-rpc) section from our docs.
+
+We recommend creating a config file to establish a singleton instance for the Universal Connector:
+
+```tsx
+
+import type { AppKitNetwork } from '@reown/appkit/networks'
+import type { CustomCaipNetwork } from '@reown/appkit-common'
+import { UniversalConnector } from '@reown/appkit-universal-connector'
+
+// Get projectId from https://dashboard.reown.com
+export const projectId = import.meta.env.VITE_PROJECT_ID
+
+if (!projectId) {
+  throw new Error('Project ID is not defined')
+}
+
+const suiMainnet: CustomCaipNetwork<'sui'> = {
+  id: 784,
+  chainNamespace: 'sui' as const,
+  caipNetworkId: 'sui:mainnet',
+  name: 'Sui',
+  nativeCurrency: { name: 'SUI', symbol: 'SUI', decimals: 9 },
+  rpcUrls: { default: { http: ['https://fullnode.mainnet.sui.io:443'] } }
+}
+
+const stacksMainnet: CustomCaipNetwork<'stacks'> = {
+  id: 1,
+  chainNamespace: 'stacks' as const,
+  caipNetworkId: 'stacks:1',
+  name: 'Stacks',
+  nativeCurrency: { name: 'STX', symbol: 'STX', decimals: 6 },
+  rpcUrls: { default: { http: ['https://stacks-node-mainnet.stacks.co'] } }
+}
+
+// for custom networks visit -> https://docs.reown.com/appkit/react/core/custom-networks
+export const networks = [suiMainnet, stacksMainnet] as [AppKitNetwork, ...AppKitNetwork[]]
+
+export async function getUniversalConnector() {
+  const universalConnector = await UniversalConnector.init({
+    projectId,
+    metadata: {
+      name: 'Universal Connector',
+      description: 'Universal Connector',
+      url: 'https://appkit.reown.com',
+      icons: ['https://appkit.reown.com/icon.png']
+    },
+    networks: [
+      {
+        methods: ['sui_signPersonalMessage'],
+        chains: [suiMainnet as CustomCaipNetwork],
+        events: [],
+        namespace: 'sui'
+      },
+      {
+        methods: ['stx_signMessage'],
+        chains: [stacksMainnet as CustomCaipNetwork],
+        events: ['stx_chainChanged'],
+        namespace: 'stacks'
+      }
+    ]
+  })
+
+  return universalConnector
+}
+```
+
+In de App.vue file you can add :
+
+```tsx
+<script lang="ts">
+import { ref, onMounted, watch } from 'vue'
+import { UniversalConnector } from '@reown/appkit-universal-connector'
+import { getUniversalConnector } from './config/index'
+
+export default {
+  name: "App",
+  setup() {
+    const universalConnector = ref<UniversalConnector>()
+    const session = ref<any>()
+
+    onMounted(async () => {
+      const connector = await getUniversalConnector()
+      universalConnector.value = connector
+    })
+
+    watch(() => universalConnector.value?.provider.session, (newSession) => {
+      session.value = newSession
+    })
+    return {
+      universalConnector,
+      session
+    }
+  }
+};
+</script>
+```
+
+
+## Trigger the modal
+
+To open AppKit Core you need to call the `connect` function from the Universal Connector.
+
+```tsx
+<template>
+  <div>
+    <button @click="handleConnect">Open</button>
+  </div>
+</template>
+
+...
+    
+async handleConnect() {
+      if (!universalConnector) {
+        return
+      }
+  
+      const { session: providerSession } = await universalConnector.connect()
+    }
+```
+
+## Smart Contract Interaction
+<Tabs>
+<Tab title="Wagmi">
+
+[Wagmi actions](https://wagmi.sh/core/api/actions/readContract) can help us interact with wallets and smart contracts:
+
+```html
+<script setup lang="ts">
+  import { readContract } from "@wagmi/core";
+  import { USDTAbi } from "../abi/USDTAbi";
+
+  const USDTAddress = "0x...";
+
+  const data = readContract({
+    abi: USDTAbi,
+    address: USDTAddress,
+    functionName: "symbol",
+  });
+</script>
+```
+
+Read more about Wagmi actions for smart contract interaction [here](https://wagmi.sh/core/actions/readContract).
+
+</Tab>
+<Tab title="Ethers">
+
+[Ethers](https://docs.ethers.org/v6/) can help us interact with wallets and smart contracts:
+
+```html
+<script setup lang="ts">
+  import { useAppKitProvider, useAppKitAccount } from "@reown/appkit/vue";
+  import { BrowserProvider, Contract, formatUnits } from "ethers";
+
+  const USDTAddress = "0x617f3112bf5397D0467D315cC709EF968D9ba546";
+
+  // The ERC-20 Contract ABI, which is a common contract interface
+  // for tokens (this is the Human-Readable ABI format)
+  const USDTAbi = [
+    "function name() view returns (string)",
+    "function symbol() view returns (string)",
+    "function balanceOf(address) view returns (uint)",
+    "function transfer(address to, uint amount)",
+    "event Transfer(address indexed from, address indexed to, uint amount)",
+  ];
+
+  function Components() {
+    const { address, isConnected } = useAppKitAccount();
+    const { walletProvider } = useAppKitProvider("eip155");
+
+    async function getBalance() {
+      if (!isConnected) throw Error("User disconnected");
+
+      const ethersProvider = new BrowserProvider(walletProvider);
+      const signer = await ethersProvider.getSigner();
+      // The Contract object
+      const USDTContract = new Contract(USDTAddress, USDTAbi, signer);
+      const USDTBalance = await USDTContract.balanceOf(address);
+
+      console.log(formatUnits(USDTBalance, 18));
+    }
+    return <button onClick={getBalance}>Get User Balance</button>;
+  }
+</script>
+```
+
+</Tab>
+
+<Tab title="Solana">
+  [@Solana/web3.js](https://solana.com/docs/clients/javascript) library allows for seamless interaction with wallets and smart contracts on the Solana blockchain.
+
+For a practical example of how it works, you can refer to our [lab dApp](https://appkit-lab.reown.com/appkit/?name=solana).
+
+```tsx
+import { ref } from 'vue';
+import {
+  SystemProgram,
+  PublicKey,
+  Keypair,
+  Transaction,
+  TransactionInstruction,
+  LAMPORTS_PER_SOL
+} from '@solana/web3.js';
+import { useAppKitAccount, useAppKitProvider } from '@reown/appkit/vue'
+import { useAppKitConnection, type Provider } from '@reown/appkit-adapter-solana/vue'
+
+export default {
+  setup() {
+    const counterMessage = ref('');
+    const { address } = useAppKitAccount();
+    const { connection } = useAppKitConnection()
+    const { walletProvider } = useAppKitProvider<Provider>('solana')
+
+    function deserializeCounterAccount(data) {
+      if (data?.byteLength !== 8) {
+        throw Error('Need exactly 8 bytes to deserialize counter');
+      }
+
+      return {
+        count: Number(data[0])
+      };
+    }
+
+    async function onIncrementCounter() {
+      try {
+        const PROGRAM_ID = new PublicKey('Cb5aXEgXptKqHHWLifvXu5BeAuVLjojQ5ypq6CfQj1hy');
+
+        const counterKeypair = Keypair.generate();
+        const counter = counterKeypair.publicKey;
+
+        const balance = await connection.getBalance(walletProvider.publicKey);
+        if (balance < LAMPORTS_PER_SOL / 100) {
+          throw Error('Not enough SOL in wallet');
+        }
+
+        const COUNTER_ACCOUNT_SIZE = 8;
+        const allocIx = SystemProgram.createAccount({
+          fromPubkey: walletProvider.publicKey,
+          newAccountPubkey: counter,
+          lamports: await connection.getMinimumBalanceForRentExemption(COUNTER_ACCOUNT_SIZE),
+          space: COUNTER_ACCOUNT_SIZE,
+          programId: PROGRAM_ID
+        });
+
+        const incrementIx = new TransactionInstruction({
+          programId: PROGRAM_ID,
+          keys: [
+            {
+              pubkey: counter,
+              isSigner: false,
+              isWritable: true
+            }
+          ],
+          data: Buffer.from([0x0])
+        });
+
+        const tx = new Transaction().add(allocIx).add(incrementIx);
+
+        tx.feePayer = walletProvider.publicKey;
+        tx.recentBlockhash = (await connection.getLatestBlockhash('confirmed')).blockhash;
+
+        await walletProvider.signAndSendTransaction(tx, [counterKeypair]);
+
+        const counterAccountInfo = await connection.getAccountInfo(counter, {
+          commitment: 'confirmed'
+        });
+
+        if (!counterAccountInfo) {
+          throw new Error('Expected counter account to have been created');
+        }
+
+        const counterAccount = deserializeCounterAccount(counterAccountInfo?.data);
+
+        if (counterAccount.count !== 1) {
+          throw new Error('Expected count to have been 1');
+        }
+
+        counterMessage.value = `[alloc+increment] count is: ${counterAccount.count}`;
+      } catch (error) {
+        console.error(error);
+        counterMessage.value = `Error: ${error.message}`;
+      }
+    }
+
+    return {
+      onIncrementCounter,
+      counterMessage
+    };
+  }
+};
+```
+</Tab>
+
+</Tabs>
