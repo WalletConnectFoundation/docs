@@ -10,74 +10,6 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Network",
-        "icon":"globe",
-        "groups": [
-          {
-            "group": "WalletConnect Docs",
-            "pages": [
-              "index"
-            ]
-          },
-          {
-            "group": "Getting started",
-            "pages": [
-              "overview",
-              "network",
-              "service-nodes",
-              "wallets"
-            ]
-          },
-          {
-            "group": "WCT Token",
-            "pages": [
-              "token-dynamics/intro",
-              "token-dynamics/fees",
-              "token-dynamics/rewards",
-              "token-dynamics/service-node-rewards",
-              "token-dynamics/wallet-rewards"
-            ]
-          },
-          {
-            "group": "WCT Staking",
-            "pages": [
-              "wct-staking/overview",
-              "wct-staking/faq"
-            ]
-          },
-          {
-            "group": "Governance",
-            "pages": [
-              "governance"
-            ]
-          },
-          {
-            "group": "WCT Smart Contracts",
-            "pages": [
-              "contract"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "App SDK",
-        "icon": "layer-group",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "app-sdk/overview"
-            ]
-          },
-          {
-            "group": "React",
-            "pages": [
-              "app-sdk/react/installation"
-            ]
-          }
-        ]
-      },
-      {
         "tab": "Wallet SDK",
         "icon": "wallet",
         "dropdowns": [
@@ -85,6 +17,12 @@
             "dropdown": "Wallet SDK - Overview",
             "icon": "wallet",
             "pages": [
+              {
+                "group": "WalletConnect Docs",
+                "pages": [
+                  "index"
+                ]
+              },
               {
                 "group": "Getting Started",
                 "pages": ["wallet-sdk/overview"]
@@ -273,6 +211,86 @@
                   "wallet-sdk/c-sharp/cloud/analytics"
                 ]
               }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "App SDK",
+        "icon": "layer-group",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "app-sdk/overview"
+            ]
+          },
+          {
+            "group": "React",
+            "pages": [
+              "app-sdk/react/installation"
+            ]
+          },
+          {
+            "group": "Next.js",
+            "pages": [
+              "app-sdk/next/installation"
+            ]
+          },
+          {
+            "group": "Vue",
+            "pages": [
+              "app-sdk/vue/installation"
+            ]
+          },
+          {
+            "group": "JavaScript",
+            "pages": [
+              "app-sdk/javascript/installation"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Network",
+        "icon":"globe",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": [
+              "overview",
+              "network",
+              "service-nodes",
+              "wallets"
+            ]
+          },
+          {
+            "group": "WCT Token",
+            "pages": [
+              "token-dynamics/intro",
+              "token-dynamics/fees",
+              "token-dynamics/rewards",
+              "token-dynamics/service-node-rewards",
+              "token-dynamics/wallet-rewards"
+            ]
+          },
+          {
+            "group": "WCT Staking",
+            "pages": [
+              "wct-staking/overview",
+              "wct-staking/faq"
+            ]
+          },
+          {
+            "group": "Governance",
+            "pages": [
+              "governance"
+            ]
+          },
+          {
+            "group": "WCT Smart Contracts",
+            "pages": [
+              "contracts"
             ]
           }
         ]
