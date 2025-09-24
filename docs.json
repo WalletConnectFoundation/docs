@@ -6,6 +6,12 @@
     "light": "#0988f0",
     "dark": "#0988f0"
   },
+  "integrations": {
+    "posthog": {
+      "apiKey": "phc_yUywlbA5HctEGSHSK7ueMEH56ktyqyqEBtY4Cl35Fgf",
+      "apiHost": "https://eu.i.posthog.com"
+    }
+  },
   "favicon": "/favicon.ico",
   "navigation": {
     "tabs": [
@@ -19,9 +25,7 @@
             "pages": [
               {
                 "group": "WalletConnect Docs",
-                "pages": [
-                  "index"
-                ]
+                "pages": ["index"]
               },
               {
                 "group": "Getting Started",
@@ -29,31 +33,27 @@
               },
               {
                 "group": "Features",
+                "pages": ["wallet-sdk/features/verify", "wallet-sdk/features/link-mode", "wallet-sdk/features/one-click-auth"]
+              },
+              {
+                "group": "Production",
+                "pages": ["wallet-sdk/best-practices"]
+              },
+              {
+                "group": "Upgrade",
+                "pages": [
+                  "wallet-sdk/upgrade/staying-up-to-date",
+                  {
+                    "group": "Web3Wallet to Wallet SDK",
                     "pages": [
-                      "wallet-sdk/features/verify",
-                      "wallet-sdk/features/link-mode",
-                      "wallet-sdk/features/one-click-auth"
+                      "wallet-sdk/upgrade/from-web3wallet-to-reown",
+                      "wallet-sdk/upgrade/from-web3wallet-web",
+                      "wallet-sdk/upgrade/from-web3wallet-react-native",
+                      "wallet-sdk/upgrade/from-web3wallet-flutter",
+                      "wallet-sdk/upgrade/from-web3wallet-android",
+                      "wallet-sdk/upgrade/from-web3wallet-ios",
+                      "wallet-sdk/upgrade/from-web3wallet-unity"
                     ]
-                  },
-                  {
-                    "group": "Production",
-                    "pages": ["wallet-sdk/best-practices"]
-                  },
-                  {
-                    "group": "Upgrade",
-                    "pages": [
-                      "wallet-sdk/upgrade/staying-up-to-date",
-                      {
-                        "group": "Web3Wallet to Wallet SDK",
-                        "pages": [
-                          "wallet-sdk/upgrade/from-web3wallet-to-reown",
-                          "wallet-sdk/upgrade/from-web3wallet-web",
-                          "wallet-sdk/upgrade/from-web3wallet-react-native",
-                          "wallet-sdk/upgrade/from-web3wallet-flutter",
-                          "wallet-sdk/upgrade/from-web3wallet-android",
-                          "wallet-sdk/upgrade/from-web3wallet-ios",
-                          "wallet-sdk/upgrade/from-web3wallet-unity"
-                      ]
                   }
                 ]
               }
@@ -74,11 +74,7 @@
               "wallet-sdk/web/resources",
               {
                 "group": "Cloud",
-                "pages": [
-                  "wallet-sdk/web/cloud/explorer-submission",
-                  "wallet-sdk/web/cloud/relay",
-                  "wallet-sdk/web/cloud/analytics"
-                ]
+                "pages": ["wallet-sdk/web/cloud/explorer-submission", "wallet-sdk/web/cloud/relay", "wallet-sdk/web/cloud/analytics"]
               }
             ]
           },
@@ -104,11 +100,7 @@
               },
               {
                 "group": "Cloud",
-                "pages": [
-                  "wallet-sdk/android/cloud/explorer-submission",
-                  "wallet-sdk/android/cloud/relay",
-                  "wallet-sdk/android/cloud/analytics"
-                ]
+                "pages": ["wallet-sdk/android/cloud/explorer-submission", "wallet-sdk/android/cloud/relay", "wallet-sdk/android/cloud/analytics"]
               }
             ]
           },
@@ -134,11 +126,7 @@
               },
               {
                 "group": "Cloud",
-                "pages": [
-                  "wallet-sdk/ios/cloud/explorer-submission",
-                  "wallet-sdk/ios/cloud/relay",
-                  "wallet-sdk/ios/cloud/analytics"
-                ]
+                "pages": ["wallet-sdk/ios/cloud/explorer-submission", "wallet-sdk/ios/cloud/relay", "wallet-sdk/ios/cloud/analytics"]
               }
             ]
           },
@@ -157,11 +145,7 @@
               "wallet-sdk/flutter/chain-abstraction",
               {
                 "group": "Cloud",
-                "pages": [
-                  "wallet-sdk/flutter/cloud/explorer-submission",
-                  "wallet-sdk/flutter/cloud/relay",
-                  "wallet-sdk/flutter/cloud/analytics"
-                ]
+                "pages": ["wallet-sdk/flutter/cloud/explorer-submission", "wallet-sdk/flutter/cloud/relay", "wallet-sdk/flutter/cloud/analytics"]
               }
             ]
           },
@@ -205,11 +189,7 @@
               "wallet-sdk/c-sharp/verify",
               {
                 "group": "Cloud",
-                "pages": [
-                  "wallet-sdk/c-sharp/cloud/explorer-submission",
-                  "wallet-sdk/c-sharp/cloud/relay",
-                  "wallet-sdk/c-sharp/cloud/analytics"
-                ]
+                "pages": ["wallet-sdk/c-sharp/cloud/explorer-submission", "wallet-sdk/c-sharp/cloud/relay", "wallet-sdk/c-sharp/cloud/analytics"]
               }
             ]
           }
@@ -221,48 +201,33 @@
         "groups": [
           {
             "group": "Getting Started",
-            "pages": [
-              "app-sdk/overview"
-            ]
+            "pages": ["app-sdk/overview"]
           },
           {
             "group": "React",
-            "pages": [
-              "app-sdk/react/installation"
-            ]
+            "pages": ["app-sdk/react/installation"]
           },
           {
             "group": "Next.js",
-            "pages": [
-              "app-sdk/next/installation"
-            ]
+            "pages": ["app-sdk/next/installation"]
           },
           {
             "group": "Vue",
-            "pages": [
-              "app-sdk/vue/installation"
-            ]
+            "pages": ["app-sdk/vue/installation"]
           },
           {
             "group": "JavaScript",
-            "pages": [
-              "app-sdk/javascript/installation"
-            ]
+            "pages": ["app-sdk/javascript/installation"]
           }
         ]
       },
       {
         "tab": "Network",
-        "icon":"globe",
+        "icon": "globe",
         "groups": [
           {
             "group": "Getting started",
-            "pages": [
-              "overview",
-              "network",
-              "service-nodes",
-              "wallets"
-            ]
+            "pages": ["overview", "network", "service-nodes", "wallets"]
           },
           {
             "group": "WCT Token",
@@ -276,22 +241,15 @@
           },
           {
             "group": "WCT Staking",
-            "pages": [
-              "wct-staking/overview",
-              "wct-staking/faq"
-            ]
+            "pages": ["wct-staking/overview", "wct-staking/faq"]
           },
           {
             "group": "Governance",
-            "pages": [
-              "governance"
-            ]
+            "pages": ["governance"]
           },
           {
             "group": "WCT Smart Contracts",
-            "pages": [
-              "contracts"
-            ]
+            "pages": ["contracts"]
           }
         ]
       }
@@ -339,16 +297,7 @@
     }
   },
   "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+    "options": ["copy", "view", "chatgpt", "claude", "perplexity", "mcp", "cursor", "vscode"]
   },
   "footer": {
     "socials": {
