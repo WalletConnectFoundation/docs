@@ -9,7 +9,7 @@
   "integrations": {
     "posthog": {
       "apiKey": "phc_yUywlbA5HctEGSHSK7ueMEH56ktyqyqEBtY4Cl35Fgf",
-      "apiHost": "https://eu.i.posthog.com"
+      "apiHost": "https://pineapple.walletconnect.com"
     }
   },
   "favicon": "/favicon.ico",
