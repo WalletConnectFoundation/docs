@@ -1,1 +1,10 @@
-{}
+{
+  "name": "walletconnect-docs",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "mintlify dev",
+    "start": "mintlify dev",
+    "broken-links": "mintlify broken-links"
+  }
+}
