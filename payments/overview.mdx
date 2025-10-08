@@ -20,6 +20,13 @@ The **WalletConnect POS SDK** brings the simplicity of “tap-to-pay” to crypt
 
 This SDK bridges online crypto rails with in-person commerce, making **stablecoin payments** as frictionless as any traditional payment method.
 
+## Quickstart
+
+<CardGroup cols={2}>
+  <Card title="Flutter" icon="flutter" href="/payments/flutter/installation">
+    Get started with WalletConnect POS SDK in Flutter.
+  </Card>
+</CardGroup>
 ## Why WalletConnect POS SDK?
 
 Stablecoins have become the dominant onchain payment medium with **$4T+ monthly transaction volume**, yet real-world checkout remains fragmented:
@@ -101,20 +108,3 @@ As providers like **Visa**, **PayPal**, and **Stripe** experiment with stablecoi
 | **Networks at Launch** | EVM chains (Ethereum, Optimism, Base, etc.), Solana, Tron |
 | **Wallet Coverage** | 500+ WalletConnect-compatible wallets |
 | **Transaction Lifecycle** | Standardized callbacks -> `new`, `pending_onchain`, `confirmed`, `underpaid`, `overpaid`, `expired`, `failed` |
-
----
-
-## Considerations
-
-- **Gas:** Users need network gas unless a PSP integrates a paymaster  
-- **Stablecoin-only:** Volatile crypto assets not supported yet  
-- **Connectivity:** Real-time onchain confirmation requires internet access  
-- **Ops Integration:** Refunds and reconciliation require PSP-side workflow integration
-
-## Quickstart
-
-<CardGroup cols={2}>
-  <Card title="Flutter" icon="flutter" href="/payments/flutter/installation">
-    Get started with WalletConnect POS SDK in Flutter.
-  </Card>
-</CardGroup>

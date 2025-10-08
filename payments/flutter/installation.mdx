@@ -19,12 +19,9 @@ sidebarTitle: "Installation"
 
 The WalletConnect POS SDK exposes methods and callbacks to create smooth payment flows.
 
-<aside>
-💡
-
+<Note>
 The methods here are shown in isolation, for a full guide on how to use them follow to the step by step guide at the bottom.
-
-</aside>
+</Note>
 
 ### Instance creation
 
@@ -519,3 +516,10 @@ Pairing URIs are single-use. If the wallet rejects or cancels, the pairing is in
 
 - Connection rejected: “Declined — connection rejected in wallet. Scan again.”
 - Connection failed: “Unable to connect. New code generated.”
+
+## Considerations
+
+- **Gas:** Users need network gas unless a PSP integrates a paymaster  
+- **Stablecoin-only:** Volatile crypto assets not supported yet  
+- **Connectivity:** Real-time onchain confirmation requires internet access  
+- **Ops Integration:** Refunds and reconciliation require PSP-side workflow integration
