@@ -252,6 +252,20 @@
             "pages": ["contracts"]
           }
         ]
+      },
+      {
+        "tab": "Payments",
+        "icon": "credit-card",
+        "groups": [
+          {
+            "group": "Point of Sale (POS) SDK",
+            "pages": ["payments/overview"]
+          },
+          {
+            "group": "Flutter",
+            "pages": ["payments/flutter/installation"]
+          }
+        ]
       }
     ],
     "global": {

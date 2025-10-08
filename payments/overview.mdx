@@ -1,0 +1,120 @@
+---
+title: "WalletConnect Point of Sale (POS) SDK"
+description: "Accept stablecoin payments at point-of-sale with a universal SDK for wallets, PSPs, and merchants."
+sidebarTitle: "Overview"
+---
+
+The **WalletConnect POS SDK** extends the open WalletConnect protocol into the world of **in-person payments**, enabling seamless, stablecoin-native checkout experiences at physical points of sale.
+
+With the same universal interoperability that connects wallets and dapps, the POS SDK allows **Payment Service Providers (PSPs)** and **merchants** to accept stablecoin payments across multiple chains and wallets, no hardware changes or fragmented integrations required.
+
+---
+
+## Overview
+
+The **WalletConnect POS SDK** brings the simplicity of “tap-to-pay” to crypto. Using a QR-based flow, any wallet connected through WalletConnect can make real-world payments in seconds.
+
+- **Merchant:** Selects “Crypto Payment” → POS generates a payment QR  
+- **Customer:** Scans with their wallet → confirms transaction  
+- **POS:** Receives instant onchain confirmation and marks payment complete  
+
+This SDK bridges online crypto rails with in-person commerce, making **stablecoin payments** as frictionless as any traditional payment method.
+
+## Why WalletConnect POS SDK?
+
+Stablecoins have become the dominant onchain payment medium with **$4T+ monthly transaction volume**, yet real-world checkout remains fragmented:
+
+- Merchants must integrate multiple wallets or blockchains individually  
+- PSPs lack visibility into transaction states and reconciliation  
+- Customers face confusing UX with manual address entry and gas settings
+
+As providers like **Visa**, **PayPal**, and **Stripe** experiment with stablecoin settlements, the next step is **real-world adoption**, where crypto payments feel native at the register.
+
+**WalletConnect POS SDK turns that vision into reality**.
+
+## What does WalletConnect POS SDK have to offer?
+
+<Steps>
+    <Step title="Universal Rail" icon="globe">
+        A single SDK for PSPs and merchants to **accept stablecoin payments across any WalletConnect-compatible wallet and supported network**. No separate wallet integrations or new hardware required.
+    </Step>
+    <Step title="Seamless Checkout UX" icon="qrcode">
+        Customers simply scan, confirm, and pay. Payments settle onchain in seconds with a **familiar checkout experience** similar to Apple Pay or tap-to-pay.
+    </Step>
+    <Step title="Multi-Chain with Full Visibility" icon="ethernet">
+        Supports **EVM, Solana, and Tron** from day one. Provides standardized transaction statuses for reconciliation and customer support:
+        
+        `[new, pending_onchain, confirmed, underpaid, overpaid, expired, failed]`.
+    </Step>
+</Steps>
+
+## How does it work?
+
+ <video
+  controls
+  className="w-full"
+  autoPlay
+  src="/images/videos/pos-demo.mp4"
+ ></video>
+
+### Merchant - Point of Sale (POS)
+1. Selects **Crypto** as payment method.
+2. Chooses **token** (e.g., USDC, USDT).
+3. Chooses **network** (e.g., Base, Polygon, Ethereum).
+4. POS **generates QR** with payment details (amount, token, network, destination).
+
+### Customer (Wallet)
+1. **Scans the QR** using a WalletConnect-compatible wallet.
+2. Wallet displays **payment preview**.
+3. Customer **confirms** the transaction.
+4. Transaction broadcasts onchain.
+
+### Completion
+- POS receives confirmation and displays success/receipt  
+- Transaction hash available for tracking and reconciliation  
+
+**This flow can also be simplified to a one-step scan for pre-filled requests.**
+
+## Who is it for?
+
+### Payment Service Providers & POS Integrators
+
+**DTC Pay**, Square-like or Ingenico-style providers are examples of PSPs that can use the POS SDK to accept stablecoin payments.
+
+- Reduce cost and complexity of integrating stablecoin payments  
+- Gain transaction lifecycle visibility for **refunds and reconciliation**  
+- Stay competitive as stablecoin adoption enters mainstream retail  
+
+### Merchants
+- Accept stablecoins from any wallet with no new hardware  
+- Offer customers a **fast, modern checkout** experience  
+- Maintain compliance and reporting via PSP dashboards  
+
+---
+
+## Supported Environments
+
+| Category | Support |
+|-----------|----------|
+| **POS SDKs** | Flutter, Kotlin, JavaScript |
+| **Assets** | Stablecoins (e.g., USDC, USDT) |
+| **Networks at Launch** | EVM chains (Ethereum, Optimism, Base, etc.), Solana, Tron |
+| **Wallet Coverage** | 500+ WalletConnect-compatible wallets |
+| **Transaction Lifecycle** | Standardized callbacks -> `new`, `pending_onchain`, `confirmed`, `underpaid`, `overpaid`, `expired`, `failed` |
+
+---
+
+## Considerations
+
+- **Gas:** Users need network gas unless a PSP integrates a paymaster  
+- **Stablecoin-only:** Volatile crypto assets not supported yet  
+- **Connectivity:** Real-time onchain confirmation requires internet access  
+- **Ops Integration:** Refunds and reconciliation require PSP-side workflow integration
+
+## Quickstart
+
+<CardGroup cols={2}>
+  <Card title="Flutter" icon="flutter" href="/payments/flutter/installation">
+    Get started with WalletConnect POS SDK in Flutter.
+  </Card>
+</CardGroup>
