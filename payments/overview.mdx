@@ -80,7 +80,7 @@ As providers like **Visa**, **PayPal**, and **Stripe** experiment with stablecoi
 - POS receives confirmation and displays success/receipt  
 - Transaction hash available for tracking and reconciliation  
 
-**This flow can also be simplified to a one-step scan for pre-filled requests.**
+**This flow can also be simplified to a one-step scan for pre-filled requests.** This is coming soon and more information will be available shortly.
 
 ## Who is it for?
 
@@ -91,6 +91,10 @@ As providers like **Visa**, **PayPal**, and **Stripe** experiment with stablecoi
 - Reduce cost and complexity of integrating stablecoin payments  
 - Gain transaction lifecycle visibility for **refunds and reconciliation**  
 - Stay competitive as stablecoin adoption enters mainstream retail  
+
+<Warning>
+WalletConnect POS SDK does not handle refunds or reconciliation directly. It is the responsibility of the PSP to handle these. However, the SDK provides the necessary standardized callbacks to allow the PSP to handle the refund and reconciliation process.
+</Warning>
 
 ### Merchants
 - Accept stablecoins from any wallet with no new hardware  
