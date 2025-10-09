@@ -74,9 +74,9 @@ await posClient.init(); // throws on error
 
 After initialization is completed, an `InitializedEvent` will be received through the `onPosEvent` subscription. This is not mandatory but could be useful in case you don’t want to await on the `posClient.init()` method.
 
-### configuredTokens getter…
+### configuredTokens getter
 
-When calling `posClient.setTokens(tokens: tokens);` your are essentially setting which tokens your POS Client would support. However, our Blockchain API might not support some network, therefor, some tokens on that network. During  `init()` method our SDK will check the currently supported networks and filter out the unsupported tokens from your initial list based on the supported networks.
+When calling `posClient.setTokens(tokens: tokens);` you are essentially setting which tokens your POS Client would support. However, our Blockchain API might not support some networks, therefore, some tokens on those networks. During the `init()` method, our SDK will check the currently supported networks and filter out the unsupported tokens from your initial list based on the supported networks.
 
 `posClient.configuredTokens;` will give you the list of tokens that would be actually supported.
 
@@ -330,7 +330,7 @@ To use the POS SDK you will need the following:
 - **Requirements:** Flutter 3.22+, Dart 3.x, Android min SDK 23, iOS 13+.
 
 <Warning>
-💡IMPORTANT: The WalletConnect POS is not available to download yet.
+IMPORTANT: The WalletConnect POS is not available to download yet.
 </Warning>
 
 ### Sequence Diagram
