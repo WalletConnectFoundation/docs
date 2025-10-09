@@ -24,10 +24,6 @@
             "icon": "wallet",
             "pages": [
               {
-                "group": "WalletConnect Docs",
-                "pages": ["index"]
-              },
-              {
                 "group": "Getting Started",
                 "pages": ["wallet-sdk/overview"]
               },
