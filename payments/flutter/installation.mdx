@@ -471,7 +471,7 @@ Customer scans the POS QR, wallet opens, but if they have no balance or insuffic
 
 **Root cause:**
 
-When the POS calls `reown_pos_buildTransaction`, the server simulates/estimates the transaction. If the user has no gas or token balance, the simulation fails and the server returns an **error**. This prevents the transaction from failing on-chain. The Flutter SDK surfaces this as part of  **`PaymentRequestFailedEvent(message)`**
+When the POS calls `wc_pos_buildTransaction`, the server simulates/estimates the transaction. If the user has no gas or token balance, the simulation fails and the server returns an **error**. This prevents the transaction from failing on-chain. The Flutter SDK surfaces this as part of  **`PaymentRequestFailedEvent(message)`**
 
 **How to handle with the SDK:**
 
