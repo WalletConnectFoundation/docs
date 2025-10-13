@@ -329,27 +329,19 @@ To use the POS SDK you will need the following:
 - **Project ID** from the Reown Dashboard ([dashboard.reown.com](http://dashboard.reown.com/)).
 - **Requirements:** Flutter 3.22+, Dart 3.x, Android min SDK 23, iOS 13+.
 
-<Warning>
-IMPORTANT: The WalletConnect POS is not available to download yet.
-</Warning>
-
 ### Sequence Diagram
 
 ![img](/images/pos-mermaid-diagram.png)
 
 ### Step 1 - Add Dependencies
 
-```yaml
-# pubspec.yaml
+First, install the dependency by running the following command:
 
-dependencies:
-  reown_pos:
-    git:
-      url: https://github.com/reown-com/reown_flutter.git
-      path: packages/reown_pos
-      ref: 769c0b0b975332c00a8f7fe19a0d63b18925d455
-
+```bash
+flutter pub add pos_client
 ```
+
+You can find the latest version [here](https://pub.dev/packages/pos_client).
 
 ### Step 2 - Complete reproducible example
 
