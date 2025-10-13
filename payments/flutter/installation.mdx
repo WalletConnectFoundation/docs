@@ -268,9 +268,9 @@ posClient.onPosEvent.subscribe((event) {
     final PosApiError apiError = event.apiError;
     final String shortMessage = event.shortMessage;
     final String fullErrorMessage = event.message;
-  } else if (event is PaymentRequestRejectedEvent) {
-    // User rejected the payment request
-    status = '3. Payment failed event.';
+  } else if (event is PaymentFailedEvent) {
+    // Payment request failed
+    status = '3. Payment request failed.';
   } else if (event is PaymentBroadcastedEvent) {
     // User approved the payment and transaction was broadcasted
     status = '4. Payment broadcasted, waiting confirmation...';
