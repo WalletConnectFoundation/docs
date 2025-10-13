@@ -24,10 +24,6 @@
             "icon": "wallet",
             "pages": [
               {
-                "group": "WalletConnect Docs",
-                "pages": ["index"]
-              },
-              {
                 "group": "Getting Started",
                 "pages": ["wallet-sdk/overview"]
               },
@@ -250,6 +246,20 @@
           {
             "group": "WCT Smart Contracts",
             "pages": ["contracts"]
+          }
+        ]
+      },
+      {
+        "tab": "Payments",
+        "icon": "credit-card",
+        "groups": [
+          {
+            "group": "Point of Sale (POS) SDK",
+            "pages": ["payments/overview"]
+          },
+          {
+            "group": "Flutter",
+            "pages": ["payments/flutter/installation"]
           }
         ]
       }
