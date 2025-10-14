@@ -32,6 +32,20 @@
                 "pages": ["wallet-sdk/features/verify", "wallet-sdk/features/link-mode", "wallet-sdk/features/one-click-auth"]
               },
               {
+                "group": "WalletGuide",
+                "pages": ["walletguide/explorer-submission", 
+                {
+                  "group": "WalletGuide Chains",
+                  "pages": ["walletguide/chains/overview", "walletguide/chains/chain-list"]
+                },
+                {
+                  "group": "WalletGuide Wallets",
+                  "pages": ["walletguide/wallets/wallet-list"]
+                },
+                "walletguide/explorer"
+                ]
+              },
+              {
                 "group": "Production",
                 "pages": ["wallet-sdk/best-practices"]
               },
