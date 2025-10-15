@@ -87,16 +87,20 @@ walletkit.on('session_proposal', async (proposal) => {
 })
 ```
 
-### 2. Display to User
+<Warning>
+  Wallets must integrate WalletConnect Wallet SDK to be compatible with WalletConnect and WalletConnect Pay. If your wallet has not yet integrated the WalletConnect Wallet SDK, please refer to the [WalletConnect Wallet SDK](/wallet-sdk/overview) documentation for instructions on how to integrate it.
+</Warning>
 
-Show the payment details from `walletPay.acceptedPayments[0]`:
+### 2. Display Payment Options to the User
 
-- Asset (parse CAIP-19 to get token address)
-- Amount (convert hex to decimal with token decimals)
+Parse the `acceptedPayments` array and match available options against the user's token balances. Display payment details for tokens the user can fulfill:
+
+- Token symbol and network (parsed from CAIP-19 asset identifier)
+- Amount (converted from hex to human-readable format with correct decimals)
 - Recipient address
-- Network/chain
+- Estimated network fees
 
-Allow user to approve the session with or without processing the payment.
+If multiple payment options are available, prioritize by user's balance and preferences. Allow users to switch between options or approve the session without processing payment.
 
 ### 3. Process Payment & Approve Session
 
