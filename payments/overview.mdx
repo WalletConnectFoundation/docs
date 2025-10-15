@@ -1,114 +1,54 @@
 ---
-title: "WalletConnect Point of Sale (POS) SDK"
-description: "Accept stablecoin payments at point-of-sale with a universal SDK for wallets, PSPs, and merchants."
+title: "WalletConnect Payments Standard"
+metatags:
+    description: "Overview of WalletConnect Payments and the `wallet_pay` standard — a universal protocol that enables wallets and payment applications to exchange blockchain-based payment requests in a consistent, secure, and chain-agnostic way."
 sidebarTitle: "Overview"
 ---
 
-The **WalletConnect POS SDK** extends the open WalletConnect protocol into the world of **in-person payments**, enabling seamless, stablecoin-native checkout experiences at physical points of sale.
+Digital payments across blockchains remain inconsistent. Each wallet, merchant, and provider implements its own integration model. This fragmentation slows innovation and limits interoperability. To address this, WalletConnect introduces the **`wallet_pay`** standard. A unified protocol for initiating and processing blockchain-based payments.
 
-With the same universal interoperability that connects wallets and dapps, the POS SDK allows **Payment Service Providers (PSPs)** and **merchants** to accept stablecoin payments across multiple chains and wallets, no hardware changes or fragmented integrations required.
+## What is `wallet_pay`
 
----
+`wallet_pay` is the open standard that defines how wallets and payment applications communicate to initiate and process blockchain-based payments.
+It provides a consistent way to describe payment requests: who is paying, what asset is being transferred, and under what conditions; regardless of wallet, blockchain, or application context.
 
-## Overview
+At its core, `wallet_pay` enables **interoperable, wallet-native payments** across the entire WalletConnect ecosystem and beyond.
 
-The **WalletConnect POS SDK** brings the simplicity of “tap-to-pay” to crypto. Using a QR-based flow, any wallet connected through WalletConnect can make real-world payments in seconds.
+## Why a Standard Matters
 
-- **Merchant:** Selects “Crypto Payment” → POS generates a payment QR  
-- **Customer:** Scans with their wallet → confirms transaction  
-- **POS:** Receives instant onchain confirmation and marks payment complete  
+Payment interactions between wallets and merchants have often been **fragmented**, each relying on custom APIs, message formats, or user flows.  
 
-This SDK bridges online crypto rails with in-person commerce, making **stablecoin payments** as frictionless as any traditional payment method.
+This lack of alignment makes it difficult for wallets, service providers, and merchants to work together at scale.
 
-## Quickstart
+`wallet_pay` introduces a **shared language** for payments, allowing:
 
-<CardGroup cols={2}>
-  <Card title="Flutter" icon="flutter" href="/payments/flutter/installation">
-    Get started with WalletConnect POS SDK in Flutter.
-  </Card>
-</CardGroup>
-## Why WalletConnect POS SDK?
+- **Wallets** to interpret any standardized payment request without bespoke integration.  
+- **Merchants and service providers** to issue payment requests compatible with any wallet that supports the standard.  
+- **Ecosystem scalability** for new payment contexts (online checkout, recurring payments, point-of-sale, etc.) can all use the same foundation.
 
-Stablecoins have become the dominant onchain payment medium with **$4T+ monthly transaction volume**, yet real-world checkout remains fragmented:
+In short, `wallet_pay` abstracts *how* payment information is exchanged, so innovation can focus on *what* experiences are built on top.
 
-- Merchants must integrate multiple wallets or blockchains individually  
-- PSPs lack visibility into transaction states and reconciliation  
-- Customers face confusing UX with manual address entry and gas settings
+## Who Should Use `wallet_pay`
 
-As providers like **Visa**, **PayPal**, and **Stripe** experiment with stablecoin settlements, the next step is **real-world adoption**, where crypto payments feel native at the register.
+| Stakeholder | How They Benefit |
+|--------------|------------------|
+| **Wallet developers** | Implement a unified payments interface that works across merchants and ecosystems. |
+| **Payment Service Providers (PSPs)** | Use the standard as a bridge between wallets, merchants, and on-chain settlement logic. |
+| **Merchants & Platforms** | Integrate once and accept payments from any `wallet_pay`-compatible wallet. |
+| **Consumer Apps for Payments (POS, web checkout, invoices, subscriptions)** | Build new payment experiences using a common protocol. |
 
-**WalletConnect POS SDK turns that vision into reality**.
+<Note>
+    While CAIP-358 primarily defines wallet-to-merchant interaction, it is extensible to PSPs that relay or implement those interactions.
+</Note>
 
-## What does WalletConnect POS SDK have to offer?
+## Role in the WalletConnect Payments Ecosystem
 
-<Steps>
-    <Step title="Universal Rail" icon="globe">
-        A single SDK for PSPs and merchants to **accept stablecoin payments across any WalletConnect-compatible wallet and supported network**. No separate wallet integrations or new hardware required.
-    </Step>
-    <Step title="Seamless Checkout UX" icon="qrcode">
-        Customers simply scan, confirm, and pay. Payments settle onchain in seconds with a **familiar checkout experience** similar to Apple Pay or tap-to-pay.
-    </Step>
-    <Step title="Multi-Chain with Full Visibility" icon="ethernet">
-        Supports **EVM, Solana, and Tron** from day one. Provides standardized transaction statuses for reconciliation and customer support:
-        
-        `[new, pending_onchain, confirmed, underpaid, overpaid, expired, failed]`.
-    </Step>
-</Steps>
+Within WalletConnect, `wallet_pay` serves as the **foundational protocol** that powers all payment-related features.  
 
-## How does it work?
+Every SDK or product, such as the **POS SDK**, implements or extends `wallet_pay` to handle request creation, signing, and transaction tracking in a consistent way.
 
- <video
-  controls
-  className="w-full"
-  autoPlay
-  src="/images/videos/pos-demo.mp4"
- ></video>
+This means that any wallet or merchant integrating `wallet_pay` is automatically compatible with the full WalletConnect Payments ecosystem, present and future.
 
-### Merchant - Point of Sale (POS)
-1. Selects **Crypto** as payment method.
-2. Chooses **token** (e.g., USDC, USDT).
-3. Chooses **network** (e.g., Base, Polygon, Ethereum).
-4. POS **generates QR** with payment details (amount, token, network, destination).
+## Specification Reference
 
-### Customer (Wallet)
-1. **Scans the QR** using a WalletConnect-compatible wallet.
-2. Wallet displays **payment preview**.
-3. Customer **confirms** the transaction.
-4. Transaction broadcasts onchain.
-
-### Completion
-- POS receives confirmation and displays success/receipt  
-- Transaction hash available for tracking and reconciliation  
-
-**This flow can also be simplified to a one-step scan for pre-filled requests.** This is coming soon and more information will be available shortly.
-
-## Who is it for?
-
-### Payment Service Providers & POS Integrators
-
-**DTC Pay**, Square-like or Ingenico-style providers are examples of PSPs that can use the POS SDK to accept stablecoin payments.
-
-- Reduce cost and complexity of integrating stablecoin payments  
-- Gain transaction lifecycle visibility for **refunds and reconciliation**  
-- Stay competitive as stablecoin adoption enters mainstream retail  
-
-<Warning>
-WalletConnect POS SDK does not handle refunds or reconciliation directly. It is the responsibility of the PSP to handle these. However, the SDK provides the necessary standardized callbacks to allow the PSP to handle the refund and reconciliation process.
-</Warning>
-
-### Merchants
-- Accept stablecoins from any wallet with no new hardware  
-- Offer customers a **fast, modern checkout** experience  
-- Maintain compliance and reporting via PSP dashboards  
-
----
-
-## Supported Environments
-
-| Category | Support |
-|-----------|----------|
-| **POS SDKs** | Flutter, Kotlin, JavaScript |
-| **Assets** | Stablecoins (e.g., USDC, USDT) |
-| **Networks at Launch** | EVM chains (Ethereum, Optimism, Base, etc.), Solana, Tron |
-| **Wallet Coverage** | 500+ WalletConnect-compatible wallets |
-| **Transaction Lifecycle** | Standardized callbacks -> `PaymentSuccessfulEvent`, `PaymentFailedEvent` |
+The `wallet_pay` standard is defined in [CAIP-358: Universal Payment Request Method](https://eip.tools/caip/358). It specifies how payment requests are structured and exchanged between merchants and wallets. Lifecycle management and status tracking (e.g., pending, confirmed, failed) are implementation details defined by [WalletConnect’s POS SDK](/payments/point-of-sale).

@@ -268,12 +268,18 @@
         "icon": "credit-card",
         "groups": [
           {
-            "group": "Point of Sale (POS) SDK",
+            "group": "WalletConnect Payments Standard",
             "pages": ["payments/overview"]
           },
           {
-            "group": "Flutter",
-            "pages": ["payments/flutter/installation"]
+            "group": "Point of Sale (POS) SDK",
+            "pages": [
+              "payments/point-of-sale",
+              {
+                "group": "Installation",
+                "pages": ["payments/flutter/installation"]
+              }
+            ]
           }
         ]
       }
