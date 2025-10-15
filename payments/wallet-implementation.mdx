@@ -1,0 +1,597 @@
+---
+title: "Wallet Pay Implementation for Wallets"
+metatags:
+    description: "Learn how to implement the wallet_pay standard in your wallet to accept payment requests from merchants and applications."
+sidebarTitle: "Wallet Implementation"
+---
+
+This guide explains how wallet developers can implement support for the `wallet_pay` standard (CAIP-358) to enable their users to make blockchain-based payments through WalletConnect-compatible merchants and applications.
+
+## Overview
+
+The `wallet_pay` standard enables wallets to receive and process standardized payment requests from merchants, point-of-sale systems, and other applications. By implementing this standard, your wallet becomes compatible with the entire WalletConnect Payments ecosystem.
+
+### Key Capabilities
+
+When you implement `wallet_pay`, your wallet can:
+
+- Receive payment requests via WalletConnect sessions
+- Display payment details including amount, recipient, and supported assets
+- Validate payment requests for correctness and security
+- Process both direct transfers and smart contract interactions
+- Support multiple blockchain networks (EVM, Solana, and more)
+- Handle payment expiry and error conditions
+
+## Implementation Flow
+
+The typical payment flow involves these steps:
+
+1. **Session Established**: User connects their wallet to a merchant application via WalletConnect
+2. **Payment Request Received**: Merchant sends a `wallet_checkout` request through the session
+3. **Request Validation**: Wallet validates the payment request structure and parameters
+4. **User Approval**: Wallet displays payment details and requests user confirmation
+5. **Payment Processing**: Upon approval, wallet executes the payment transaction
+6. **Response Sent**: Wallet sends the transaction hash and details back to the merchant
+
+## Request Structure
+
+The `wallet_checkout` method receives a request with the following structure:
+
+```typescript
+{
+  orderId: string              // Unique identifier (max 128 characters)
+  acceptedPayments: PaymentOption[]  // Array of payment options
+  products?: ProductMetadata[] // Optional product information
+  expiry?: number             // Optional UNIX timestamp (seconds)
+}
+```
+
+### Payment Options
+
+Each payment option specifies either a direct transfer or a contract interaction:
+
+```typescript
+type PaymentOption = {
+  asset: string           // CAIP-19 asset identifier
+  amount: string          // Hex-encoded amount
+  recipient?: string      // CAIP-10 account ID (for direct payments)
+  contractInteraction?: ContractInteraction  // For contract-based payments
+}
+```
+
+**Direct Payment Example (ERC20 Transfer):**
+```typescript
+{
+  asset: "eip155:1/erc20:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  amount: "0xF4240",  // 1000000 (1 USDC with 6 decimals)
+  recipient: "eip155:1:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+}
+```
+
+**Contract Interaction Example (EVM):**
+```typescript
+{
+  asset: "eip155:1/slip44:60",
+  amount: "0x0",
+  contractInteraction: {
+    type: "evm-calls",
+    data: [{
+      to: "0x...",
+      value: "0x0",
+      data: "0x..."
+    }]
+  }
+}
+```
+
+### Product Metadata
+
+Optional product information for UI display:
+
+```typescript
+type ProductMetadata = {
+  name: string           // Product name
+  description?: string   // Product description
+  imageUrl?: string     // Product image URL
+  price?: string        // Human-readable price (e.g., "$10.00")
+}
+```
+
+## Implementation Guide
+
+### Step 1: Register the Method Handler
+
+Register the `wallet_checkout` method in your WalletConnect event handler:
+
+```typescript
+import { walletkit } from '@/utils/WalletConnectUtil'
+import { SignClientTypes } from '@walletconnect/types'
+
+const onSessionRequest = async (
+  requestEvent: SignClientTypes.EventArguments['session_request']
+) => {
+  const { topic, params, id } = requestEvent
+  const { request } = params
+
+  switch (request.method) {
+    case 'wallet_checkout':
+      await handleWalletCheckout(requestEvent)
+      break
+    // ... other methods
+  }
+}
+
+walletkit.on('session_request', onSessionRequest)
+```
+
+### Step 2: Validate the Request
+
+Implement comprehensive validation using a schema validator like Zod:
+
+```typescript
+import { z } from 'zod'
+
+// CAIP-19 Asset ID validation
+const isValidCAIP19AssetId = (assetId: string): boolean => {
+  const chainAssetParts = assetId.split('/')
+  if (chainAssetParts.length !== 2) return false
+  
+  const chainParts = chainAssetParts[0]?.split(':')
+  const assetParts = chainAssetParts[1]?.split(':')
+  
+  return (
+    chainParts?.length === 2 &&
+    chainParts[0]?.length > 0 &&
+    chainParts[1]?.length > 0 &&
+    assetParts.length === 2 &&
+    assetParts[0]?.length > 0 &&
+    assetParts[1]?.length > 0
+  )
+}
+
+// CAIP-10 Account ID validation
+const isValidCAIP10AccountId = (accountId: string): boolean => {
+  const parts = accountId.split(':')
+  return parts.length === 3 && 
+         parts.every(part => part.length > 0)
+}
+
+// Payment Option Schema
+const PaymentOptionSchema = z.object({
+  asset: z.string()
+    .refine(isValidCAIP19AssetId, 'Invalid CAIP-19 asset'),
+  amount: z.string()
+    .regex(/^0x[0-9a-fA-F]+$/, 'Amount must be a hex string'),
+  recipient: z.string()
+    .refine(isValidCAIP10AccountId, 'Invalid CAIP-10 recipient')
+    .optional(),
+  contractInteraction: z.object({
+    type: z.string(),
+    data: z.any()
+  }).optional()
+}).refine(
+  data => (data.recipient && !data.contractInteraction) ||
+          (!data.recipient && data.contractInteraction),
+  'Either recipient or contractInteraction must be provided, but not both'
+)
+
+// Checkout Request Schema
+const CheckoutRequestSchema = z.object({
+  orderId: z.string().max(128, 'Order ID must not exceed 128 characters'),
+  acceptedPayments: z.array(PaymentOptionSchema)
+    .min(1, 'At least one payment option is required'),
+  products: z.array(z.object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    imageUrl: z.string().url().optional(),
+    price: z.string().optional()
+  })).optional(),
+  expiry: z.number().int().optional()
+})
+
+// Validate the request
+const validateCheckoutRequest = (checkoutRequest: any) => {
+  // Check expiry
+  if (checkoutRequest.expiry) {
+    const currentTime = Math.floor(Date.now() / 1000)
+    if (currentTime > checkoutRequest.expiry) {
+      throw new CheckoutError(4200, 'Checkout request has expired')
+    }
+  }
+  
+  // Validate structure
+  CheckoutRequestSchema.parse(checkoutRequest)
+}
+```
+
+### Step 3: Check Asset Availability
+
+Determine which payment options the user can fulfill:
+
+```typescript
+const findFeasiblePayments = async (
+  acceptedPayments: PaymentOption[]
+): Promise<DetailedPaymentOption[]> => {
+  const feasiblePayments: DetailedPaymentOption[] = []
+  
+  for (const payment of acceptedPayments) {
+    const [chainPart, assetPart] = payment.asset.split('/')
+    const [chainNamespace, chainId] = chainPart.split(':')
+    const [assetNamespace, assetReference] = assetPart.split(':')
+    
+    // Get user's balance for this asset
+    const balance = await getUserAssetBalance(
+      chainNamespace,
+      chainId,
+      assetNamespace,
+      assetReference
+    )
+    
+    // Check if user has sufficient balance
+    const requiredAmount = BigInt(payment.amount)
+    if (balance >= requiredAmount) {
+      // Estimate gas fees
+      const gasFee = await estimateGasFee(payment)
+      
+      feasiblePayments.push({
+        ...payment,
+        assetMetadata: {
+          assetIcon: getAssetIcon(assetReference),
+          assetName: getAssetName(assetReference),
+          assetSymbol: getAssetSymbol(assetReference),
+          assetNamespace,
+          assetDecimals: getAssetDecimals(assetReference),
+          assetBalance: balance
+        },
+        chainMetadata: {
+          chainId,
+          chainName: getChainName(chainId),
+          chainNamespace,
+          chainIcon: getChainIcon(chainId)
+        },
+        fee: gasFee
+      })
+    }
+  }
+  
+  if (feasiblePayments.length === 0) {
+    throw new CheckoutError(4300, 'Insufficient funds')
+  }
+  
+  return feasiblePayments
+}
+```
+
+### Step 4: Display Payment UI
+
+Show payment details to the user for approval:
+
+```typescript
+const handleWalletCheckout = async (
+  requestEvent: SignClientTypes.EventArguments['session_request']
+) => {
+  const { topic, params, id } = requestEvent
+  const checkoutRequest = params.request.params[0]
+  
+  try {
+    // Validate request
+    validateCheckoutRequest(checkoutRequest)
+    
+    // Find feasible payments
+    const feasiblePayments = await findFeasiblePayments(
+      checkoutRequest.acceptedPayments
+    )
+    
+    // Show payment modal to user
+    showPaymentModal({
+      orderId: checkoutRequest.orderId,
+      products: checkoutRequest.products,
+      paymentOptions: feasiblePayments,
+      onApprove: (selectedPayment) => 
+        processPayment(topic, id, selectedPayment, checkoutRequest.orderId),
+      onReject: () => 
+        sendErrorResponse(topic, id, 4001, 'User rejected payment')
+    })
+  } catch (error) {
+    await sendErrorResponse(topic, id, error.code, error.message)
+  }
+}
+```
+
+### Step 5: Process the Payment
+
+Execute the blockchain transaction based on the payment type:
+
+```typescript
+const processPayment = async (
+  topic: string,
+  requestId: number,
+  payment: DetailedPaymentOption,
+  orderId: string
+) => {
+  try {
+    let txHash: string
+    
+    const { chainMetadata, assetMetadata, contractInteraction, recipient } = payment
+    
+    // Direct payment
+    if (recipient && !contractInteraction) {
+      const recipientAddress = recipient.split(':')[2]
+      
+      // EVM chains
+      if (chainMetadata.chainNamespace === 'eip155') {
+        if (assetMetadata.assetNamespace === 'slip44') {
+          // Native token transfer (ETH)
+          txHash = await sendNativeToken(
+            recipientAddress,
+            BigInt(payment.amount)
+          )
+        } else if (assetMetadata.assetNamespace === 'erc20') {
+          // ERC20 token transfer
+          txHash = await sendERC20Token(
+            payment.asset.split(':')[2], // token address
+            recipientAddress,
+            BigInt(payment.amount)
+          )
+        }
+      }
+      
+      // Solana
+      else if (chainMetadata.chainNamespace === 'solana') {
+        if (assetMetadata.assetNamespace === 'slip44') {
+          // SOL transfer
+          txHash = await sendSol(
+            recipientAddress,
+            BigInt(payment.amount)
+          )
+        } else if (assetMetadata.assetNamespace === 'token') {
+          // SPL token transfer
+          txHash = await sendSplToken(
+            assetMetadata.assetReference, // mint address
+            recipientAddress,
+            BigInt(payment.amount)
+          )
+        }
+      }
+    }
+    
+    // Contract interaction
+    else if (contractInteraction && !recipient) {
+      if (contractInteraction.type === 'evm-calls') {
+        // Execute EVM contract calls
+        for (const call of contractInteraction.data) {
+          txHash = await sendTransaction({
+            to: call.to,
+            value: call.value || '0x0',
+            data: call.data
+          })
+        }
+      } else if (contractInteraction.type === 'solana-instruction') {
+        // Execute Solana instruction
+        txHash = await executeSolanaInstruction(contractInteraction.data)
+      }
+    }
+    
+    // Send success response
+    await walletkit.respondSessionRequest({
+      topic,
+      response: {
+        jsonrpc: '2.0',
+        id: requestId,
+        result: {
+          orderId,
+          txid: txHash,
+          recipient: payment.recipient,
+          asset: payment.asset,
+          amount: payment.amount
+        }
+      }
+    })
+  } catch (error) {
+    await sendErrorResponse(topic, requestId, 4600, 'Payment failed')
+  }
+}
+```
+
+### Step 6: Helper Functions for Token Transfers
+
+**ERC20 Transfer:**
+```typescript
+import { encodeFunctionData, erc20Abi } from 'viem'
+
+const sendERC20Token = async (
+  tokenAddress: string,
+  recipientAddress: string,
+  amount: bigint
+): Promise<string> => {
+  const calldata = encodeFunctionData({
+    abi: erc20Abi,
+    functionName: 'transfer',
+    args: [recipientAddress as `0x${string}`, amount]
+  })
+  
+  const tx = await wallet.sendTransaction({
+    to: tokenAddress,
+    value: '0x0',
+    data: calldata
+  })
+  
+  return tx.hash
+}
+```
+
+**Solana SPL Token Transfer:**
+```typescript
+import { Connection, PublicKey, Transaction } from '@solana/web3.js'
+import { createTransferInstruction, getAssociatedTokenAddress } from '@solana/spl-token'
+
+const sendSplToken = async (
+  mintAddress: string,
+  recipientAddress: string,
+  amount: bigint
+): Promise<string> => {
+  const connection = new Connection(rpcUrl)
+  const senderPubkey = new PublicKey(await wallet.getAddress())
+  const recipientPubkey = new PublicKey(recipientAddress)
+  const mintPubkey = new PublicKey(mintAddress)
+  
+  // Get associated token accounts
+  const senderTokenAccount = await getAssociatedTokenAddress(
+    mintPubkey,
+    senderPubkey
+  )
+  const recipientTokenAccount = await getAssociatedTokenAddress(
+    mintPubkey,
+    recipientPubkey
+  )
+  
+  // Create transfer instruction
+  const instruction = createTransferInstruction(
+    senderTokenAccount,
+    recipientTokenAccount,
+    senderPubkey,
+    amount
+  )
+  
+  // Build and send transaction
+  const transaction = new Transaction().add(instruction)
+  const { blockhash } = await connection.getLatestBlockhash()
+  transaction.recentBlockhash = blockhash
+  transaction.feePayer = senderPubkey
+  
+  const txHash = await wallet.signAndSendTransaction(transaction)
+  return txHash
+}
+```
+
+## Error Handling
+
+Implement proper error responses using standardized error codes:
+
+```typescript
+enum CheckoutErrorCode {
+  USER_REJECTED = 4001,
+  NO_MATCHING_ASSETS = 4100,
+  CHECKOUT_EXPIRED = 4200,
+  INSUFFICIENT_FUNDS = 4300,
+  UNSUPPORTED_CONTRACT_INTERACTION = 4400,
+  INVALID_CONTRACT_INTERACTION_DATA = 4401,
+  CONTRACT_INTERACTION_FAILED = 4402,
+  METHOD_NOT_FOUND = -32601,
+  INVALID_CHECKOUT_REQUEST = 4500,
+  DIRECT_PAYMENT_ERROR = 4600
+}
+
+const sendErrorResponse = async (
+  topic: string,
+  requestId: number,
+  code: number,
+  message: string
+) => {
+  await walletkit.respondSessionRequest({
+    topic,
+    response: {
+      jsonrpc: '2.0',
+      id: requestId,
+      error: {
+        code,
+        message
+      }
+    }
+  })
+}
+```
+
+### Error Code Reference
+
+| Code | Name | Description |
+|------|------|-------------|
+| 4001 | USER_REJECTED | User declined the payment request |
+| 4100 | NO_MATCHING_ASSETS | User doesn't hold any of the requested assets |
+| 4200 | CHECKOUT_EXPIRED | Payment request has expired |
+| 4300 | INSUFFICIENT_FUNDS | User has insufficient balance for the payment |
+| 4400 | UNSUPPORTED_CONTRACT_INTERACTION | Contract interaction type not supported |
+| 4401 | INVALID_CONTRACT_INTERACTION_DATA | Contract interaction data is malformed |
+| 4402 | CONTRACT_INTERACTION_FAILED | Contract interaction execution failed |
+| 4500 | INVALID_CHECKOUT_REQUEST | Request structure is invalid |
+| 4600 | DIRECT_PAYMENT_ERROR | Direct payment transaction failed |
+| -32601 | METHOD_NOT_FOUND | Wallet doesn't support wallet_checkout |
+
+## Supported Asset Formats
+
+### EVM Chains (eip155)
+
+**Native Token (ETH):**
+```
+eip155:1/slip44:60
+```
+
+**ERC20 Token:**
+```
+eip155:1/erc20:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+```
+
+### Solana (solana)
+
+**Native Token (SOL):**
+```
+solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/slip44:501
+```
+
+**SPL Token:**
+```
+solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+```
+
+## Best Practices
+
+### Security
+
+1. **Always validate payment requests** before displaying to users
+2. **Verify asset and recipient formats** match CAIP standards
+3. **Check expiry timestamps** to prevent stale payment processing
+4. **Confirm gas fees** can be covered before attempting transactions
+5. **Display clear payment details** to users including recipient address, amount, and network
+
+### User Experience
+
+1. **Show feasible payment options first** - filter out options the user can't fulfill
+2. **Display product information** when available for context
+3. **Estimate and show gas fees** upfront
+4. **Provide clear error messages** when payments fail
+5. **Support multiple chains** to maximize compatibility
+
+### Performance
+
+1. **Validate requests asynchronously** to avoid blocking the UI
+2. **Cache asset metadata** to reduce lookups
+3. **Batch balance checks** when possible
+4. **Use efficient RPC providers** for transaction submission
+
+## Testing
+
+Test your implementation with the reference dApp:
+
+1. Deploy the [WalletConnect Pay dApp example](https://github.com/reown-com/web-examples/tree/chore/wallet-pay-dapp/advanced/dapps/walletconnect-pay-dapp)
+2. Connect your wallet via WalletConnect
+3. Initiate a test payment with various asset types
+4. Verify payment requests are validated correctly
+5. Test error scenarios (insufficient funds, expired requests, etc.)
+
+## Reference Implementation
+
+For a complete working example, see the [React Wallet v2 implementation](https://github.com/reown-com/web-examples/tree/chore/wallet-pay-dapp/advanced/wallets/react-wallet-v2) which demonstrates:
+
+- Request validation with Zod schemas
+- Multi-chain payment processing (EVM and Solana)
+- Contract interaction support
+- Error handling and user feedback
+- Balance checking and fee estimation
+
+## Additional Resources
+
+- [CAIP-358: Universal Payment Request Method](https://eip.tools/caip/358)
+- [CAIP-19: Asset Type and Asset ID Specification](https://chainagnostic.org/CAIPs/caip-19)
+- [CAIP-10: Account ID Specification](https://chainagnostic.org/CAIPs/caip-10)
+- [WalletConnect Wallet SDK](/wallet-sdk/overview)
+- [POS SDK Documentation](/payments/point-of-sale)

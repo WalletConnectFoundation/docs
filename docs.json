@@ -269,7 +269,7 @@
         "groups": [
           {
             "group": "WalletConnect Payments Standard",
-            "pages": ["payments/overview"]
+            "pages": ["payments/overview", "payments/wallet-implementation"]
           },
           {
             "group": "Point of Sale (POS) SDK",
