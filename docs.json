@@ -268,7 +268,7 @@
         "icon": "credit-card",
         "groups": [
           {
-            "group": "WalletConnect Payments",
+            "group": "WalletConnect Payments Standard",
             "pages": ["payments/overview"]
           },
           {
