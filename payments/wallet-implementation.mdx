@@ -11,6 +11,8 @@ This guide shows wallet developers how to implement WalletConnect Pay to process
 
 WalletConnect Pay allows merchants to request payments during the session connection flow. The payment request is included in the session proposal, and wallets can process the payment and return the transaction result when approving the session.
 
+**WalletConnect Pay is chain-agnostic** and supports any asset on any blockchain network that can be identified using the CAIP-19 standard. This includes EVM chains, Solana, Bitcoin, Cosmos, and any other blockchain ecosystem.
+
 ## Integration Flow
 
 1. Merchant calls `provider.connect({ walletPay, ... })` with payment details
@@ -36,8 +38,9 @@ The `walletPay` object is located at `proposal.params.requests.walletPay`:
 }
 ```
 
-### Example
+### Examples
 
+**EVM (Base network, USDC token):**
 ```json
 {
   "version": "1.0.0",
@@ -47,6 +50,18 @@ The `walletPay` object is located at `proposal.params.requests.walletPay`:
     "recipient": "eip155:8453:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
   }],
   "expiry": 1735689600
+}
+```
+
+**Solana (SOL token):**
+```json
+{
+  "version": "1.0.0",
+  "acceptedPayments": [{
+    "asset": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/slip44:501",
+    "amount": "0x3b9aca00",
+    "recipient": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:7S3P4HxJpyyigGzodYwHtCxZyUQe9JiBMHyRWXArAaKv"
+  }]
 }
 ```
 
@@ -163,29 +178,55 @@ The merchant receives this in `session.walletPayResult[0]`.
 
 ## Format Specifications
 
+WalletConnect Pay uses CAIP standards to ensure chain-agnostic compatibility across all blockchain networks.
+
 ### CAIP-19 Asset Format
+
+All assets use CAIP-19 identifiers:
 
 ```
 {chainNamespace}:{chainId}/{assetNamespace}:{assetReference}
 ```
 
-Example: `eip155:1/erc20:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48`
+**Examples across different chains:**
+
+| Chain | Example Asset |
+|-------|--------------|
+| Ethereum (USDC) | `eip155:1/erc20:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` |
+| Base (USDC) | `eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
+| Solana (SOL) | `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/slip44:501` |
+| Solana (SPL Token) | `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/spl:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
+| Bitcoin | `bip122:000000000019d6689c085ae165831e93/slip44:0` |
+| Cosmos (ATOM) | `cosmos:cosmoshub-4/slip44:118` |
+
+Any blockchain that can be represented with a CAIP-2 chain ID can support WalletConnect Pay.
 
 ### CAIP-10 Account Format
+
+All recipients use CAIP-10 account identifiers:
 
 ```
 {chainNamespace}:{chainId}:{address}
 ```
 
-Example: `eip155:8453:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb`
+**Examples:**
+- Ethereum: `eip155:1:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb`
+- Solana: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:7S3P4HxJpyyigGzodYwHtCxZyUQe9JiBMHyRWXArAaKv`
+- Cosmos: `cosmos:cosmoshub-4:cosmos1t2uflqwqe0fsj0shcfkrvpukewcw40yjj6hdc0`
 
 ### Amount Encoding
 
-Amounts are hex-encoded smallest units:
+Amounts are hex-encoded in the asset's smallest unit (varies by chain):
 
 ```typescript
-// 10 USDC (6 decimals) = 10000000
+// EVM tokens (e.g., 10 USDC with 6 decimals)
 "0x" + (10 * 10**6).toString(16)  // "0x989680"
+
+// Solana (1 SOL with 9 decimals)
+"0x" + (1 * 10**9).toString(16)  // "0x3b9aca00"
+
+// Bitcoin (0.001 BTC with 8 decimals)
+"0x" + (0.001 * 10**8).toString(16)  // "0x186a0"
 ```
 
 ## Error Handling
