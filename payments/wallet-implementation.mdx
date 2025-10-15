@@ -53,13 +53,13 @@ The `walletPay` object is located at `proposal.params.requests.walletPay`:
 }
 ```
 
-**Solana (SOL token):**
+**Solana (USDC SPL token):**
 ```json
 {
   "version": "1.0.0",
   "acceptedPayments": [{
-    "asset": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/slip44:501",
-    "amount": "0x3b9aca00",
+    "asset": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "amount": "0xf4240",
     "recipient": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:7S3P4HxJpyyigGzodYwHtCxZyUQe9JiBMHyRWXArAaKv"
   }]
 }
@@ -194,12 +194,12 @@ All assets use CAIP-19 identifiers:
 |-------|--------------|
 | Ethereum (USDC) | `eip155:1/erc20:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` |
 | Base (USDC) | `eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
-| Solana (SOL) | `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/slip44:501` |
-| Solana (SPL Token) | `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/spl:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
-| Bitcoin | `bip122:000000000019d6689c085ae165831e93/slip44:0` |
-| Cosmos (ATOM) | `cosmos:cosmoshub-4/slip44:118` |
+| Optimism (USDC) | `eip155:10/erc20:0x7F5c764cBc14f9669B88837ca1490cCa17c31607` |
+| Polygon (USDC) | `eip155:137/erc20:0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174` |
+| Arbitrum (USDC) | `eip155:42161/erc20:0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8` |
+| Solana (USDC) | `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
 
-Any blockchain that can be represented with a CAIP-2 chain ID can support WalletConnect Pay.
+WalletConnect Pay supports any asset on chains with CAIP-19 specifications, including all EVM chains and Solana.
 
 ### CAIP-10 Account Format
 
@@ -211,8 +211,8 @@ All recipients use CAIP-10 account identifiers:
 
 **Examples:**
 - Ethereum: `eip155:1:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb`
+- Base: `eip155:8453:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb`
 - Solana: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:7S3P4HxJpyyigGzodYwHtCxZyUQe9JiBMHyRWXArAaKv`
-- Cosmos: `cosmos:cosmoshub-4:cosmos1t2uflqwqe0fsj0shcfkrvpukewcw40yjj6hdc0`
 
 ### Amount Encoding
 
@@ -222,11 +222,8 @@ Amounts are hex-encoded in the asset's smallest unit (varies by chain):
 // EVM tokens (e.g., 10 USDC with 6 decimals)
 "0x" + (10 * 10**6).toString(16)  // "0x989680"
 
-// Solana (1 SOL with 9 decimals)
-"0x" + (1 * 10**9).toString(16)  // "0x3b9aca00"
-
-// Bitcoin (0.001 BTC with 8 decimals)
-"0x" + (0.001 * 10**8).toString(16)  // "0x186a0"
+// Solana tokens (e.g., 1 USDC with 6 decimals)
+"0x" + (1 * 10**6).toString(16)  // "0xf4240"
 ```
 
 ## Error Handling
