@@ -1,0 +1,264 @@
+---
+title: "WalletConnect Pay Implementation for Wallets"
+metatags:
+    description: "Learn how to implement WalletConnect Pay in your wallet to process payment requests during session establishment."
+sidebarTitle: "Wallet Implementation"
+---
+
+This guide shows wallet developers how to implement WalletConnect Pay to process payment requests during WalletConnect session establishment.
+
+<Warning>
+  This flow is not currently live and will be released soon. More information will be available shortly.
+</Warning>
+
+## Overview
+
+WalletConnect Pay allows merchants to request payments during the session connection flow. The payment request is included in the session proposal, and wallets can process the payment and return the transaction result when approving the session.
+
+**WalletConnect Pay is chain-agnostic** and supports any asset on any blockchain network that can be identified using the CAIP-19 standard. This includes EVM chains, Solana, Bitcoin, Cosmos, and any other blockchain ecosystem.
+
+## Integration Flow
+
+1. Merchant calls `provider.connect({ walletPay, ... })` with payment details
+2. Wallet receives session proposal containing payment request
+3. Wallet shows payment details to user
+4. User approves session (optionally with payment)
+5. Wallet processes payment and returns result in session approval
+
+## Payment Request Schema
+
+The `walletPay` object is located at `proposal.params.requests.walletPay`:
+
+```typescript
+{
+  version: "1.0.0",
+  orderId?: string,
+  acceptedPayments: [{
+    asset: string,      // CAIP-19 format: "eip155:1/erc20:0x..."
+    amount: string,     // Hex-encoded: "0x186a0"
+    recipient: string   // CAIP-10 format: "eip155:1:0x..."
+  }],
+  expiry?: number       // UNIX timestamp
+}
+```
+
+### Examples
+
+**EVM (Base network, USDC token):**
+```json
+{
+  "version": "1.0.0",
+  "acceptedPayments": [{
+    "asset": "eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "amount": "0x186a0",
+    "recipient": "eip155:8453:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+  }],
+  "expiry": 1735689600
+}
+```
+
+**Solana (USDC SPL token):**
+```json
+{
+  "version": "1.0.0",
+  "acceptedPayments": [{
+    "asset": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "amount": "0xf4240",
+    "recipient": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:7S3P4HxJpyyigGzodYwHtCxZyUQe9JiBMHyRWXArAaKv"
+  }]
+}
+```
+
+## Implementation
+
+### 1. Detect Payment Requests
+
+Listen for session proposals and check for payment requests:
+
+```typescript
+import { SignClientTypes } from '@walletconnect/types'
+
+walletkit.on('session_proposal', async (proposal) => {
+  const walletPay = proposal?.params?.requests?.walletPay
+  
+  if (walletPay) {
+    // Show payment approval UI
+    await handlePaymentProposal(proposal, walletPay)
+  } else {
+    // Regular session approval
+    await handleSessionProposal(proposal)
+  }
+})
+```
+
+<Warning>
+  Wallets must integrate WalletConnect Wallet SDK to be compatible with WalletConnect and WalletConnect Pay. If your wallet has not yet integrated the WalletConnect Wallet SDK, please refer to the [WalletConnect Wallet SDK](/wallet-sdk/overview) documentation for instructions on how to integrate it.
+</Warning>
+
+### 2. Display Payment Options to the User
+
+Parse the `acceptedPayments` array and match available options against the user's token balances. Display payment details for tokens the user can fulfill:
+
+- Token symbol and network (parsed from CAIP-19 asset identifier)
+- Amount (converted from hex to human-readable format with correct decimals)
+- Recipient address
+- Estimated network fees
+
+If multiple payment options are available, prioritize by user's balance and preferences. Allow users to switch between options or approve the session without processing payment.
+
+### 3. Process Payment & Approve Session
+
+```typescript
+import { EngineTypes } from '@walletconnect/types'
+import { buildApprovedNamespaces } from '@walletconnect/utils'
+
+async function approveWithPayment(proposal, walletPay, shouldProcess) {
+  const namespaces = buildApprovedNamespaces({
+    proposal: proposal.params,
+    supportedNamespaces: YOUR_SUPPORTED_NAMESPACES
+  })
+  
+  const responses = []
+  
+  // Process payment if user approved
+  if (walletPay && shouldProcess) {
+    const result = await executePayment(walletPay)
+    responses.push(result)
+  }
+  
+  // Approve session with payment result
+  await walletkit.approveSession({
+    id: proposal.id,
+    namespaces,
+    proposalRequestsResponses: responses
+  })
+}
+```
+
+### 4. Execute Payment
+
+Implement payment execution based on your wallet's architecture. The basic flow:
+
+```typescript
+async function executePayment(walletPay: EngineTypes.WalletPayParams) {
+  const payment = walletPay.acceptedPayments[0]
+  
+  // Parse payment details
+  const [chainId, assetType, assetAddress] = parseAsset(payment.asset)
+  const recipientAddress = payment.recipient.split(':')[2]
+  
+  // Execute transfer (implementation depends on your wallet)
+  const txHash = await transferToken(
+    assetAddress,
+    recipientAddress,
+    payment.amount,
+    chainId
+  )
+  
+  // Return result
+  return {
+    version: walletPay.version,
+    orderId: walletPay.orderId,
+    txid: txHash,
+    recipient: payment.recipient,
+    asset: payment.asset,
+    amount: payment.amount
+  }
+}
+```
+
+## Payment Result Schema
+
+Return this structure in `proposalRequestsResponses`:
+
+```typescript
+{
+  version: string,     // Echo from request
+  orderId?: string,    // Echo from request
+  txid: string,        // Transaction hash
+  recipient: string,   // CAIP-10 recipient
+  asset: string,       // CAIP-19 asset
+  amount: string       // Hex-encoded amount
+}
+```
+
+The merchant receives this in `session.walletPayResult[0]`.
+
+## Format Specifications
+
+WalletConnect Pay uses CAIP standards to ensure chain-agnostic compatibility across all blockchain networks.
+
+### CAIP-19 Asset Format
+
+All assets use CAIP-19 identifiers:
+
+```
+{chainNamespace}:{chainId}/{assetNamespace}:{assetReference}
+```
+
+**Examples across different chains:**
+
+| Chain | Example Asset |
+|-------|--------------|
+| Ethereum (USDC) | `eip155:1/erc20:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` |
+| Base (USDC) | `eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
+| Optimism (USDC) | `eip155:10/erc20:0x7F5c764cBc14f9669B88837ca1490cCa17c31607` |
+| Polygon (USDC) | `eip155:137/erc20:0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174` |
+| Arbitrum (USDC) | `eip155:42161/erc20:0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8` |
+| Solana (USDC) | `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
+
+WalletConnect Pay supports any asset on chains with CAIP-19 specifications, including all EVM chains and Solana.
+
+### CAIP-10 Account Format
+
+All recipients use CAIP-10 account identifiers:
+
+```
+{chainNamespace}:{chainId}:{address}
+```
+
+**Examples:**
+- Ethereum: `eip155:1:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb`
+- Base: `eip155:8453:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb`
+- Solana: `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:7S3P4HxJpyyigGzodYwHtCxZyUQe9JiBMHyRWXArAaKv`
+
+### Amount Encoding
+
+Amounts are hex-encoded in the asset's smallest unit (varies by chain):
+
+```typescript
+// EVM tokens (e.g., 10 USDC with 6 decimals)
+"0x" + (10 * 10**6).toString(16)  // "0x989680"
+
+// Solana tokens (e.g., 1 USDC with 6 decimals)
+"0x" + (1 * 10**6).toString(16)  // "0xf4240"
+```
+
+## Error Handling
+
+Handle common scenarios:
+
+- **Expired requests**: Check `walletPay.expiry` against current timestamp
+- **Insufficient balance**: Validate before attempting transfer
+- **User rejection**: Allow session approval without payment
+- **Transaction failures**: Catch errors and optionally reject session
+
+## Testing
+
+Test with the reference implementation:
+
+```bash
+git clone https://github.com/reown-com/web-examples.git
+cd web-examples
+git checkout chore/wallet-pay-dapp
+cd advanced/dapps/walletconnect-pay-dapp
+npm install && npm run dev
+```
+
+## Additional Resources
+
+- [Reference Wallet Implementation](https://github.com/reown-com/web-examples/tree/chore/wallet-pay-dapp/advanced/wallets/react-wallet-v2)
+- [Reference DApp](https://github.com/reown-com/web-examples/tree/chore/wallet-pay-dapp/advanced/dapps/walletconnect-pay-dapp)
+- [CAIP-19 Specification](https://chainagnostic.org/CAIPs/caip-19)
+- [CAIP-10 Specification](https://chainagnostic.org/CAIPs/caip-10)
+- [WalletConnect Wallet SDK](/wallet-sdk/overview)
