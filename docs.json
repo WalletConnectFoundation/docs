@@ -278,6 +278,7 @@
                 {
                   "group": "Point of Sale (POS) SDK",
                   "pages": [
+                    "payments/point-of-sale",
                     "payments/flutter/installation"
                   ]
                 }
