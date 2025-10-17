@@ -78,5 +78,31 @@ export const appCategories = [
         href: 'https://walletguide.walletconnect.network/'
       }
     ]
+  },
+  {
+    id: 'payments', label: 'Payments', items: [
+      {
+        id: 'walletconnect-pay',
+        title: 'WalletConnect Pay',
+        desc: 'A universal protocol that enables wallets and payment apps to initiate blockchain-based payment requests in a secure and chain-agnostic way.',
+        icon: '/images/wc-pay-home.svg',
+        image: {
+          light: '/images/walletconnect-home.svg',
+          dark: '/images/walletconnect-home.svg',
+        },
+        href: '/payments/overview'
+      },
+      {
+        id: 'walletconnect-pos-sdk',
+        title: 'Point of Sale (POS)',
+        desc: 'A universal SDK for wallets, PSPs, and merchants to accept stablecoin payments at point-of-sale.',
+        icon: '/images/pos-home.svg',
+        image: {
+          light: '/images/walletconnect-home.svg',
+          dark: '/images/walletconnect-home.svg',
+        },
+        href: '/payments/point-of-sale'
+      }
+    ]
   }
 ]

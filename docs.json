@@ -273,16 +273,14 @@
           },
           {
             "group": "WalletConnect Pay",
-            "pages": ["payments/wallet-implementation"]
-          },
-          {
-            "group": "Point of Sale (POS) SDK",
             "pages": [
-              "payments/point-of-sale",
-              {
-                "group": "Installation",
-                "pages": ["payments/flutter/installation"]
-              }
+              "payments/wallet-implementation",
+                {
+                  "group": "Point of Sale (POS) SDK",
+                  "pages": [
+                    "payments/flutter/installation"
+                  ]
+                }
             ]
           }
         ]
