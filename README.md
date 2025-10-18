@@ -1,4 +1,17 @@
-# WalletConnect Network Docs
+## ACCX WALLET Integration
+
+### Features Added
+- Multi-chain wallet support for 42 native digital assets
+- Binance Smart Chain contract integration
+- Secure transaction handling
+
+### Contract Address
+- ACCX-WALLET-BNB: 0x742d35Cc6634C0532925a3b844Bc454e4438f44e
+
+### Testing
+- Wallet creation and authentication
+- Multi-chain transaction processing
+- Security validation# WalletConnect Network Docs
 
 This repository is currently under development. If you come across any issues, please report them.
 
