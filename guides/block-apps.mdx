@@ -22,7 +22,7 @@ If there are specific apps that you want to block (not flagged as malicious by V
 
 When receiving `onSessionProposal` events, check the dapp's metadata (name, URL, description) from `proposal.proposer.metadata`.
 
-After this, you can reject unwated connections by calling `rejectSession()` for apps you want to block. For example:
+After this, you can reject unwanted connections by calling `rejectSession()` for apps you want to block. For example:
 
 ```javascript
 walletKit.onSessionProposal.subscribe((event) => {
