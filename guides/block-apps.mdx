@@ -1,0 +1,46 @@
+---
+title: How to Block Apps from Connecting to your Users' Wallets
+sidebarTitle: How to block connections from specific apps
+---
+
+As a wallet provider or a custodian, you may want to block certain apps from connecting to your users' wallets. This can be useful for a variety of reasons, such as to prevent users from using certain apps that are not compliant with your policies or to simply block certain apps from connecting to your users' wallets.
+
+Using the Wallet SDK, you can block apps from connecting to your users' wallets by rejecting session requests from certain apps.
+
+## Prerequisites
+
+- Please ensure you have integrated Wallet SDK into your wallet.
+- Please ensure that you have obtained and configured the project ID from the [WalletConnect Dashboard](https://dashboard.reown.com).
+
+## Maintaining a Blocklist of Apps
+
+Wallet SDK allows you to identify malicious apps using [Verify API](/wallet-sdk/features/verify). However, as a wallet, you will need to build your own logic for the UI and UX of blocking certain apps.
+
+If there are specific apps that you want to block (not flagged as malicious by Verify API), you will need to maintain a blocklist of apps by storing the app's metadata in a database or a file. 
+
+## Inspecting Session Requests
+
+When receiving `onSessionProposal` events, check the dapp's metadata (name, URL, description) from `proposal.proposer.metadata`.
+
+After this, you can reject unwanted connections by calling `rejectSession()` for apps you want to block. For example:
+
+```javascript
+walletKit.on('session_proposal', (event) => {
+  const dappUrl = event.params.proposer.metadata.url;
+  
+  // Your blocklist logic
+  if (isBlocked(dappUrl)) {
+    walletKit.rejectSession({
+      id: event.id,
+      reason: getSdkError('USER_REJECTED')
+    });
+    return;
+  }
+  
+  // Otherwise show approval UI
+});
+```
+
+## Conclusion
+
+By following the steps above, you can block apps from connecting to your users' wallets by rejecting session requests from certain apps.
