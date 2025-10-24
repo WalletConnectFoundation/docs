@@ -1,0 +1,35 @@
+---
+title: Extended WalletConnect Sessions Request
+---
+
+This guide will walk you through how a wallet developer can customize the session request expiry in WalletConnect using the **`expiry`** parameter.
+
+## Extended Session Expiry - what does it mean?
+
+When an app sends a request through WalletConnect (for example, a signature request), it stays “active” until the expiry time is reached. If the wallet does not respond before the expiry, the request automatically fails with a timeout.
+
+By default, the expiry is short, i.e., 5 minutes. Extending the session expiry time allows the wallet and app to keep the request open longer, **up to 7 days**. This is useful for cases like off-hours approvals, delayed custody flows, or multi-party signing.
+
+### What do wallets need to do?
+
+A wallet must:
+- Maintain pending state until expiry or completion.
+- Gracefully discard expired requests.
+- Verify user intent remains valid after long delays.
+
+### Limits
+
+- **Minimum:** 300 seconds (5 min)
+- **Maximum:** 604,800 seconds (7 days)
+
+## How can I extend the session request expiry as a wallet? 
+
+Wallets must correctly interpret and enforce the expiry.
+
+- Parse `expiry` in seconds from incoming request metadata.
+- Keep pending requests active until they’re resolved or the expiry time elapses.
+- Notify the user of pending and expired requests.
+- If the expiry has passed, return an error response (`code: 4100`, “Request expired”).
+- Optional UX: display countdown timers or “expires in X hours”.
+
+Please refer to the [Best Practices](/wallet-sdk/best-practices#session-request-expiry) section to learn how you can implement this in your code. 
