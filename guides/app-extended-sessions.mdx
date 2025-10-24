@@ -1,0 +1,77 @@
+---
+title: Extended WalletConnect Sessions Request for Apps
+---
+
+This guide will walk you through how an app developer can customize the session request expiry in WalletConnect using the **`expiry`** parameter.
+
+## Extended Session Expiry - what does it mean?
+
+When an app sends a request through WalletConnect (for example, a signature request), it stays “active” until the expiry time is reached. If the wallet does not respond before the expiry, the request automatically fails with a timeout.
+
+By default, the expiry is short, i.e., 5 minutes. Extending the session expiry time allows the wallet and app to keep the request open longer, **up to 7 days**. This is useful for cases like off-hours approvals, delayed custody flows, or multi-party signing.
+
+### What do apps need to do?
+
+An app must:
+
+- Keep track of outstanding requests and handle delayed responses.
+- Have a UI that tolerates waiting for a response as long as the expiry is configured.
+
+Extended durations may not be suitable for **time-bounded actions** (e.g., swaps with quotes, flash opportunities) where blockchain state changes invalidate the request. 
+
+Hence an app must align **WalletConnect expiry** with any **contract-level expiry** to avoid mismatched timing.
+
+### Limits
+
+- **Minimum:** 300 seconds (5 min)
+- **Maximum:** 604,800 seconds (7 days)
+
+## How can I extend the session request expiry as an app? 
+
+Developers can define how long a WalletConnect session request remains active by using the **`expiry`** parameter in the session request payload.
+
+### Parameter
+
+`expiry`: Optional field to set session expiry time. Must be in seconds.
+
+### Implementation
+
+Below are the examples of how to implement the `expiry` parameter in the session request payload for different providers.
+
+<CodeGroup>  
+    ```javascript Sign Client
+    const result = await signClient.request({
+        topic: 'xyz',
+        request: {
+          method: 'personal_sign',
+          params: [
+            '0xdeadbeef',
+            '0x000000000000000000000000000000000000dead'
+          ]
+        },
+        chainId: 'eip155:1',
+        expiry: 600 // <-- add this for 10 minutes expiry in seconds
+    });
+    ```
+    ```javascript Universal Provider
+    const result = await universalProvider.request(
+        {
+          method: "personal_sign",
+          params: ["0xdeadbeef", "0x000000000000000000000000000000000000dead"],
+        },
+        "eip155:1",
+        600, // <-- add this for 10 minutes expiry in seconds
+      );
+    ```
+    ```javascript Ethereum Provider
+    await ethereumProvider.request(
+      {
+        method: "personal_sign",
+        params: ["0xdeadbeef", "0x000000000000000000000000000000000000dead"],
+      },
+      600, // <-- add this for 10 minutes expiry in seconds
+    );
+    ```
+</CodeGroup>
+
+**Apps should store pending request IDs in local storage to handle delayed responses, app reload or crash scenarios.**
