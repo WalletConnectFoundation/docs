@@ -195,7 +195,7 @@ It's important that you register the UI callbacks and delegate them before trigg
 
 ```kotlin
 POSClient.setDelegate(object : POSDelegate {
-	override fun onEvent(pairingUrl: String) {  
+	override fun onEvent(event: POS.Model.PaymentEvent) {  
 			//TODO: handle events
      }
 	
