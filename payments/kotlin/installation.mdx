@@ -106,7 +106,7 @@ The WalletConnect POS comes with a set of different UI events that allow to adap
             data object PaymentRequested : PaymentEvent
             data object PaymentBroadcasted : PaymentEvent
             data class PaymentRejected(val message: String) : PaymentEvent
-            data class PaymentSuccessful(val result: Any) : PaymentEvent
+            data class PaymentSuccessful(val result: Any, val recipient: String) : PaymentEvent
             data class Error(val error: Throwable) : PaymentEvent
     }
 
@@ -195,7 +195,7 @@ It's important that you register the UI callbacks and delegate them before trigg
 
 ```kotlin
 POSClient.setDelegate(object : POSDelegate {
-	override fun onEvent(pairingUrl: String) {  
+	override fun onEvent(event: POS.Model.PaymentEvent) {  
 			//TODO: handle events
      }
 	
