@@ -38,7 +38,7 @@ POSClient.initialize(
 Where the `POS.Params.Init` are as follow
 
 ```kotlin
- val projectId = "your_project_id"
+ val projectId = "your_project_id" // Obtain your project ID from the dashboard.reown.com
  val metaData = MetaData(
    merchantName = "Name of Merchant",
    description = "Short Description",
@@ -106,7 +106,7 @@ The WalletConnect POS comes with a set of different UI events that allow to adap
             data object PaymentRequested : PaymentEvent
             data object PaymentBroadcasted : PaymentEvent
             data class PaymentRejected(val message: String) : PaymentEvent
-            data class PaymentSuccessful(val result: Any, val recipient: String) : PaymentEvent
+            data class PaymentSuccessful(val result: Any) : PaymentEvent
             data class Error(val error: Throwable) : PaymentEvent
     }
 
@@ -195,7 +195,7 @@ It's important that you register the UI callbacks and delegate them before trigg
 
 ```kotlin
 POSClient.setDelegate(object : POSDelegate {
-	override fun onEvent(event: POS.Model.PaymentEvent) {  
+	override fun onEvent(pairingUrl: String) {  
 			//TODO: handle events
      }
 	
