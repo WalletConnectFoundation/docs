@@ -191,7 +191,7 @@ class MyApp : Application() {
 
 <Step title="Wire the UI" titleSize="h3">
 
-Its important that you register the UI callbacks and delegate them before triggering a payment, or you risk missing early events like  `onQRShow`.
+It's important that you register the UI callbacks and delegate them before triggering a payment, or you risk missing early events like  `onQRShow`.
 
 ```kotlin
 POSClient.setDelegate(object : POSDelegate {
