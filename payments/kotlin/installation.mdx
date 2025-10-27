@@ -230,89 +230,9 @@ POSClient.createPaymentIntent(paymentIntents: List<PaymentIntent>)
 <Step title="Render QR code and connect" titleSize="h3">
 
 Use `onQRShow(uri)` to render the WalletConnect QR; on successful session you’ll receive 
-`Connected` you can use this state to show a loading spinner indicating that the payment request will follow. To display the QR code follow:
+`Connected` you can use this state to show a loading spinner indicating that the payment request will follow. 
 
-<Steps>
-<Step title="Install dependencies" titleSize="h4">
-
-```kotlin
-// app/build.gradle.kts
-dependencies {
-implementation("com.google.zxing:core:3.5.3")
-}
-```
-</Step>
-
-<Step title="Create a ViewModel  to expose the UI state" titleSize="h4">
-
-```kotlin
-class POSViewModel : ViewModel() {
-	private val _qr = MutableStateFlow<String?>(null)
-	val qr: StateFlow<String?> = _qr
-	fun onQr(url: String) { _qr.value = url }
-	fun emit(e: PosEvent) { /* update other UI states */ }
-}
-```
-</Step>
-
-<Step title="Render the QR when available" titleSize="h4">
-
-```kotlin
-@Composable
-fun PaymentScreen(viewModel: POSViewModel) {
-	val qrUrl by viewModel.qr.collectAsState()
-	if (qrUrl != null) {
-		QrImage(data = qrUrl!!, size = 240.dp)
-		} else {
-			Text("Preparing WalletConnect…")
-		}
-}
-```
-</Step>
-
-<Step title="Create QR composable" titleSize="h4">
-
-```kotlin
-import android.graphics.Bitmap
-import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.Image
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.EncodeHintType
-import com.google.zxing.qrcode.QRCodeWriter
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
-
-@Composable
-fun QrImage(data: String, size: Dp = 240.dp) {
-	val px = with(LocalDensity.current) { size.roundToPx() }
-	val bmp by remember(data, px) { mutableStateOf(generateQrBitmap(data, px)) }
-	bmp?.let { Image(bitmap = it.asImageBitmap(), contentDescription = "WalletConnect QR") }
-}
-
-private fun generateQrBitmap(
-	data: String,
-	sizePx: Int,
-	margin: Int = 1,
-	ecLevel: ErrorCorrectionLevel = ErrorCorrectionLevel.M
-): Bitmap? = runCatching {
-	val hints = mapOf(
-		EncodeHintType.CHARACTER_SET to "UTF-8",
-		EncodeHintType.MARGIN to margin,
-		EncodeHintType.ERROR_CORRECTION to ecLevel
-	)
-	val matrix = QRCodeWriter().encode(data, BarcodeFormat.QR_CODE, sizePx, sizePx, hints)
-	Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888).apply {
-		for (x in 0 until sizePx) for (y in 0 until sizePx) {
-			setPixel(x, y, if (matrix[x, y]) 0xFF000000.toInt() else 0xFFFFFFFF.toInt())
-		}
-	}
-}.getOrNull()
-```
-</Step>
-</Steps>
+**Projects need to create their own UI.**
 
 </Step>
 
