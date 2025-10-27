@@ -278,7 +278,8 @@
                   "group": "Point of Sale (POS) SDK",
                   "pages": [
                     "payments/point-of-sale",
-                    "payments/flutter/installation"
+                    "payments/flutter/installation",
+                    "payments/kotlin/installation"
                   ]
                 }
             ]

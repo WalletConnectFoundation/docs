@@ -1,0 +1,252 @@
+---
+title: "WalletConnect POS SDK - Kotlin Installation"
+description: "WalletConnect for POS is an SDK that lets customers accept stablecoin payments with a checkout experience on par with NFC tap‑to‑pay. The SDK handles WalletConnect session lifecycles, building blockchain specific transactions, UI callbacks and transaction verification."
+sidebarTitle: "Kotlin - POS SDK"
+---
+
+## User flow
+
+1. Cashier selects “Pay with Crypto” on the POS.
+2. Customer chooses token and network on the POS (e.g., USDC on Solana/Ethereum).
+3. POS shows a WalletConnect QR. 
+4. Customer scans with their wallet; session is established.
+5. POS requests the payment. 
+6. Wallet displays amount and the customer approves. 
+7. The transaction is broadcasted by the wallet.
+8. POS shows confirmation
+
+## SDK Methods
+
+The WalletConnect POS SDK exposes methods and callbacks to create smooth payment flows.
+
+<Note>
+The methods here are shown in isolation, for a full guide on how to use them follow to the step by step guide at the bottom.
+</Note>
+
+### Initialization
+
+To initialize the SDK you have to call the initialize method with the `initParams`
+
+```kotlin
+POSClient.initialize(
+      init = POS.Params.Init,
+      onSuccess = { /*ready*/ },
+      onError = { e -> /*error*/ }
+)
+```
+
+Where the `POS.Params.Init` are as follow
+
+```kotlin
+ val projectId = "your_project_id" // Obtain your project ID from the dashboard.reown.com
+ val metaData = MetaData(
+   merchantName = "Name of Merchant",
+   description = "Short Description",
+   url = "url_web_page",
+   icons = listOf("https://example.com/icon.png")
+ )
+
+ val initParams = Init(
+	 projectId = projectId,
+	 deviceId = "unique_device_id"
+	 metaData = metadata,
+	 application = this
+ )
+```
+
+### Payment Intent
+
+A payment intent is the server-side entity that specifies exactly what must be paid `(asset, chain, amount)` and how we will validate it.
+
+```kotlin
+POSClient.createPaymentIntent(intents: List<PaymentIntent>)
+```
+
+Where the `PaymentIntent` has the following fields:
+
+```kotlin
+data class PaymentIntent(
+    var token: Token,
+    val amount: String,
+    val recipient: String
+)
+							
+data class Token(
+    val network: Network,
+    val symbol: String,
+    val standard: String,
+    val address: String
+)
+
+data class Network(
+    val name: String,
+    val chainId: String
+)
+```
+
+**What it does under the hood:**
+
+- Generates the connection URL
+- Sends the connection proposal to the wallet
+- Awaits the connection result
+- Builds and sends the transaction to the wallet
+- Awaits the transaction result from the wallet
+- Checks the transaction status
+
+### Payment intent life cycle
+
+The WalletConnect POS comes with a set of different UI events that allow to adapt the POS UI depending on the status of the payment.
+
+```kotlin
+   sealed interface PaymentEvent {
+            data class QrReady(val uri: URI) : PaymentEvent
+            data object Connected : PaymentEvent
+            data object ConnectionRejected : PaymentEvent
+            data class ConnectionFailed(val error: Throwable) : PaymentEvent
+            data object PaymentRequested : PaymentEvent
+            data object PaymentBroadcasted : PaymentEvent
+            data class PaymentRejected(val message: String) : PaymentEvent
+            data class PaymentSuccessful(val result: Any, val recipient: String) : PaymentEvent
+            data class Error(val error: Throwable) : PaymentEvent
+    }
+
+fun interface POSDelegate {
+  fun onEvent(event: POS.Model.PaymentEvent)
+}
+
+POSClient.setDelegate(POSDelegate)
+```
+
+## How to Integrate the POS SDK
+
+Below are the steps to integrate the Kotlin POS SDK into your project.
+
+### Sequence Diagram
+
+![img](/images/pos-mermaid-diagram.png)
+
+### Prerequisites
+
+To use the POS SDK you will need the following:
+
+- **Project ID** from the Reown Dashboard ([dashboard.reown.com](http://dashboard.reown.com)) .
+- **Latest SDKs** (Reown Kotlin): https://github.com/reown-com/reown-kotlin/releases
+- **Requirements:** Android min SDK 23
+
+<Note>
+    IMPORTANT: The WalletConnect POS is not available to download yet.
+</Note>
+
+### Integration Steps
+
+<Steps>
+
+<Step title="Add the Kotlin POS SDK dependencies" titleSize="h3">
+
+First, add the dependencies to your project's `build.gradle.kts` file as shown below:
+
+```kotlin /app/build.gradle.kts
+dependencies {
+  implementation(platform("com.reown:android-bom:<latest>"))
+  implementation("com.reown:android-core")
+  implementation("com.reown:pos")
+}
+
+```
+
+</Step>
+
+<Step title="Initialize the POS client" titleSize="h3">
+
+```kotlin
+//The Application class of your project
+class MyApp : Application() {
+  override fun onCreate() {
+    super.onCreate()
+
+    val projectId = "your_project_id"
+    val metaData = MetaData(
+      merchantName = "Name of Merchant",
+      description = "Short Description",
+      url = "url_web_page",
+      icons = listOf("https://example.com/icon.png")
+    )
+
+    val initParams = Pos.Params.Init(
+	    projectId = projectId,
+	    deviceId = "unique_device_id"
+	    metaData = metadata,
+	    application = this
+    )
+    
+    POSClient.initialize(
+      init = initParams,
+      onSuccess = { /*ready*/ },
+      onError = { e -> /*error*/ }
+    )
+  }
+}
+```
+</Step>
+
+<Step title="Wire the UI" titleSize="h3">
+
+It's important that you register the UI callbacks and delegate them before triggering a payment, or you risk missing early events like  `onQRShow`.
+
+```kotlin
+POSClient.setDelegate(object : POSDelegate {
+	override fun onEvent(event: POS.Model.PaymentEvent) {  
+			//TODO: handle events
+     }
+	
+}
+```
+</Step>
+
+<Step title="Initiate the payment" titleSize="h3">
+
+Now, you can create a payment intent and initiate the payment.
+
+```kotlin
+val intents = listOf(
+	PaymentIntent(
+	      token = POS.Model.Token(
+          network = POS.Model.Network(
+                        chainId = "eip155:1",
+                        name = "Ethereum"
+                  ),
+          standard = "erc20",
+          symbol = "USDC",
+          address = "0x1234"
+                        ),
+        amount = "1",
+        recipient = "0x12345565"
+      )
+)
+POSClient.createPaymentIntent(paymentIntents: List<PaymentIntent>)
+```
+</Step>
+
+<Step title="Render QR code and connect" titleSize="h3">
+
+Use `onQRShow(uri)` to render the WalletConnect QR; on successful session you’ll receive 
+`Connected` you can use this state to show a loading spinner indicating that the payment request will follow. 
+
+**Projects need to create their own UI.**
+
+</Step>
+
+<Step title="Send Transaction and observe status" titleSize="h3">
+
+The SDK takes care of sending the transaction and depending on the status it will trigger different life-cycle events
+
+- `PaymentRequested` → wallet prompt shown to the user
+- `PaymentBroadcasted` → tx broadcasted
+- `PaymentSuccessful`  → tx confirmed
+- `Error(val error: Throwable)` → tx failed to complete
+
+Depending on the different status is recommended to adapt the UI to show feedback to the user.
+
+</Step>
+
+</Steps>
