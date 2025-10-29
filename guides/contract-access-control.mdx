@@ -103,6 +103,9 @@ function handleRequest(payload) {
 
   if (request.method === "eth_sendTransaction") {
     const tx = request.params[0];
+    if (!tx.to) {
+      throw new Error("Contract creation transactions are not allowed.");
+    }
     const contract = tx.to.toLowerCase();
 
     const allowed = (ALLOWED_CONTRACTS[chain] || []).map(a => a.toLowerCase());
