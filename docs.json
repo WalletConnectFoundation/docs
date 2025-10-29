@@ -70,7 +70,8 @@
               {
                 "group": "Guides",
                 "pages": [
-                  "guides/block-apps",
+                  "guides/app-access-control",
+                  "guides/contract-access-control",
                   "guides/extended-sessions"
                 ]
               }

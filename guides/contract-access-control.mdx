@@ -1,0 +1,127 @@
+---
+title: How to Control Which Smart Contracts Your Users Can Interact With
+sidebarTitle: Managing Smart Contract Access
+---
+
+As a wallet provider or custodian, you may want to limit which smart contracts your users can interact with to maintain tighter control over onchain activity. This can be useful for enforcing compliance requirements, reducing exposure to malicious or unverified contracts, or simply restricting access to certain protocols that don’t align with your policies.
+
+Using the Wallet SDK, you can inspect and filter contract interaction requests to block or approve transactions based on your own criteria, such as contract addresses, function signatures, or network-specific rules.
+
+## Prerequisites
+
+- Please ensure you have integrated Wallet SDK into your wallet.
+- Please ensure that you have obtained and configured the project ID from the [WalletConnect Dashboard](https://dashboard.reown.com).
+
+## Managing Smart Contract Access
+
+Wallet SDK does not provide a built-in way to create and manage smart contract allowlists for access control. However, you can use the Wallet SDK to inspect the `session_proposal` and `session_request` payloads and review it to approve or reject the proposal before a session is established and/or a transaction is signed respectively.
+
+### Inspecting Session Proposals
+
+When a Web3 app is trying to establish a session or connect to your wallet, it will send a `session_proposal` payload to your wallet as shown below. 
+
+After this, as a wallet, you can do the following:
+
+1. Check `verifyContext.origin` and `validation` to confirm the dapp is trusted.
+2. Approve or reject the proposal before the session is created.
+
+```json
+{
+  "id": 1685471520923476,
+  "topic": "proposal_topic",
+  "params": {
+    "requiredNamespaces": {
+      "eip155": {
+        "chains": ["eip155:1"],
+        "methods": ["eth_sendTransaction", "personal_sign"],
+        "events": ["chainChanged", "accountsChanged"]
+      }
+    },
+    "proposer": {
+      "metadata": {
+        "name": "Aave",
+        "description": "Aave App",
+        "url": "https://app.aave.com",
+        "icons": ["https://aave.com/icon.png"]
+      }
+    },
+    "verifyContext": {
+      "origin": "https://app.aave.com",
+      "validation": "VALID",
+      "verifyUrl": "https://verify.walletconnect.com/record/abc123"
+    }
+  }
+}
+```
+
+### Inspecting Session Requests
+
+After a session is approved, Web3 apps may request to sign a transaction or a message. As a wallet, you will receive a JSON-RPC request from the Web3 app as shown below.
+
+Inside the request payload, you will find the contract address (`to: 0xContractAddress`) that is being interacted with and the function that is being called.
+
+```json
+{
+  "id": 1685471630000123,
+  "topic": "session_topic",
+  "params": {
+    "chainId": "eip155:1",
+    "request": {
+      "method": "eth_sendTransaction",
+      "params": [
+        {
+          "from": "0xCustodianSubAccount",
+          "to": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32",
+          "data": "0xa9059cbb0000000000000000000000000F1b5...",
+          "value": "0x0"
+        }
+      ]
+    },
+    "verifyContext": {
+      "origin": "https://app.aave.com",
+      "validation": "VALID"
+    }
+  }
+}
+```
+
+### Enforcing Smart Contract Allowlists
+
+As a wallet or custodian, you would need to code your own logic to enforce the smart contract allowlists. Please refer to the example implementation below that works for all EVM chains.
+
+```javascript
+const ALLOWED_CONTRACTS = {
+  "eip155:1": [
+    "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32", // Lido
+    "0x7Be8076f4EA4A4AD08075C2508e481d6C946D12b"  // OpenSea
+  ]
+};
+
+function handleRequest(payload) {
+  const chain = payload.params.chainId;
+  const request = payload.params.request;
+
+  if (request.method === "eth_sendTransaction") {
+    const tx = request.params[0];
+    const contract = tx.to.toLowerCase();
+
+    const allowed = (ALLOWED_CONTRACTS[chain] || []).map(a => a.toLowerCase());
+
+    if (!allowed.includes(contract)) {
+      throw new Error(`Blocked transaction to unapproved contract: ${contract}`);
+    } else {
+      // Forward to signing flow
+      signAndBroadcast(tx);
+    }
+  }
+}
+
+// Example placeholder for your signing logic
+function signAndBroadcast(tx) {
+  console.log("Signing and broadcasting transaction:", tx);
+}
+```
+
+## Conclusion
+
+By following the steps above, you can block your users from interacting with certain smart contracts from certain apps.
