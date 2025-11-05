@@ -10,7 +10,7 @@ sidebarTitle: "Flutter - POS SDK"
 2. Customer chooses token and network on the POS (e.g., USDC on Solana/Ethereum).
 3. POS shows a WalletConnect QR. 
 4. Customer scans with their wallet; session is established.
-5. POS requests the payment; 
+5. POS requests the payment. 
 6. Wallet displays amount and the customer approves. 
 7. The transaction is broadcasted by the wallet.
 8. POS shows confirmation
@@ -131,7 +131,7 @@ sealed class PosNetwork with _$PosNetwork {
 }
 ```
 
-What it does under the hood:
+**What it does under the hood:**
 
 - Generates the connection URL
 - Sends the connection proposal to the wallet

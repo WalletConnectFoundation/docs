@@ -1,5 +1,6 @@
 ---
 title: Installation
+sidebarTitle: Vue
 ---
 
 import CloudBanner from "/snippets/cloud-banner.mdx";
@@ -53,17 +54,18 @@ For more information, please visit [RPC Reference](https://docs.reown.com/advanc
 
 We recommend creating a config file to establish a singleton instance for the Universal Connector:
 
-```tsx
+<CodeGroup>
 
+```tsx Generic Example
 import type { AppKitNetwork } from '@reown/appkit/networks'
 import type { CustomCaipNetwork } from '@reown/appkit-common'
 import { UniversalConnector } from '@reown/appkit-universal-connector'
 
 // Get projectId from https://dashboard.reown.com
-export const projectId = import.meta.env.VITE_PROJECT_ID
+export const projectId = import.meta.env.VITE_PROJECT_ID || "YOUR_PROJECT_ID_HERE" // Replace with your actual project ID
 
-if (!projectId) {
-  throw new Error('Project ID is not defined')
+if (!projectId || projectId === "YOUR_PROJECT_ID_HERE") {
+  throw new Error('Project ID is not defined. Please set your project ID from the WalletConnect Dashboard.')
 }
 
 const suiMainnet: CustomCaipNetwork<'sui'> = {
@@ -75,17 +77,7 @@ const suiMainnet: CustomCaipNetwork<'sui'> = {
   rpcUrls: { default: { http: ['https://fullnode.mainnet.sui.io:443'] } }
 }
 
-const stacksMainnet: CustomCaipNetwork<'stacks'> = {
-  id: 1,
-  chainNamespace: 'stacks' as const,
-  caipNetworkId: 'stacks:1',
-  name: 'Stacks',
-  nativeCurrency: { name: 'STX', symbol: 'STX', decimals: 6 },
-  rpcUrls: { default: { http: ['https://stacks-node-mainnet.stacks.co'] } }
-}
-
-// for custom networks visit -> https://docs.reown.com/appkit/react/core/custom-networks
-export const networks = [suiMainnet, stacksMainnet] as [AppKitNetwork, ...AppKitNetwork[]]
+export const networks = [suiMainnet] as [AppKitNetwork, ...AppKitNetwork[]]
 
 export async function getUniversalConnector() {
   const universalConnector = await UniversalConnector.init({
@@ -102,11 +94,52 @@ export async function getUniversalConnector() {
         chains: [suiMainnet as CustomCaipNetwork],
         events: [],
         namespace: 'sui'
-      },
+      }
+    ]
+  })
+
+  return universalConnector
+}
+```
+
+```tsx Stacks Example
+import type { AppKitNetwork } from '@reown/appkit/networks'
+import type { InferredCaipNetwork } from '@reown/appkit-common'
+import { UniversalConnector } from '@reown/appkit-universal-connector'
+
+// Get projectId from https://dashboard.reown.com
+export const projectId = import.meta.env.VITE_PROJECT_ID || "YOUR_PROJECT_ID_HERE" // Replace with your actual project ID
+
+if (!projectId || projectId === "YOUR_PROJECT_ID_HERE") {
+  throw new Error('Project ID is not defined. Please set your project ID from the WalletConnect Dashboard.')
+}
+
+// you can configure your own network
+const stacksMainnet: InferredCaipNetwork = {
+  id: 'stacks-mainnet',
+  chainNamespace: 'stacks' as const,
+  caipNetworkId: 'stacks:1',
+  name: 'Stacks Mainnet',
+  nativeCurrency: { name: 'STX', symbol: 'STX', decimals: 6 },
+  rpcUrls: { default: { http: ['https://stacks-node-api.mainnet.stacks.co'] } } // Example Stacks Mainnet RPC URL
+}
+
+export const networks = [stacksMainnet] as [AppKitNetwork, ...AppKitNetwork[]]
+
+export async function getUniversalConnector() {
+  const universalConnector = await UniversalConnector.init({
+    projectId,
+    metadata: {
+      name: 'Universal Connector',
+      description: 'Universal Connector',
+      url: 'https://appkit.reown.com',
+      icons: ['https://appkit.reown.com/icon.png']
+    },
+    networks: [
       {
-        methods: ['stx_signMessage'],
-        chains: [stacksMainnet as CustomCaipNetwork],
-        events: ['stx_chainChanged'],
+        methods: ['stx_signMessage', 'stx_signTransaction', 'stx_getAccounts', 'stx_getAddresses', 'stx_callContract', 'stx_deployContract', 'sendTransfer', 'getAddresses'],
+        chains: [stacksMainnet as InferredCaipNetwork],
+        events: ['stx_chainChanged', 'stx_accountsChanged'],
         namespace: 'stacks'
       }
     ]
@@ -115,6 +148,8 @@ export async function getUniversalConnector() {
   return universalConnector
 }
 ```
+
+</CodeGroup>
 
 In de App.vue file you can add :
 

@@ -66,6 +66,14 @@
                     ]
                   }
                 ]
+              },
+              {
+                "group": "Guides",
+                "pages": [
+                  "guides/app-access-control",
+                  "guides/contract-access-control",
+                  "guides/extended-sessions"
+                ]
               }
             ]
           },
@@ -214,20 +222,12 @@
             "pages": ["app-sdk/overview"]
           },
           {
-            "group": "React",
-            "pages": ["app-sdk/react/installation"]
+            "group": "Installation",
+            "pages": ["app-sdk/react/installation", "app-sdk/next/installation", "app-sdk/vue/installation", "app-sdk/javascript/installation"]
           },
           {
-            "group": "Next.js",
-            "pages": ["app-sdk/next/installation"]
-          },
-          {
-            "group": "Vue",
-            "pages": ["app-sdk/vue/installation"]
-          },
-          {
-            "group": "JavaScript",
-            "pages": ["app-sdk/javascript/installation"]
+            "group": "Guides",
+            "pages": ["guides/app-extended-sessions"]
           }
         ]
       },
@@ -279,7 +279,8 @@
                   "group": "Point of Sale (POS) SDK",
                   "pages": [
                     "payments/point-of-sale",
-                    "payments/flutter/installation"
+                    "payments/flutter/installation",
+                    "payments/kotlin/installation"
                   ]
                 }
             ]

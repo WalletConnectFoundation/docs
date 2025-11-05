@@ -1,5 +1,6 @@
 ---
 title: Installation
+sidebarTitle: JavaScript
 ---
 
 import CloudBanner from "/snippets/cloud-banner.mdx";
@@ -45,12 +46,14 @@ For more information, please visit [RPC Reference](https://docs.reown.com/advanc
 
 We recommend creating a config file to establish a singleton instance for the Universal Connector:
 
-```tsx
+<CodeGroup>
+
+```tsx Generic Example
 import { UniversalConnector } from '@reown/appkit-universal-connector'
 
-export const projectId = import.meta.env.VITE_PROJECT_ID || "b56e18d47c72ab683b10814fe9495694" // this is a public projectId only to use on localhost
-if (!projectId) {
-  throw new Error('Project ID is not defined')
+export const projectId = import.meta.env.VITE_PROJECT_ID || "YOUR_PROJECT_ID_HERE" // Replace with your actual project ID
+if (!projectId || projectId === "YOUR_PROJECT_ID_HERE") {
+  throw new Error('Project ID is not defined. Please set your project ID from the WalletConnect Dashboard.')
 }
 
 // you can configure your own network
@@ -63,17 +66,7 @@ const suiMainnet = {
   rpcUrls: { default: { http: ['https://fullnode.mainnet.sui.io:443'] } }
 }
 
-const stacksMainnet = {
-  id: 1,
-  chainNamespace: 'stacks',
-  caipNetworkId: 'stacks:1',
-  name: 'Stacks',
-  nativeCurrency: { name: 'STX', symbol: 'STX', decimals: 6 },
-  rpcUrls: { default: { http: ['https://stacks-node-mainnet.stacks.co'] } }
-}
-
-
-export const networks = [suiMainnet, stacksMainnet]
+export const networks = [suiMainnet]
 
 export let universalConnector
 
@@ -93,11 +86,51 @@ export async function getUniversalConnector() {
           chains: [suiMainnet],
           events: [],
           namespace: 'sui'
-        },
+        }
+      ]
+    })
+  }
+  return universalConnector
+}
+```
+
+```tsx Stacks Example
+import { UniversalConnector } from '@reown/appkit-universal-connector'
+
+export const projectId = import.meta.env.VITE_PROJECT_ID || "YOUR_PROJECT_ID_HERE" // Replace with your actual project ID
+if (!projectId || projectId === "YOUR_PROJECT_ID_HERE") {
+  throw new Error('Project ID is not defined. Please set your project ID from the WalletConnect Dashboard.')
+}
+
+// you can configure your own network
+const stacksMainnet = {
+  id: 'stacks-mainnet',
+  chainNamespace: 'stacks',
+  caipNetworkId: 'stacks:1',
+  name: 'Stacks Mainnet',
+  nativeCurrency: { name: 'STX', symbol: 'STX', decimals: 6 },
+  rpcUrls: { default: { http: ['https://stacks-node-api.mainnet.stacks.co'] } } // Example Stacks Mainnet RPC URL
+}
+
+export const networks = [stacksMainnet]
+
+export let universalConnector
+
+export async function getUniversalConnector() {
+  if (!universalConnector) {
+    universalConnector = await UniversalConnector.init({
+      projectId,
+      metadata: {
+        name: 'Universal Connector',
+        description: 'Universal Connector',
+        url: 'https://appkit.reown.com',
+        icons: ['https://appkit.reown.com/icon.png']
+      },
+      networks: [
         {
-          methods: ['stx_signMessage'],
+          methods: ['stx_signMessage', 'stx_signTransaction', 'stx_getAccounts', 'stx_getAddresses', 'stx_callContract', 'stx_deployContract', 'sendTransfer', 'getAddresses'],
           chains: [stacksMainnet],
-          events: ['stx_chainChanged'],
+          events: ['stx_chainChanged', 'stx_accountsChanged'],
           namespace: 'stacks'
         }
       ]
@@ -106,6 +139,8 @@ export async function getUniversalConnector() {
   return universalConnector
 }
 ```
+
+</CodeGroup>
 
 In the main.js file you can add:
 

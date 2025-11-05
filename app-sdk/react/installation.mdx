@@ -1,5 +1,6 @@
 ---
 title: Installation
+sidebarTitle: React
 ---
 
 import CloudBanner from "/snippets/cloud-banner.mdx";
@@ -60,7 +61,9 @@ For more information, please visit [RPC Reference](https://docs.reown.com/advanc
 
 We recommend creating a config file to establish a singleton instance for the Universal Connector:
 
-```tsx
+<CodeGroup>
+
+```tsx Generic Example
 import type { AppKitNetwork } from '@reown/appkit/networks'
 import type { CustomCaipNetwork } from '@reown/appkit-common'
 import { UniversalConnector } from '@reown/appkit-universal-connector'
@@ -106,6 +109,55 @@ export async function getUniversalConnector() {
   return universalConnector
 }
 ```
+
+```tsx Stacks Example
+import type { AppKitNetwork } from '@reown/appkit/networks'
+import type { InferredCaipNetwork } from '@reown/appkit-common'
+import { UniversalConnector } from '@reown/appkit-universal-connector'
+
+// Get projectId from https://dashboard.reown.com
+export const projectId = import.meta.env.VITE_PROJECT_ID || "YOUR_PROJECT_ID_HERE" // Replace with your actual project ID
+
+if (!projectId || projectId === "YOUR_PROJECT_ID_HERE") {
+  throw new Error('Project ID is not defined. Please set your project ID from the WalletConnect Dashboard.')
+}
+
+// you can configure your own network
+const stacksMainnet: InferredCaipNetwork = {
+  id: 'stacks-mainnet',
+  chainNamespace: 'stacks' as const,
+  caipNetworkId: 'stacks:1',
+  name: 'Stacks Mainnet',
+  nativeCurrency: { name: 'STX', symbol: 'STX', decimals: 6 },
+  rpcUrls: { default: { http: ['https://stacks-node-api.mainnet.stacks.co'] } } // Example Stacks Mainnet RPC URL
+}
+
+export const networks = [stacksMainnet] as [AppKitNetwork, ...AppKitNetwork[]]
+
+export async function getUniversalConnector() {
+  const universalConnector = await UniversalConnector.init({
+    projectId,
+    metadata: {
+      name: 'Universal Connector',
+      description: 'Universal Connector',
+      url: 'https://appkit.reown.com',
+      icons: ['https://appkit.reown.com/icon.png']
+    },
+    networks: [
+      {
+        methods: ['stx_signMessage', 'stx_signTransaction', 'stx_getAccounts', 'stx_getAddresses', 'stx_callContract', 'stx_deployContract', 'sendTransfer', 'getAddresses'],
+        chains: [stacksMainnet as InferredCaipNetwork],
+        events: ['stx_chainChanged', 'stx_accountsChanged'],
+        namespace: 'stacks'
+      }
+    ]
+  })
+
+  return universalConnector
+}
+```
+
+</CodeGroup>
 
 In the App.tsx file you can add :
 
