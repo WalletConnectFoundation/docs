@@ -6,6 +6,12 @@
     "light": "#0988f0",
     "dark": "#0988f0"
   },
+  "redirects": [
+    {
+      "source": "/guides/**",
+      "destination": "/custodians/**"
+    }
+  ],
   "integrations": {
     "posthog": {
       "apiKey": "phc_yUywlbA5HctEGSHSK7ueMEH56ktyqyqEBtY4Cl35Fgf",
@@ -80,11 +86,12 @@
                 ]
               },
               {
-                "group": "Guides",
+                "group": "Custodians and Institutions",
                 "pages": [
-                  "guides/app-access-control",
-                  "guides/contract-access-control",
-                  "guides/extended-sessions"
+                  "custodians/overview",
+                  "custodians/app-access-control",
+                  "custodians/contract-access-control",
+                  "custodians/extended-sessions"
                 ]
               }
             ]
