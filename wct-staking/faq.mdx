@@ -4,59 +4,118 @@ title: FAQ
 
 ## Frequently Asked Questions
 
-### Are there any fees for staking/unstaking WCT?
+### How does staking work?
 
-Yes, a small gas fee will apply when claiming WCT tokens. The exact amount will depend on blockchain network conditions at the time of claiming.
+When you stake WCT, you lock tokens in the protocol to earn rewards and voting power.
 
-### Can I join a distribution period mid-week?
+Your position remains fully locked and at **constant stakeweight** until you choose to **initiate an unlock**.
 
-Yes, but you'll need to wait until the next distribution period to start receiving rewards. Distribution periods run from Thursday to Thursday, and to be eligible, your position must:
+Once unlocking begins, your stakeweight **decays linearly** over the selected duration until your tokens become withdrawable.
 
--   Start before Thursday 00:00 GMT
--   Have at least 1 week remaining in the lock period
+---
 
-### How do I receive more rewards?
+### How do I unstake or exit?
 
-You can increase your rewards by:
+You can exit anytime by **initiating an unlocking period**.
 
--   Increasing your stakeweight through:
--   Adding more WCT to your position
--   Extending your lock period closer to the maximum (104 weeks)
--   Regularly claiming and restaking your rewards to compound your position
--   Extending your lock period when claiming rewards to maintain optimal stakeweight
+Select one of the available durations (e.g., 4, 26, or 52 weeks).
 
-### What happens if I miss claiming my rewards?
+During this time, stakeweight and rewards gradually decrease.
 
-Your rewards will accumulate and remain available to claim. There's no deadline for claiming rewards, and you won't lose them by not claiming immediately.
+When the period ends, your tokens become **fully withdrawable**.
+
+---
+
+### Which unlock durations are available?
+
+You can choose from predefined options:
+
+**4, 8, 12, 26, 52, 78, or 104 weeks** (≈ 1–24 months).
+
+Shorter unlocks provide flexibility; longer ones grant higher rewards.
+
+---
+
+### How are rewards calculated and distributed?
+
+Rewards are distributed **weekly** (Thursday–Thursday) based on your **share of total stakeweight**:
+
+$$
+\text{Reward Share} = \frac{\text{Position Stakeweight}}{\text{Total Network Stakeweight}}
+$$
+
+Positions created or updated after Thursday 00:00 GMT become eligible in the **next** reward cycle.
+
+---
+
+### How can I increase my rewards?
+
+You can earn more by:
+
+- Staking **more WCT**
+- Choosing a **longer unlock duration**
+- **Re-staking** your weekly rewards to compound your position
+- Keeping your position locked (not unlocking) to maintain full stakeweight
+
+---
+
+### What happens if I don’t claim rewards immediately?
+
+Unclaimed rewards **accumulate automatically** and can be claimed anytime.
+
+There’s **no expiry** or penalty for delayed claiming.
+
+---
 
 ### Can I partially unstake my position?
 
-No, partial unstaking is not supported. When unstaking, you must withdraw your entire position.
+No. Partial unstaking is **not supported** — you must withdraw the full position once it’s fully unlocked.
 
-### What happens to my rewards if my position expires?
+---
 
-Once your position expires:
+### Can I change or extend my staking position?
 
--   It stops being eligible for new rewards
--   You can still claim any accumulated rewards
--   You'll need to create a new position to continue earning rewards
+Yes. While locked, you can:
 
-### Can I have multiple staking positions on one address?
+- **Add more WCT** to your existing position
+- **Change your unlock preset** to a longer duration
 
-No, you can only have one active staking position at a time per address. You can increase your position by adding more WCT or extend the lock period, but you cannot create multiple separate positions.
+Both actions update your stakeweight accordingly.
 
-### Can locked tokens be staked?
+Changes made mid-week take effect in the **next reward period**.
 
-Yes, locked tokens can be staked, even if they are not yet transferable.
+---
 
-These locked tokens are exclusively allocated to core development contributors, early backers, and team members, and are subject to a 4-year unlock schedule, which includes a 1-year cliff starting from the Token Generation Event (TGE).
+### Are there any fees?
 
-While these tokens remain non-transferable during the lock-up period, they can still participate in staking and earn rewards.
+Only regular **gas fees** apply for on-chain transactions such as staking, updating, claiming, or unstaking.
+
+The cost depends on current network conditions.
+
+---
+
+### Can I have multiple staking positions?
+
+Each address can hold **one active position**.
+
+If you want multiple positions with different durations, use multiple wallet accounts or addresses.
+
+---
+
+### Can locked tokens participate in staking?
+
+Yes. Certain locked allocations (e.g., team or contributor tokens) can be staked and earn rewards even while non-transferable, under their original vesting terms.
 
 <Warning>
-This applies only to specific long-term allocations.
+  This applies only to long-term allocation contracts.
 </Warning>
 
-### Can I update my position mid-week?
+---
 
-Yes, but any updates made mid-week will only take effect starting from the next distribution period. Distribution periods run from Thursday to Thursday, so changes must be in place before Thursday 00:00 GMT to impact the upcoming period.
+### What happens after my unlock finishes?
+
+When the unlock period ends:
+
+- Your stakeweight and voting power drop to **0**
+- You can **withdraw** your full amount
+- To continue earning, simply **stake again**
