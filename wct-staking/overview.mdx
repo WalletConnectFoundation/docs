@@ -7,148 +7,183 @@ Staking WCT is the primary mechanism through which token holders engage with and
 
 Staking WCT provides three key benefits: voting rights in protocol governance, eligibility for performance rewards programs, and weekly WCT token rewards distributions. These mechanisms allow token holders to participate actively in the protocol while earning additional rewards.
 
+<Note>
+The staking model now uses <b>perpetual positions</b> with <b>user-triggered unlocking</b>. You select an <b>unlock duration</b> up front (from a discrete set of options), but your position stays fully locked and at full stakeweight <b>until you decide to initiate unlock</b>. When you initiate unlock, stakeweight <b>decays linearly</b> over the chosen duration.
+</Note>
+
 ## Stake Weight
 
-Stakeweight is the measure used to determine a staker's position within the network at any given time. It is calculated based on two factors: the amount of WCT tokens staked and the remaining lock time of the position. This combined metric ensures that both the quantity of tokens and commitment duration are valued in the protocol. Rewards are distributed proportionally to each staker's share of the total stakeweight in the network. Additionally, a staker's voting power in governance is directly proportional to their stakeweight.
+Stakeweight is the measure used to determine a staker's position within the network at any given time. It is derived from two factors: the amount of WCT staked and the <b>remaining lock time</b> of the position. Rewards are distributed proportionally to each staker's share of total network stakeweight, and governance voting power is directly proportional to stakeweight.
+
+### States
+
+- **Locked (Perpetual):** Your position is active and not unlocking. While locked, the <b>remaining lock time is fixed</b> at your selected unlock duration, so <b>stakeweight does not decay</b>.
+
+- **Unlocking:** You've initiated an unstake. Remaining lock time <b>decreases linearly</b> to zero over the selected unlock duration; stakeweight decays accordingly. When it reaches zero, the position becomes fully withdrawable.
 
 ### Calculating Stake Weight
 
-The stakeweight calculation follows this formula:
+The stakeweight calculation is:
+
 
 $$
-  Stakeweight = (Amount_of_WCT * Remaining_Lock_Time) / 209
+\text{Stakeweight} = \frac{\text{Amount\_of\_WCT} \times \text{Remaining\_Lock\_Time}}{209}
 $$
 
 Where:
 
-- Amount of WCT: The number of WCT tokens staked
-- Remaining Lock Time: The number of weeks remaining in the lock period
-- 209: The maximum stakeweight value
+- **Amount of WCT:** Number of WCT tokens staked.
+- **Remaining Lock Time:**
+  - **Locked state:** fixed at the **selected unlock duration** (e.g., 52 weeks).
+  - **Unlocking state:** decays linearly from the selected duration down to 0.
+- **209:** Normalization constant for maximum stakeweight.
 
-For example, if a user stakes 1000 WCT with 40 weeks of lock time, their stakeweight would be:
+For example, if a user stakes **1,000 WCT** and has selected a **40-week** unlock duration:
 
+- **Locked:**
 $$
-  Stakeweight = (1000 * 40) / 209 = 191.3
+\text{Stakeweight} = \frac{1000 \times 40}{209} \approx 191.39
+$$
+
+- **Unlocking (halfway through, 20 weeks remaining):**
+$$
+\text{Stakeweight} = \frac{1000 \times 20}{209} \approx 95.69
 $$
 
 <Note>
-While the stakeweight formula uses 209 weeks as the denominator, the current maximum lock time that can be selected when staking is 105 weeks (2 years).
+While the stakeweight formula uses <b>209 weeks</b> as the denominator, the current <b>maximum unlock duration</b> you can select is <b>104 weeks</b> (≈ 2 years).
 </Note>
 
 <Note>
-Due to how rounding works using timestamps 105 weeks is used to represent 2 years.
+Due to timestamp rounding, <b>104 weeks</b> is used to represent <b>2 years</b>.
 </Note>
 
-### Decaying Stake weight
+### Stakeweight Decay (only during Unlocking)
 
-A staking position's stakeweight naturally decays each week as the lock time decreases. To maintain or increase their stakeweight, users have two options: they can deposit additional WCT tokens into their existing position, or they can extend their lock time period. Both actions will result in an increased stakeweight, allowing users to maintain or improve their proportional share of rewards.
+In the **Locked** state, stakeweight remains constant (no decay).
+
+In the **Unstaking** state, **remaining lock time**—and thus stakeweight—decays linearly week by week until it reaches 0 at the end of the unlock duration.
 
 ## How to Stake WCT
 
-To stake WCT, you need to visit your [WalletConnect Profile](https://profile.walletconnect.network) and navigate to the staking section.
+To stake WCT, visit [**https://app.walletconnect.com/stake**](https://app.walletconnect.com/stake)
 
-<img src="/images/wct-staking.png" className='w-full'/>
+<img src="/images/how-to-stake-1.png" className='w-full rounded-xl'/>
+<img src="/images/how-to-stake-2.png" className='w-full rounded-xl'/>
+<img src="/images/how-to-stake-3.png" className='w-full rounded-xl'/>
+<img src="/images/how-to-stake-4.png" className='w-full rounded-xl'/>
 
-The staking process involves two transactions:
-1. First, you'll need to approve the staking contract to use the WCT tokens you want to stake.
-2. Then, you can create your staking position by selecting:
-  - The amount of WCT to stake
-  - The lock duration 
-
-Each step will require a separate transaction signature. Once both transactions are confirmed, you will receive your staking position and begin earning rewards based on your stakeweight.
+The staking flow involves:
+- Connect your wallet.
+- Select **Stake**.
+- Enter the **amount** you want to stake.
+- Set the **duration** (this sets the **unstaking period** used when you later exit. The longer the duration, the higher the APY).
+- **Approve** the amount — sign the approval with your wallet.
+- **Stake** — sign the staking transaction with your wallet.
 
 <Warning>
-Once you stake your WCT tokens, they will be locked for the duration you selected. You will only be able to unstake your tokens after the lock period has ended.
+Your position is <b>perpetually locked</b> until you <b>initiate unstaking</b>. Choosing the unlock duration does <b>not</b> exit you; it sets the duration for a future exit.
 </Warning>
+
+## Discrete Unlock Duration Options
+
+To simplify decisions, the unlock duration must be one of:
+
+- **4, 8, 12, 26, 52, 78, or 104 weeks** (≈ 1–24 months)
+
+You can change your preset **while Locked**. The preset determines the **remaining lock time** used for stakeweight in the Locked state and the **length of the decay** once you initiate unstaking.
 
 ## Staking Rewards Eligibility
 
-<Warning>
-Staking will be available from November 26, 2024. However, rewards distribution will begin for the week starting 19, 2024.
-</Warning>
+Rewards are distributed **weekly**. Each reward period **starts and ends on Thursday (00:00 GMT)**.
 
-Staking rewards are distributed weekly, with each reward period starting and ending on Thursday. To qualify for staking rewards in a given week, your staking position must meet two criteria:
-- Must have started before Thursday 00:00 GMT of that week
-- Must have at least 1 week remaining in the lock period
+To be eligible for a given week:
+- Your position must **exist before Thursday 00:00 GMT** of that week; and
+- Your position must have **Remaining Lock Time > 0**:
+  - **Locked:** always eligible.
+  - **Unlocking:** eligible while **≥ 1 week** remains (once it hits 0, eligibility ends).
 
 ### Examples
 
-#### Eligible Position
-If you create a staking position on Wednesday at 23:00 GMT with a 4-week lock, you will be eligible for rewards in the following week's distribution because:
-- The position starts before Thursday 00:00 GMT
-- The position has more than 1 week remaining in the lock period
+#### Eligible (Locked)
+Created on **Wednesday 23:00 GMT**, preset **4 weeks**, not unlocking yet → Eligible for the week starting Thursday 00:00 GMT (position existed before the cutoff and is Locked).
 
-#### Ineligible Position
-If you create a staking position on Thursday at 01:00 GMT with a 1-week lock, you won't be eligible for that week's rewards distribution, as your position started after the cutoff time.
+#### Eligible (Unlocking with ≥ 1 week)
+Initiate unlock on **Monday** with preset **12 weeks** → For subsequent Thursdays while ≥ 1 week remains, the position is eligible (with a decaying stakeweight).
 
-## Expired Positions
+#### Ineligible (Too late)
+Create a new position at **Thursday 01:00 GMT** → Not eligible for that week (created after the cutoff).
 
-When a staking position expires (the lock period ends), two key things happen:
-- The position stops being eligible for rewards.
-- The position can no longer be updated (you cannot add more WCT or extend the lock).
-- The voting power associated with the position is 0.
+## Position Lifecycle
 
-The only action available for an expired position is to unstake. After unstaking, users can create a new position to continue participating in the protocol.
+### Initiating Unstake (Exit)
 
-### Preventing Expiration
+When you're ready to exit:
 
-To prevent a position from expiring, users can extend their lock period at any time before expiration. The extension can be for any number of weeks up to the difference between the maximum lock time (105 weeks) and the remaining lock time. For example, if your position has 30 weeks remaining, you could extend it by up to 75 additional weeks.
+1. Go to [**https://app.walletconnect.com/stake**](https://app.walletconnect.com/stake)
+2. Connect your wallet
+3. Click **Unstake**
+4. After the unstaking duration ends, you will be able to withdraw your locked tokens.
+
+From that point:
+- Remaining lock time **decays linearly** from the unstaking duration selected when the position was created to **0**.
+- Stakeweight decays accordingly.
+- When it reaches **0**, the position becomes **fully withdrawable**.
+
+<img src="/images/stake-position-lifecycle-1.png" className='w-full rounded-xl'/>
+<img src="/images/stake-position-lifecycle-2.png" className='w-full rounded-xl'/>
+
+
+### Re-Locking (Stop Decay)
+
+- While **Unstaking**, you can **Update** your position to return to the **Locked** state.
+- When updating your position, you must select a preset that is **≥ the current remaining time** (you can make it **longer**, but not shorter).
+- Decay stops immediately; stakeweight snaps back to the fixed value using the new preset.
+
+### Completed Unstake
+
+When remaining lock time reaches **0**:
+- Stakeweight and voting power become **0**.
+- The position becomes **withdrawable** (full amount; partial withdrawals are not supported).
+- After withdrawing, you may create a **new** staking position at any time.
 
 ## Updating Your Position
 
-Users can update their active (non-expired) staking positions at any time. There are two types of updates available: adding more WCT tokens and extending the lock period.
+Users can update **active staking** positions at any time:
 
 ### Adding WCT
 
-You can increase your staking position by adding more WCT tokens at any time. The added tokens will be locked for the remaining duration of your position.
+Increase your position by depositing more WCT. The added tokens adopt your position's current preset.
 
-<img src="/images/wct-add-tokens.png" className='w-full'/>
+<img src="/images/stake-add-wct.png" className='w-full rounded-xl'/>
 
-### Extending Lock Time
+### Changing the Unlock Duration Preset
 
-Users can extend their lock period by adding more weeks to their position. As your stakeweight naturally decays over time, extending the lock is an effective way to maintain or increase it.
+While **Staked**, you can change your duration to any of the discrete options **greater than or equal to** your current remaining time. This **does not** initiate unlocking; it only changes the **fixed remaining lock time** used for stakeweight in the Locked state and sets the future unlock duration.
 
-<img src="/images/wct-extend-lock.png" className='w-full'/>
-
-The maximum number of weeks you can add is calculated as:
-
-$$
-  Max Weeks = 105 - Remaining Lock Time
-$$
-
-For example, if your position has 30 weeks remaining, you can extend it by up to 75 additional weeks.
-
-## Unstaking WCT
-
-Unstaking is the process through which users can claim back their WCT tokens after their lock period has ended.
-
-<img src="/images/wct-unstaking.png" className='w-full'/>
-
-To unstake your WCT:
-1. Visit your [WalletConnect Profile](https://profile.walletconnect.network)
-2. Navigate to the staking section
-3. Click on the unstake button
-
-<Note>
-Partial unstaking is not supported. You must unstake the entire position.
-</Note>
-
-After unstaking, you can immediately create a new staking position with your preferred amount and lock duration.
+<img src="/images/stake-change-unlock-duration.png" className='w-full rounded-xl'/>
 
 ## Claiming Rewards
 
-Every Thursday, WCT rewards are distributed to eligible stakers based on their proportional share of the total stakeweight in the network. The rewards for each position are calculated by taking their stakeweight divided by the sum of all eligible staking positions' stakeweight. For example, if your stakeweight represents 5% of the total network stakeweight, you will receive aproximatly 5% of that week's reward distribution.
+Every Thursday, WCT rewards are distributed to eligible positions based on their proportional share of total network stakeweight. If your position's stakeweight represents 5% of the total, you'll receive approximately 5% of that week's distribution.
 
-```rewardShare = positionStakeweight / totalNetworkStakeweight```
+$$
+\text{Reward\_Share} = \frac{\text{Position\_Stakeweight}}{\text{Total\_Network\_Stakeweight}}
+$$
 
-These rewards can be claimed through your dashboard at any time.
-
-<img src="/images/wct-claiming.png" className='w-full'/>
-
-### Restaking Rewards
-
-When claiming rewards, users have the option to restake them directly into their existing position. This is an effective strategy to maintain and increase your stakeweight over time. 
+You can claim rewards on your dashboard at any time. When claiming, you may **re-stake** rewards back into the position to grow stakeweight.
 
 <Tip>
-Regular weekly visits to your profile keeps the token holder updated on the network and enable you to claim rewards, restake them, and extend your lock period, helping maintain an optimal stakeweight.
+Checking in weekly lets you claim and optionally re-stake rewards and adjust your preset, helping you maintain optimal stakeweight.
 </Tip>
+
+## Migration Path (Existing Positions)
+
+To avoid disrupting existing positions at upgrade time:
+
+- Existing positions were treated as **already unlocking** under the new contracts, so they continue to decay and become withdrawable on their original timelines without action required.
+- If you prefer the new **perpetual** behavior, select **Update**, choose a duration (you'll be able to select only durations **greater than or equal to** your current remaining lock), then remain **Locked** until you choose to initiate a new unlock.
+
+## Backwards Compatibility / Optionality
+
+Power users can still mimic the old behavior by **initiating unlock immediately after staking**, which starts decay from day one (as before). Otherwise, you enjoy constant stakeweight until you decide to exit.
