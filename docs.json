@@ -6,6 +6,12 @@
     "light": "#0988f0",
     "dark": "#0988f0"
   },
+  "redirects": [
+    {
+      "source": "/guides/**",
+      "destination": "/custodians/**"
+    }
+  ],
   "integrations": {
     "posthog": {
       "apiKey": "phc_yUywlbA5HctEGSHSK7ueMEH56ktyqyqEBtY4Cl35Fgf",
@@ -30,6 +36,18 @@
               {
                 "group": "Features",
                 "pages": ["wallet-sdk/features/verify", "wallet-sdk/features/link-mode", "wallet-sdk/features/one-click-auth"]
+              },
+              {
+                "group": "Chain Support",
+                "pages": [
+                  "wallet-sdk/chain-support/overview",
+                  "wallet-sdk/chain-support/evm",
+                  "wallet-sdk/chain-support/solana",
+                  "wallet-sdk/chain-support/bitcoin",
+                  "wallet-sdk/chain-support/sui",
+                  "wallet-sdk/chain-support/stacks",
+                  "wallet-sdk/chain-support/ton"
+                ]
               },
               {
                 "group": "WalletGuide",
@@ -68,11 +86,12 @@
                 ]
               },
               {
-                "group": "Guides",
+                "group": "Custodians and Institutions",
                 "pages": [
-                  "guides/app-access-control",
-                  "guides/contract-access-control",
-                  "guides/extended-sessions"
+                  "custodians/overview",
+                  "custodians/app-access-control",
+                  "custodians/contract-access-control",
+                  "custodians/extended-sessions"
                 ]
               }
             ]
