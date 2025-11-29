@@ -1,0 +1,20 @@
+```markdown
+Configure strict branch protection rules for main across all AfricaCryptoChainx repositories
+
+- Require pull request before merging  
+- Require 1 approving review  
+- Require status checks to pass (Dependabot, Fortify AST, CodeQL)  
+- Require linear history  
+- Block force pushes  
+- Allow direct pushes to main only for admins and project manager  
+- Do not allow bypassing the above rules  
+- Dismiss stale approvals on new commits  
+
+This setup ensures:
+- All code is reviewed and scanned for security
+- No accidental or malicious history rewrites
+- Full control for the project manager while maintaining transparency
+- Consistent quality across the entire AfricaCryptoChainx ecosystem (wallet, ACCXBot, dApps, contracts)
+
+Organization-level enforcement applied to every repository under Africacryptochainx-Com.
+```
