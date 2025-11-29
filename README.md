@@ -1,5 +1,22 @@
 # WalletConnect Network Docs
+# AfricaCryptoChainx WalletConnect Integration Docs
 
+**Official integration guide for the AfricaCryptoChainx (ACCX) ecosystem**
+
+This repository contains comprehensive WalletConnect v2 integration documentation and code examples for all AfricaCryptoChainx products:
+
+- ACCX Wallet (mobile & web)
+- ACCX dApps & GameFi mini-apps
+- Walk-to-Earn platform
+- Staking dashboard
+- ACCXBot Telegram Mini App
+
+## Development
+
+Install the [Mintlify CLI](https://mintlify.com) to preview changes locally:
+
+```bash
+npm i -g mintlify
 This repository is currently under development. If you come across any issues, please report them.
 
 ## Development
