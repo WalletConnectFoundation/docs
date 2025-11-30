@@ -1,0 +1,134 @@
+# .github/dependabot.yml
+# Dependabot configuration for AfricaCryptoChainx (ACCX) – Monorepo style
+version: 2
+
+updates:
+  # ─────────────────────────────────────────────────────
+  # JavaScript / TypeScript – Root (wallet, frontend, dApps)
+  # ─────────────────────────────────────────────────────
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 15
+    labels:
+      - dependencies
+      - javascript
+      - automated
+    commit-message:
+      prefix: chore
+      prefix-development: chore(dev)
+      include: scope
+    groups:
+      production:
+        dependency-type: production
+      development:
+        dependency-type: development
+    # Allow major updates only when a vulnerability is fixed (safe)
+    versioning-strategy: increase-if-necessary
+
+  # ─────────────────────────────────────────────────────
+  # Smart Contracts (Hardhat / Foundry / Truffle) – /contracts
+  # ─────────────────────────────────────────────────────
+  - package-ecosystem: npm
+    directory: "/contracts"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - smart-contracts
+      - security
+      - automated
+    commit-message:
+      prefix: chore(contracts)
+      include: scope
+    groups:
+      contracts:
+        patterns:
+          - "@openzeppelin/*"
+          - "hardhat*"
+          - "@nomicfoundation/*"
+          - "ethers"
+          - "truffle*"
+          - "solhint"
+          - "solmate"
+          - "@uniswap/*"
+
+  # ─────────────────────────────────────────────────────
+  # GitHub Actions
+  # ─────────────────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels:
+      - github-actions
+      - dependencies
+      - automated
+    rebase-strategy: auto
+
+  # ─────────────────────────────────────────────────────
+  # Python – Backend, bots, scripts
+  # ─────────────────────────────────────────────────────
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+      - automated
+    groups:
+      python:
+        patterns:
+          - "*"
+
+  # ─────────────────────────────────────────────────────
+  # Docker
+  # ─────────────────────────────────────────────────────
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels:
+      - docker
+      - dependencies
+      - automated
+
+  # ─────────────────────────────────────────────────────
+  # Daily security-only updates (fast reaction to critical CVEs)
+  # Works best when you also enable "Dependabot security updates" in repo settings
+  # ─────────────────────────────────────────────────────
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    labels:
+      - security
+      - critical
+      - automated
+    commit-message:
+      prefix: fix(security)
+      include: scope
+    versioning-strategy: increase-if-necessary   # allows major bumps if they fix a vuln
+    # Only creates PRs when Dependabot knows a vuln is fixed
+    # (you can further restrict with `allow:` if needed)
+
+  - package-ecosystem: npm
+    directory: "/contracts"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 5
+    labels:
+      - security
+      - critical
+      - smart-contracts
+      - automated
+    commit-message:
+      prefix: fix(contracts-security)
+      include: scope
+    versioning-strategy: increase-if-necessary
