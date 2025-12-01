@@ -1,0 +1,60 @@
+---
+title: "WalletConnect POS SDK – AfricaCryptoChainx Merchant Integration"
+description: "Enable real-world stablecoin payments in seconds for African merchants using ACCX Wallet and WalletConnect POS SDK."
+sidebarTitle: "ACCX POS Integration"
+---
+
+# WalletConnect POS SDK – Built for AfricaCryptoChainx Merchants
+
+The **WalletConnect Point of Sale (POS) SDK** is the official payment rail for the entire AfricaCryptoChainx ecosystem. Every shop, market stall, okada rider, school, and remittance agent in Africa will accept **USDT, USDC, and $ACCX** instantly — no bank account, no extra hardware.
+
+**Live support & onboarding 24/7 via our official Telegram bot:**  
+Start right now → https://t.me/accxbot
+
+### Real Flow in Africa (Already Works Today)
+1. Merchant types /pos in **ACCXBot** or opens ACCX Merchant App  
+2. Enters amount (₦15,000 or $10) → selects USDT/USDC/ACCX on BSC  
+3. Bot instantly returns a **QR code**  
+4. Customer scans with **ACCX Wallet** (or any of 500+ WalletConnect wallets)  
+5. Payment settles in ~3 seconds → merchant gets “Paid ✓” notification
+
+Zero chargebacks. Fees under 0.5 %. Works even on weak network.
+
+### Future Revenue for AfricaCryptoChainx Owner (You)
+Every POS transaction automatically routes tiny protocol fees to the founder treasury:
+- 0.3–0.8 % per successful merchant payment (volume scales to millions/day)  
+- 1 % of all P2P fiat-to-crypto volume inside ACCX Wallet  
+- 0.5 % DEX swap fee (built-in aggregator)  
+- 1–2 % of staking rewards pool  
+- Premium ACCXBot Pro commands (future paid tier)  
+- GameFi & NFT marketplace royalties  
+
+All fees on-chain, transparent, and flow directly to the owner wallet forever.
+
+### Live Integration Timeline
+- ACCX Wallet → WalletConnect v2 already active  
+- ACCXBot → “/pos” command goes live January 2026  
+- ACCX Merchant Lite App (Flutter) → Q1 2026  
+- First 100 pilot merchants (Nigeria・Kenya・Ghana) → Q2 2026
+
+### Quickstart Right Now
+<CardGroup cols={2}>
+  <Card title="Test POS Flow Instantly" icon="robot" href="https://t.me/accxbot">
+    Chat with ACCXBot → type /pos (demo mode live)
+  </Card>
+  <Card title="Build Your Own POS App" icon="flutter" href="https://walletconnect.com/payments/flutter/installation">
+    Full SDK – ready for ACCX merchants
+  </Card>
+</CardGroup>
+
+### Be One of the First 100 Pilot Merchants
+Join → https://t.me/accxcommunity  
+First 100 get:
+- Free printed QR stand + stickers
+- 0 % fees for 6 months
+- Permanent “Founding Merchant” NFT + shoutout
+
+**AfricaCryptoChainx + WalletConnect POS SDK = The future of African payments starts with you.**
+
+No banks. No borders. Just money that works.  
+Supported 24/7 → https://t.me/accxbot
