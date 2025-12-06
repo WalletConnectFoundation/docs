@@ -1,6 +1,6 @@
 # AfricaCryptoChainx – Official Assets & Token Repository
 
-## Status (December 4, 2025)
+## Status (December 6, 2025)
 - **Mainnet**: Under active development — audit-first launch Q2 2026  
 - **Testnet**: Public beta Q1 2026  
 - **Tokens**: No live contracts yet — all addresses announced post-audit  
@@ -10,14 +10,14 @@ This repo houses verified assets for the ACCX ecosystem once deployed. Community
 
 ## Planned Assets (42 African Digital Assets)
 When mainnet launches, this will include:  
-- **ACCX**: Native governance/utility token (BEP-20 on BSC initially for early access; 1:1 migration to ACCX L1 at mainnet launch)  
+- **ACCX**: Native governance/utility token (BEP-20 on BSC initially for early access; 1:1 migration to ACCX L1 at mainnet launch via proxy upgrade pattern)  
 - **AFR**: Africoin (remittances)  
 - **AFT**: AfroToken (DeFi lending)  
 - **SHC**: Sahara Coin (creator economy)  
 - **SAV**: Savanna Token (agricultural yield)  
 - +37 more (region-specific: NAI, ZAM, GHS, KES, etc.)  
 
-All will have: logos, decimals (18), symbols, socials, and verified contracts. Initial BSC deployment (chain ID 56) for interoperability; full migration to ACCX L1 (chain ID 17777) via 1:1 bridge/swap mechanism (atomic upgrade with no loss of value).
+All will have: logos, decimals (18), symbols, socials, and verified contracts. Initial BSC deployment (chain ID 56) for interoperability; full migration to ACCX L1 (chain ID 17777) via 1:1 bridge/swap mechanism (no loss of value, using OpenZeppelin Upgrades for atomicity).
 
 ## How to Prepare Your Token for ACCX Integration
 Submissions open post-testnet. Requirements:  
