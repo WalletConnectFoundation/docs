@@ -1,0 +1,62 @@
+messages:
+  - role: system
+    content: |-
+      ```json
+      {
+        "servers": {
+          "github": {
+            "type": "http",
+            "url": "https://api.githubcopilot.com/mcp/"
+          }
+        }
+      }
+      ```
+
+      ```markdown
+      - **Description**:  
+        "Setup and integration of ACCX Wallet for secure crypto transactions, user authentication, and multi-chain support. Managed by ACCXBOT: [https://t.me/accxbot](https://t.me/accxbot)"
+      ```
+  - role: user
+    content: >-
+      ```markdown
+
+      Create MCP server configuration and documentation for AfricaCryptoChainx
+      development tools integration.
+
+
+      **Requirements:**
+
+      - Configure GitHub Copilot MCP server for code assistance
+
+      - Document ACCX Wallet setup and features
+
+      - Include ACCXBOT Telegram integration details
+
+      - Maintain professional blockchain terminology
+
+      - Ensure secure multi-chain architecture
+
+
+      **Key Components:**
+
+      - GitHub development environment setup
+
+      - ACCX Wallet transaction security
+
+      - User authentication systems
+
+      - Multi-chain blockchain support
+
+      - Telegram bot integration
+
+
+      **Format:** JSON configuration with markdown documentation
+
+      **Tone:** Technical and professional
+
+
+      **Target:** Blockchain developers and AfricaCryptoChainx ecosystem
+      contributors
+
+      ```
+model: xai/grok-3

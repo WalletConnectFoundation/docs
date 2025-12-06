@@ -1,0 +1,43 @@
+```yaml
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: daily
+    target-branch: main
+    labels:
+      - dependencies
+      - npm
+      - AfricaCryptoChainx
+    commit-message:
+      prefix: chore
+      include: scope
+    open-pull-requests-limit: 10
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: daily
+    target-branch: main
+    labels:
+      - dependencies
+      - python
+      - ACCXBOT
+    commit-message:
+      prefix: chore
+      include: scope
+    open-pull-requests-limit: 10
+  - package-ecosystem: github-actions
+    directory: /.github/workflows
+    schedule:
+      interval: daily
+    target-branch: main
+    labels:
+      - dependencies
+      - github-actions
+      - AfricaCryptoChainx
+    commit-message:
+      prefix: chore
+      include: scope
+    open-pull-requests-limit: 5
+```
