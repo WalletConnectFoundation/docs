@@ -246,7 +246,7 @@
           },
           {
             "group": "Guides",
-            "pages": ["guides/app-extended-sessions"]
+            "pages": ["app-sdk/tonconnect/installation", "guides/app-extended-sessions"]
           }
         ]
       },
