@@ -346,7 +346,7 @@
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://dashboard.reown.com"
+      "href": "https://dashboard.walletconnect.com"
     }
   },
   "contextual": {

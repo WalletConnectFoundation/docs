@@ -13,7 +13,7 @@ This section is to inform you about the pre-requisites for integrating WalletCon
 
 ### Cloud Configuration
 
-Create a new project on WalletConnect Dashboard at https://dashboard.reown.com and obtain a new project ID. You will need this project ID to initialize WalletConnect in your project (app).
+Create a new project on WalletConnect Dashboard at https://dashboard.walletconnect.com and obtain a new project ID. You will need this project ID to initialize WalletConnect in your project (app).
 
 <CloudBanner />
 
@@ -68,7 +68,7 @@ import type { AppKitNetwork } from '@reown/appkit/networks'
 import type { CustomCaipNetwork } from '@reown/appkit-common'
 import { UniversalConnector } from '@reown/appkit-universal-connector'
 
-// Get projectId from https://dashboard.reown.com
+// Get projectId from https://dashboard.walletconnect.com
 export const projectId = import.meta.env.VITE_PROJECT_ID || "b56e18d47c72ab683b10814fe9495694" // this is a public projectId only to use on localhost
 
 if (!projectId) {
@@ -115,7 +115,7 @@ import type { AppKitNetwork } from '@reown/appkit/networks'
 import type { InferredCaipNetwork } from '@reown/appkit-common'
 import { UniversalConnector } from '@reown/appkit-universal-connector'
 
-// Get projectId from https://dashboard.reown.com
+// Get projectId from https://dashboard.walletconnect.com
 export const projectId = import.meta.env.VITE_PROJECT_ID || "YOUR_PROJECT_ID_HERE" // Replace with your actual project ID
 
 if (!projectId || projectId === "YOUR_PROJECT_ID_HERE") {
