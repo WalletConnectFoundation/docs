@@ -1,0 +1,269 @@
+# AfricaCryptoChainx: Vanilla JavaScript WalletConnect Integration
+
+## Overview
+This PR adds WalletConnect configuration for AfricaCryptoChainx in vanilla JavaScript, enabling wallet integration without React dependencies. Perfect for lightweight implementations and existing JavaScript projects.
+
+## Features Added
+- ✅ Vanilla JavaScript WalletConnect setup
+- ✅ AfricaCryptoChainx custom network configuration
+- ✅ Singleton Universal Connector pattern
+- ✅ Type-safe configuration with proper error handling
+- ✅ Environment variable support
+
+## Installation
+
+```bash
+# Choose your package manager
+npm install @reown/appkit @reown/appkit-universal-connector @reown/appkit-common ethers
+# or
+yarn add @reown/appkit @reown/appkit-universal-connector @reown/appkit-common ethers
+# or
+bun add @reown/appkit @reown/appkit-universal-connector @reown/appkit-common ethers
+```
+
+## Configuration
+
+### **config/appKit.js**
+```javascript
+import { UniversalConnector } from '@reown/appkit-universal-connector'
+
+export const projectId = import.meta.env.VITE_PROJECT_ID || "YOUR_PROJECT_ID"
+
+if (!projectId || projectId === "YOUR_PROJECT_ID") {
+    throw new Error('Please set your project ID from WalletConnect Dashboard')
+}
+
+// AfricaCryptoChainx Network Configuration
+const africaCryptoChainxNetwork = {
+    id: 1001,
+    chainNamespace: 'eip155',
+    caipNetworkId: 'eip155:1001',
+    name: 'AfricaCryptoChainx',
+    nativeCurrency: { 
+        name: 'ACCX', 
+        symbol: 'ACCX', 
+        decimals: 18 
+    },
+    rpcUrls: { 
+        default: { 
+            http: ['https://rpc.africacryptochainx.com'] 
+        } 
+    },
+    blockExplorerUrls: ['https://explorer.africacryptochainx.com']
+}
+
+export const networks = [africaCryptoChainxNetwork]
+
+// Singleton instance
+export let universalConnector
+
+export async function getUniversalConnector() {
+    if (!universalConnector) {
+        universalConnector = await UniversalConnector.init({
+            projectId,
+            metadata: {
+                name: 'AfricaCryptoChainx DApp',
+                description: 'Owner-controlled blockchain platform for Africa',
+                url: 'https://africacryptochainx.com',
+                icons: ['https://africacryptochainx.com/logo.png']
+            },
+            networks: [
+                {
+                    methods: [
+                        'eth_sendTransaction',
+                        'eth_sign',
+                        'personal_sign',
+                        'eth_signTypedData',
+                        'eth_getBalance',
+                        'eth_call'
+                    ],
+                    chains: [africaCryptoChainxNetwork],
+                    events: ['chainChanged', 'accountsChanged'],
+                    namespace: 'eip155'
+                }
+            ]
+        })
+    }
+    return universalConnector
+}
+```
+
+## Usage Example
+
+### **main.js**
+```javascript
+import { getUniversalConnector } from './config/appKit.js'
+
+let address = null
+let session = null
+
+async function setup() {
+    const universalConnector = await getUniversalConnector()
+    
+    // Check if already connected
+    if (universalConnector?.provider.session) {
+        session = universalConnector.provider.session
+        updateUI()
+    }
+}
+
+async function handleConnect() {
+    const universalConnector = await getUniversalConnector()
+    if (!universalConnector) return
+
+    const { session: providerSession } = await universalConnector.connect()
+    
+    // Extract address from session
+    if (providerSession?.namespaces?.eip155?.accounts?.[0]) {
+        const account = providerSession.namespaces.eip155.accounts[0]
+        address = account.split(':')[2] // Get address part
+    }
+    
+    session = providerSession
+    updateUI()
+}
+
+async function handleDisconnect() {
+    const universalConnector = await getUniversalConnector()
+    if (!universalConnector) return
+    
+    await universalConnector.disconnect()
+    address = null
+    session = null
+    updateUI()
+}
+
+function updateUI() {
+    const connectBtn = document.getElementById('connect-btn')
+    const addressDisplay = document.getElementById('address-display')
+    
+    if (address) {
+        connectBtn.textContent = 'Disconnect'
+        connectBtn.onclick = handleDisconnect
+        addressDisplay.textContent = `Connected: ${address.slice(0, 6)}...${address.slice(-4)}`
+        addressDisplay.style.display = 'block'
+    } else {
+        connectBtn.textContent = 'Connect Wallet'
+        connectBtn.onclick = handleConnect
+        addressDisplay.style.display = 'none'
+    }
+}
+
+// Initialize
+setup()
+
+// Make functions globally available (optional)
+window.connectWallet = handleConnect
+window.disconnectWallet = handleDisconnect
+```
+
+### **HTML Integration**
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfricaCryptoChainx</title>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 AfricaCryptoChainx</h1>
+        <div id="address-display" style="display: none;"></div>
+        <button id="connect-btn">Connect Wallet</button>
+        
+        <!-- Owner Controls (only visible to owner) -->
+        <div id="owner-panel" style="display: none;">
+            <h2>Owner Controls</h2>
+            <button onclick="mintTokens()">Mint ACCX</button>
+            <button onclick="burnTokens()">Burn ACCX</button>
+            <button onclick="lockContract()">Lock Contract</button>
+        </div>
+    </div>
+    
+    <script type="module" src="main.js"></script>
+</body>
+</html>
+```
+
+## Smart Contract Interaction with Ethers.js
+
+```javascript
+import { BrowserProvider, Contract, formatUnits } from "ethers"
+
+// ACCX Contract Configuration
+const ACCX_ADDRESS = "0x..." // Deployed contract address
+const ACCX_ABI = [
+    "function balanceOf(address) view returns (uint256)",
+    "function transfer(address to, uint256 amount)",
+    "function mint(address to, uint256 amount)",
+    "function burn(address from, uint256 amount)",
+    "function owner() view returns (address)"
+]
+
+async function getACCXBalance() {
+    const universalConnector = await getUniversalConnector()
+    if (!universalConnector || !address) return
+    
+    const provider = new BrowserProvider(universalConnector.provider)
+    const signer = await provider.getSigner()
+    const contract = new Contract(ACCX_ADDRESS, ACCX_ABI, signer)
+    
+    const balance = await contract.balanceOf(address)
+    console.log(`Balance: ${formatUnits(balance, 18)} ACCX`)
+    return balance
+}
+
+async function mintTokens(amount) {
+    const universalConnector = await getUniversalConnector()
+    if (!universalConnector || !address) return
+    
+    const provider = new BrowserProvider(universalConnector.provider)
+    const signer = await provider.getSigner()
+    const contract = new Contract(ACCX_ADDRESS, ACCX_ABI, signer)
+    
+    // Check if caller is owner
+    const owner = await contract.owner()
+    if (address.toLowerCase() !== owner.toLowerCase()) {
+        throw new Error("Only contract owner can mint tokens")
+    }
+    
+    const tx = await contract.mint(address, amount)
+    await tx.wait()
+    return tx
+}
+```
+
+## Files Added
+- `config/appKit.js` - WalletConnect configuration
+- `main.js` - Main application logic
+- `index.html` - HTML template
+
+## Dependencies
+- `@reown/appkit` - Core WalletConnect SDK
+- `@reown/appkit-universal-connector` - Multi-chain support
+- `@reown/appkit-common` - Common utilities
+- `ethers` - Ethereum library for contract interaction
+
+## Testing Checklist
+- [ ] Wallet connection working in vanilla JS
+- [ ] AfricaCryptoChainx network detected
+- [ ] Address extraction from session
+- [ ] UI updates correctly on connect/disconnect
+- [ ] Contract interactions work with Ethers.js
+- [ ] Singleton pattern prevents multiple instances
+
+## Environment Setup
+```bash
+# Create .env file
+echo "VITE_PROJECT_ID=your_project_id_here" > .env
+```
+
+## Benefits
+- **No React Dependency**: Works with any JavaScript project
+- **Lightweight**: Minimal bundle size
+- **Singleton Pattern**: Prevents duplicate connections
+- **Type Safety**: Full TypeScript support available
+- **Easy Integration**: Simple API for wallet connection
+
+This implementation provides a robust, production-ready wallet integration for AfricaCryptoChainx that works with any JavaScript project architecture.
