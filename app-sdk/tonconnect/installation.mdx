@@ -29,19 +29,19 @@ Install the required packages using your preferred package manager:
 <CodeGroup>
 
 ```bash npm
-npm install @tonconnect/sdk @reown/appkit-universal-connector
+npm install @tonconnect/sdk @reown/appkit-universal-connector @tonconnect/ui-react
 ```
 
 ```bash Yarn
-yarn add @tonconnect/sdk @reown/appkit-universal-connector
+yarn add @tonconnect/sdk @reown/appkit-universal-connector @tonconnect/ui-react
 ```
 
 ```bash pnpm
-pnpm add @tonconnect/sdk @reown/appkit-universal-connector
+pnpm add @tonconnect/sdk @reown/appkit-universal-connector @tonconnect/ui-react
 ```
 
 ```bash Bun
-bun add @tonconnect/sdk @reown/appkit-universal-connector
+bun add @tonconnect/sdk @reown/appkit-universal-connector @tonconnect/ui-react  
 ```
 
 </CodeGroup>
@@ -85,6 +85,10 @@ Here's a complete example of integrating WalletConnect into a TON Connect applic
 import { TonConnect } from '@tonconnect/sdk';
 import { initializeWalletConnect } from '@tonconnect/sdk';
 import { UniversalConnector } from '@reown/appkit-universal-connector';
+import {
+  TonConnectUIProvider,
+  TonConnectButton,
+} from '@tonconnect/ui-react';
 
 // Initialize WalletConnect support
 initializeWalletConnect(UniversalConnector, {
@@ -97,16 +101,21 @@ initializeWalletConnect(UniversalConnector, {
   }
 });
 
-// Create TON Connect instance
-const tonConnect = new TonConnect({
-  manifestUrl: 'https://mytonapp.com/tonconnect-manifest.json'
-});
 
-// Connect to a wallet
-async function connectWallet() {
-  const wallets = await tonConnect.getWallets();
-  // WalletConnect-compatible wallets will now be available in the list
-  console.log('Available wallets:', wallets);
+export function App() {
+  // Create TON Connect instance
+  const tonConnect = new TonConnect({// Create TON Connect instance
+      manifestUrl: 'https://mytonapp.com/tonconnect-manifest.json'
+    });
+
+  return (
+    <div className={"pages"}>
+      <h1>WalletConnect + TON React Example</h1>
+      <TonConnectUIProvider connector={tonConnect}>
+        <TonConnectButton />
+      </TonConnectUIProvider>
+    </div>
+  )
 }
 ```
 
