@@ -1,97 +1,93 @@
-name: ACCX Conceptual Documentation Workflow
+name: ACCX Conceptual Documentation Generator
 
 on:
+  workflow_dispatch:  # Manual trigger only — prevents automatic speculative updates
   push:
     branches: [ main ]
-  workflow_dispatch:
+    paths:
+      - 'docs/templates/**'  # Run only when templates change
 
 permissions:
   contents: write
 
 jobs:
-  update-conceptual-docs:
+  generate-concept-docs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate 42 Conceptual Coins Documentation
+      - name: Generate Conceptual Framework Document
         run: |
-          mkdir -p docs
-          cat > docs/42-coins.md << 'EOF'
-# AfricaCryptoChainx – 42 Proposed Digital Assets (Conceptual)
+          mkdir -p docs/concepts
+          cat > docs/concepts/regional-tokens-framework.md << 'EOF'
+# AfricaCryptoChainx – Regional Token Framework (Conceptual)
 
-| #  | Coin Name                  | Symbol | Status    |
-|----|----------------------------|--------|-----------|
-| 1  | AfricaCryptoChainx Coin    | ACC    | Proposed  |
-| 2  | Africoin                   | AFR    | Proposed  |
-| 3  | AfroToken                  | AFT    | Proposed  |
-| 4  | Sahara Coin                | SHC    | Proposed  |
-| 5  | Savanna Token              | SAV    | Proposed  |
-| 6  | Zambezi Coin               | ZBC    | Proposed  |
-| 7  | Kilimanjaro Token          | KMT    | Proposed  |
-| 8  | Ubuntu Coin                | UBC    | Proposed  |
-| 9  | Serengeti Token            | SGT    | Proposed  |
-| 10 | CapeCoin                   | CPC    | Proposed  |
-| 11 | Victoria Coin              | VIC    | Proposed  |
-| 12 | Nile Token                 | NLT    | Proposed  |
-| 13 | Kalahari Coin              | KHC    | Proposed  |
-| 14 | Rift Token                 | RFT    | Proposed  |
-| 15 | Baobab Coin                | BBC    | Proposed  |
-| 16 | Acacia Token               | ACT    | Proposed  |
-| 17 | Congo Coin                 | CGC    | Proposed  |
-| 18 | Atlas Token                | ATS    | Proposed  |
-| 19 | Oasis Coin                 | OSC    | Proposed  |
-| 20 | Horizon Token              | HRT    | Proposed  |
-| 21 | Eden Coin                  | EDC    | Proposed  |
-| 22 | Gateway Token              | GAT    | Proposed  |
-| 23 | Unity Coin                 | UTC    | Proposed  |
-| 24 | Harmony Token              | HMT    | Proposed  |
-| 25 | Heritage Coin              | HTC    | Proposed  |
-| 26 | Liberty Token              | LBT    | Proposed  |
-| 27 | Pride Coin                 | PDC    | Proposed  |
-| 28 | Essence Token              | EST    | Proposed  |
-| 29 | Destiny Coin               | DSC    | Proposed  |
-| 30 | Pulse Token                | PLT    | Proposed  |
-| 31 | Eclipse Coin               | ECC    | Proposed  |
-| 32 | Legacy Token               | LGC    | Proposed  |
-| 33 | Fortune Coin               | FRC    | Proposed  |
-| 34 | Prosperity Token           | PRT    | Proposed  |
-| 35 | Wisdom Coin                | WSC    | Proposed  |
-| 36 | Vision Token               | VST    | Proposed  |
-| 37 | Genesis Token              | GST    | Proposed  |
-| 38 | Spirit Coin                | SPC    | Proposed  |
-| 39 | Sovereign Token            | SOV    | Proposed  |
-| 40 | Summit Coin                | SMT    | Proposed  |
-| 41 | Citadel Token              | CTT    | Proposed  |
-| 42 | Foundation Coin            | FDT    | Proposed  |
+**Status**: Exploratory Concept Only  
+**Phase**: Pre-Research  
+**Last Updated**: $(date -u +"%Y-%m-%d")
 
-All 42 coins are conceptual proposals for a future wallet ecosystem. No deployments or minting functions exist yet.
+## Overview
+This document outlines a **conceptual framework** for potential regional digital assets within the AfricaCryptoChainx ecosystem. These are **not active projects** but exploratory ideas for future development phases.
+
+## Conceptual Asset List
+
+| Region/Category | Conceptual Name          | Purpose (Conceptual)                  |
+|-----------------|--------------------------|---------------------------------------|
+| Continental     | AfricaCryptoChainx (ACC) | Continental utility token             |
+| Regional        | West Africa Token (WAT)  | Regional economic integration         |
+| Regional        | East Africa Coin (EAC)   | Cross-border trade facilitation       |
+| Cultural        | Ubuntu Token (UBT)       | Community governance participation    |
+| Geographic      | Sahara Trade Coin (STC)  | Desert region economic development    |
+| Economic        | Nile Delta Token (NDT)   | Agricultural sector digitization      |
+
+## Important Disclaimers
+1. **No Deployments**: None of these tokens exist on any blockchain
+2. **No Development**: No smart contracts have been written for these concepts
+3. **No Timeline**: These are ideas without implementation schedule
+4. **Subject to Change**: All concepts may be modified or abandoned
+
+## Next Steps for Concept Validation
+1. Community feedback collection (Q2 2026 target)
+2. Market research on regional needs
+3. Technical feasibility study
+4. Regulatory compliance assessment
+
+---
+*This is a living document for community discussion only.*
 EOF
 
-      - name: Generate AI Feedback Documentation
+      - name: Generate Development Status Dashboard
         run: |
-          mkdir -p docs/assets
-          cat > docs/ai-feedback-final.md << 'EOF'
-# AI Website Builder Feedback – 5/5 Stars (Nigeria)
-**All questions answered · 42 coins · ACCXBOT · Walk-to-Earn**
+          cat > docs/concepts/development-status.md << 'EOF'
+# AfricaCryptoChainx Development Status
 
-![Q1–Q6](assets/ai-feedback-page1-clean.png)
-![Q7–Q9](assets/ai-feedback-page2-clean.png)
+## Active Development
+- **ACCXToken.sol** — BEP-20 utility token (v0.1.0 released)
+- **@ACCXBot** — Telegram bot with Mini App support (MVP phase)
 
-*Images to be uploaded manually to docs/assets/*
+## Conceptual / Future Exploration
+- Regional token framework (conceptual only)
+- Cross-chain interoperability ideas
+- Advanced GameFi mechanics
+
+## Not Started / Ideas Only
+- Multi-chain deployments
+- DAO governance system
+
+## Real Development Resources
+- [GitHub Repository](https://github.com/Africacryptochainx-Com)
+- [Token Contract Source](contracts/ACCXToken.sol)
+- [Project Roadmap](docs/roadmap.md)
 EOF
 
-      - name: Commit and Push Updated Documentation
+      - name: Add Placeholder Notice
+        run: |
+          echo "Note: This workflow generates text-based conceptual documentation only. Images and external assets must be added manually." >> $GITHUB_STEP_SUMMARY
+
+      - name: Commit Documentation Updates
+        if: success()
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "docs: update conceptual 42 coins and AI feedback documentation"
-          branch: main
-          file_pattern: docs/
-
-      - name: Workflow Complete
-        run: |
-          echo "ACCX conceptual documentation successfully updated"
-          echo "Status: Planning Phase – Ready for Development
+          commit_message: "docs: update conceptual framework and development status"
+          file_pattern: docs/concepts/
