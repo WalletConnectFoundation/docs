@@ -1,11 +1,11 @@
 export const ProductCard = ({ img, href, title, description, model, type }) => {
   return (
-    <a href={href} rel="noopener noreferrer" className="group">
-      <div className="flex flex-col gap-4 rounded-xl md:p-1">
+    <a href={href} rel="noopener noreferrer" className="group mb-5">
+      <div className="flex flex-col rounded-xl md:p-1">
         <div className="w-full h-32 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800">
           <img
             src={img}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 align-center"
+            className="w-full h-[calc(100%+4px)] object-cover transition-transform duration-300 group-hover:scale-105 align-center -mt-1"
             alt={title}
             loading="lazy"
             noZoom
