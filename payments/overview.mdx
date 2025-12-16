@@ -5,60 +5,47 @@ metatags:
 sidebarTitle: "Overview"
 ---
 
-Digital payments across blockchains remain inconsistent. Each wallet, merchant, and provider implements its own integration model. This fragmentation slows innovation and limits interoperability. To address this, WalletConnect introduces the **`wallet_pay`** standard. A unified protocol for initiating and processing blockchain-based payments.
+Digital payments across blockchains remain inconsistent. Payments are fragmented by geography and <Tooltip headline="Rail" tip="The term for the payment network that is used to process payments.">Rail</Tooltip>. For example, a few countries in Latin America run on PIX and Mercado Pago, Europe on SEPA and cards, Southeast Asia on QR wallets like GrabPay and GCash, China on Alipay and WeChat Pay, India on UPI. 
 
-## What is `wallet_pay`
+Each region invented its own system, none of them interoperate, and merchants and PSPs are forced to support whatever their local stack dictates. Users adapt to the rail in front of them rather than the method they prefer.
 
-`wallet_pay` is the open standard that defines how wallets and payment applications communicate to initiate and process blockchain-based payments.
-It provides a consistent way to describe payment requests: who is paying, what asset is being transferred, and under what conditions; regardless of wallet, blockchain, or application context.
+In the world of Crypto payments, each wallet, merchant, and provider implements its own integration model. This fragmentation slows innovation and limits interoperability. 
 
-At its core, `wallet_pay` enables **interoperable, wallet-native payments** across the entire WalletConnect ecosystem and beyond.
+To address this, WalletConnect introduces the **WalletConnect Pay**. 
 
-## Why a Standard Matters
+**WalletConnect Pay** provides a complete end-to-end crypto payment solution that fits directly into an existing Payment Service Provider (PSP) stack, allowing crypto payments to be offered without changing how payments operate today. 
 
-Payment interactions between wallets and merchants have often been **fragmented**, each relying on custom APIs, message formats, or user flows.  
+## How can I as a PSP use or integrate WalletConnect Pay?
 
-This lack of alignment makes it difficult for wallets, service providers, and merchants to work together at scale.
+As a Payment Service Provider (PSP), you can use the POS (Point of Sale) SDK to integrate WalletConnect Pay into your existing payment stack. This allows you to offer your merchants and customers an option to accept crypto payments without changing how payments operate today.
 
-`wallet_pay` introduces a **shared language** for payments, allowing:
+If you are a PSP and want to learn more about WalletConnect Pay and its offerings, please reach out to sales@walletconnect.com.
 
-- **Wallets** to interpret any standardized payment request without bespoke integration.  
-- **Merchants and service providers** to issue payment requests compatible with any wallet that supports the standard.  
-- **Ecosystem scalability** for new payment contexts (online checkout, recurring payments, point-of-sale, etc.) can all use the same foundation.
+## What would WalletConnect Pay look like in action?
 
-In short, `wallet_pay` abstracts *how* payment information is exchanged, so innovation can focus on *what* experiences are built on top.
+WalletConnect Pay would live inside the POS device that a merchant uses to accept day-to-day payments. The flow would be as follows:
 
-## Who Should Use `wallet_pay`
+1. The merchant selects "Pay with Crypto" on the POS device.
+2. The POS device generates a WalletConnect QR with the payment intent.
+3. The customer scans the QR with their wallet:
+   - The wallet displays the payment intent.
+   - The customer picks the token and network of their choice (e.g., USDC on Ethereum) and approves the payment.
+   - The wallet builds the transaction and sends it to the network.
 
-| Stakeholder | How They Benefit |
-|--------------|------------------|
-| **Wallet developers** | Implement a unified payments interface that works across merchants and ecosystems. |
-| **Payment Service Providers (PSPs)** | Use the standard as a bridge between wallets, merchants, and on-chain settlement logic. |
-| **Merchants & Platforms** | Integrate once and accept payments from any `wallet_pay`-compatible wallet. |
-| **Consumer Apps for Payments (POS, web checkout, invoices, subscriptions)** | Build new payment experiences using a common protocol. |
+4. Or alternatively, the customer scams the QR code with their QR scanner:
+    - This takes the customer to a payment gateway URL that is pre-filled with the payment intent.
+    - The customer can connect their wallet (using WalletConnect).
+    - The wallet displays the payment intent.
+    - The customer picks the token and network of their choice (e.g., USDC on Ethereum) and approves the payment.
+    - The wallet builds the transaction and sends it to the network.
+5. The POS device receives the transaction result and displays it to the customer.
+6. The merchant then receives fiat or crypto settlement from the PSP.
 
-<Note>
-    While CAIP-358 primarily defines wallet-to-merchant interaction, it is extensible to PSPs that relay or implement those interactions.
-</Note>
-
-## Role in the WalletConnect Payments Ecosystem
-
-Within WalletConnect, `wallet_pay` serves as the **foundational protocol** that powers all payment-related features.  
-
-Every SDK or product, such as the **POS SDK**, implements or extends `wallet_pay` to handle request creation, signing, and transaction tracking in a consistent way.
-
-This means that any wallet or merchant integrating `wallet_pay` is automatically compatible with the full WalletConnect Payments ecosystem, present and future.
-
-## Specification Reference
-
-The `wallet_pay` standard is defined in [CAIP-358: Universal Payment Request Method](https://eip.tools/caip/358). It specifies how payment requests are structured and exchanged between merchants and wallets. Lifecycle management and status tracking (e.g., pending, confirmed, failed) are implementation details defined by [WalletConnect’s POS SDK](/payments/point-of-sale).
+<Insert Demo />
 
 ## Get Started
 
 <CardGroup cols={2}>
-  <Card title="WalletConnect Pay" icon="credit-card" href="/payments/wallet-implementation">
-    Get started with WalletConnect Pay.
-  </Card>
   <Card title="WalletConnect POS SDK" icon="cart-shopping" href="/payments/point-of-sale">
     Get started with WalletConnect POS SDK.
   </Card>

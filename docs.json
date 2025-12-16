@@ -293,7 +293,6 @@
           {
             "group": "WalletConnect Pay",
             "pages": [
-              "payments/wallet-implementation",
                 {
                   "group": "Point of Sale (POS) SDK",
                   "pages": [
