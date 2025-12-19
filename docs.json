@@ -287,21 +287,15 @@
         "icon": "credit-card",
         "groups": [
           {
-            "group": "WalletConnect Payments Standard",
+            "group": "Introduction",
             "pages": ["payments/overview"]
           },
           {
-            "group": "WalletConnect Pay",
+            "group": "Point of Sale (POS) SDK",
             "pages": [
-              "payments/wallet-implementation",
-                {
-                  "group": "Point of Sale (POS) SDK",
-                  "pages": [
-                    "payments/point-of-sale",
-                    "payments/flutter/installation",
-                    "payments/kotlin/installation"
-                  ]
-                }
+              "payments/point-of-sale",
+              "payments/flutter/installation",
+              "payments/kotlin/installation"
             ]
           }
         ]
