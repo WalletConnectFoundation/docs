@@ -85,8 +85,8 @@ export async function getUniversalConnector() {
     metadata: {
       name: 'Universal Connector',
       description: 'Universal Connector',
-      url: 'https://appkit.reown.com',
-      icons: ['https://appkit.reown.com/icon.png']
+      url: 'https://www.walletconnect.com',
+      icons: ['https://www.walletconnect.com/icon.png']
     },
     networks: [
       {
@@ -132,8 +132,8 @@ export async function getUniversalConnector() {
     metadata: {
       name: 'Universal Connector',
       description: 'Universal Connector',
-      url: 'https://appkit.reown.com',
-      icons: ['https://appkit.reown.com/icon.png']
+      url: 'https://www.walletconnect.com',
+      icons: ['https://www.walletconnect.com/icon.png']
     },
     networks: [
       {
@@ -141,6 +141,51 @@ export async function getUniversalConnector() {
         chains: [stacksMainnet as InferredCaipNetwork],
         events: ['stx_chainChanged', 'stx_accountsChanged'],
         namespace: 'stacks'
+      }
+    ]
+  })
+
+  return universalConnector
+}
+```
+
+```tsx TON Example
+import type { AppKitNetwork } from '@reown/appkit/networks'
+import type { CustomCaipNetwork } from '@reown/appkit-common'
+import { UniversalConnector } from '@reown/appkit-universal-connector'
+
+// Get projectId from https://dashboard.walletconnect.com
+export const projectId = import.meta.env.VITE_PROJECT_ID || "YOUR_PROJECT_ID_HERE" // Replace with your actual project ID
+
+if (!projectId) {
+  throw new Error('Project ID is not defined')
+}
+const tonMainnet: CustomCaipNetwork<'ton'> = {
+  id: -239,
+  chainNamespace: 'ton' as const,
+  caipNetworkId: 'ton:-239',
+  name: 'TON',
+  nativeCurrency: { name: 'TON', symbol: 'TON', decimals: 9 },
+  rpcUrls: { default: { http: ['https://toncenter.com/api/v2/jsonRPC'] } }
+}
+
+export const networks = [tonMainnet] as [AppKitNetwork, ...AppKitNetwork[]]
+
+export async function getUniversalConnector() {
+  const universalConnector = await UniversalConnector.init({
+    projectId,
+    metadata: {
+      name: 'Universal Connector',
+      description: 'Universal Connector',
+      url: 'https://www.walletconnect.com',
+      icons: ['https://www.walletconnect.com/icon.png']
+    },
+    networks: [
+      {
+        methods: ['ton_signData'],
+        chains: [tonMainnet as CustomCaipNetwork],
+        events: [],
+        namespace: 'ton'
       }
     ]
   })
@@ -275,7 +320,7 @@ Read more about Wagmi actions for smart contract interaction [here](https://wagm
 <Tab title="Solana">
   [@Solana/web3.js](https://solana.com/docs/clients/javascript) library allows for seamless interaction with wallets and smart contracts on the Solana blockchain.
 
-For a practical example of how it works, you can refer to our [lab dApp](https://appkit-lab.reown.com/appkit/?name=solana).
+For a practical example of how it works, you can refer to our [lab dApp](https://lab.reown.com/appkit/?name=solana).
 
 ```tsx
 import { ref } from 'vue';
