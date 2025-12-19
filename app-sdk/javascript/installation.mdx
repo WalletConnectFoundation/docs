@@ -39,7 +39,14 @@ pnpm add @reown/appkit @reown/appkit-universal-connector @reown/appkit-common et
 </CodeGroup>
 
 ## Implementation
-For a quick integration of Appkit Core you can use the `UniversalConnector` class. Which simplifies the integration of Appkit Core by providing a single interface for all the blockchain protocols.
+
+Here is a sample implementation of WalletConnect App SDK with JavaScript. You can also check the example repository below.
+
+<Card title="WalletConnect App SDK JavaScript Example" icon="github" href="https://github.com/reown-com/appkit-web-examples/tree/main/javascript/javascript-core-universal-connector">
+Check the WalletConnect App SDK JavaScript example
+</Card>
+
+For a quick integration of WalletConnect App SDK you can use the `UniversalConnector` class. Which simplifies the integration of WalletConnect App SDK by providing a single interface for all the blockchain protocols.
 
 You can configure the Universal Connector with the networks you want to support.
 For more information, please visit [RPC Reference](https://docs.reown.com/advanced/multichain/rpc-reference/cosmos-rpc) section from our docs.
@@ -207,7 +214,7 @@ setup()
 
 
 ## Trigger the modal
-To open AppKit you need to call the `connect` function from the Provider, sending the namespace, methods, the full chain Namespace and the events available.
+To open the WalletConnect modal you need to call the `connect` function from the Universal Connector.
 For more information, please visit [RPC Reference](https://docs.reown.com/advanced/multichain/rpc-reference/cosmos-rpc) section from our docs.
 
 ```tsx
@@ -238,7 +245,7 @@ For more information, please visit [RPC Reference](https://docs.reown.com/advanc
 .... 
 
 <div> 
-  <button id="open-connect-modal">Open AppKit Core</button>
+  <button id="open-connect-modal">Open WalletConnect modal</button>
 </div>
 
 ```
