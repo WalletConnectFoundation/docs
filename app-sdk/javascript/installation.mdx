@@ -155,8 +155,8 @@ import { UniversalConnector } from '@reown/appkit-universal-connector'
 // Get projectId from https://dashboard.walletconnect.com
 export const projectId = import.meta.env.VITE_PROJECT_ID || "YOUR_PROJECT_ID_HERE" // Replace with your actual project ID
 
-if (!projectId) {
-  throw new Error('Project ID is not defined')
+if (!projectId || projectId === "YOUR_PROJECT_ID_HERE") {
+  throw new Error('Project ID is not defined. Please set your project ID from the WalletConnect Dashboard.')
 }
 const tonMainnet: CustomCaipNetwork<'ton'> = {
   id: -239,
