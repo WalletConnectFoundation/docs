@@ -39,7 +39,14 @@ pnpm add @reown/appkit @reown/appkit-universal-connector @reown/appkit-common et
 </CodeGroup>
 
 ## Implementation
-For a quick integration of Appkit Core you can use the `UniversalConnector` class. Which simplifies the integration of Appkit Core by providing a single interface for all the blockchain protocols.
+
+Here is a sample implementation of WalletConnect App SDK with JavaScript. You can also check the example repository below.
+
+<Card title="WalletConnect App SDK JavaScript Example" icon="github" href="https://github.com/reown-com/appkit-web-examples/tree/main/javascript/javascript-core-universal-connector">
+Check the WalletConnect App SDK JavaScript example
+</Card>
+
+For a quick integration of WalletConnect App SDK you can use the `UniversalConnector` class. Which simplifies the integration of WalletConnect App SDK by providing a single interface for all the blockchain protocols.
 
 You can configure the Universal Connector with the networks you want to support.
 For more information, please visit [RPC Reference](https://docs.reown.com/advanced/multichain/rpc-reference/cosmos-rpc) section from our docs.
@@ -52,6 +59,7 @@ We recommend creating a config file to establish a singleton instance for the Un
 import { UniversalConnector } from '@reown/appkit-universal-connector'
 
 export const projectId = import.meta.env.VITE_PROJECT_ID || "YOUR_PROJECT_ID_HERE" // Replace with your actual project ID
+
 if (!projectId || projectId === "YOUR_PROJECT_ID_HERE") {
   throw new Error('Project ID is not defined. Please set your project ID from the WalletConnect Dashboard.')
 }
@@ -77,8 +85,8 @@ export async function getUniversalConnector() {
       metadata: {
         name: 'Universal Connector',
         description: 'Universal Connector',
-        url: 'https://appkit.reown.com',
-        icons: ['https://appkit.reown.com/icon.png']
+        url: 'https://www.walletconnect.com',
+        icons: ['https://www.walletconnect.com/icon.png']
       },
       networks: [
         {
@@ -98,6 +106,7 @@ export async function getUniversalConnector() {
 import { UniversalConnector } from '@reown/appkit-universal-connector'
 
 export const projectId = import.meta.env.VITE_PROJECT_ID || "YOUR_PROJECT_ID_HERE" // Replace with your actual project ID
+
 if (!projectId || projectId === "YOUR_PROJECT_ID_HERE") {
   throw new Error('Project ID is not defined. Please set your project ID from the WalletConnect Dashboard.')
 }
@@ -123,8 +132,8 @@ export async function getUniversalConnector() {
       metadata: {
         name: 'Universal Connector',
         description: 'Universal Connector',
-        url: 'https://appkit.reown.com',
-        icons: ['https://appkit.reown.com/icon.png']
+        url: 'https://www.walletconnect.com',
+        icons: ['https://www.walletconnect.com/icon.png']
       },
       networks: [
         {
@@ -136,6 +145,52 @@ export async function getUniversalConnector() {
       ]
     })
   }
+  return universalConnector
+}
+```
+
+```tsx TON Example
+import type { AppKitNetwork } from '@reown/appkit/networks'
+import type { CustomCaipNetwork } from '@reown/appkit-common'
+import { UniversalConnector } from '@reown/appkit-universal-connector'
+
+// Get projectId from https://dashboard.walletconnect.com
+export const projectId = import.meta.env.VITE_PROJECT_ID || "YOUR_PROJECT_ID_HERE" // Replace with your actual project ID
+
+if (!projectId || projectId === "YOUR_PROJECT_ID_HERE") {
+  throw new Error('Project ID is not defined. Please set your project ID from the WalletConnect Dashboard.')
+}
+
+const tonMainnet: CustomCaipNetwork<'ton'> = {
+  id: -239,
+  chainNamespace: 'ton' as const,
+  caipNetworkId: 'ton:-239',
+  name: 'TON',
+  nativeCurrency: { name: 'TON', symbol: 'TON', decimals: 9 },
+  rpcUrls: { default: { http: ['https://toncenter.com/api/v2/jsonRPC'] } }
+}
+
+export const networks = [tonMainnet] as [AppKitNetwork, ...AppKitNetwork[]]
+
+export async function getUniversalConnector() {
+  const universalConnector = await UniversalConnector.init({
+    projectId,
+    metadata: {
+      name: 'Universal Connector',
+      description: 'Universal Connector',
+      url: 'https://www.walletconnect.com',
+      icons: ['https://www.walletconnect.com/icon.png']
+    },
+    networks: [
+      {
+        methods: ['ton_signData'],
+        chains: [tonMainnet as CustomCaipNetwork],
+        events: [],
+        namespace: 'ton'
+      }
+    ]
+  })
+
   return universalConnector
 }
 ```
@@ -162,7 +217,7 @@ setup()
 
 
 ## Trigger the modal
-To open AppKit you need to call the `connect` function from the Provider, sending the namespace, methods, the full chain Namespace and the events available.
+To open the WalletConnect modal you need to call the `connect` function from the Universal Connector.
 For more information, please visit [RPC Reference](https://docs.reown.com/advanced/multichain/rpc-reference/cosmos-rpc) section from our docs.
 
 ```tsx
@@ -193,7 +248,7 @@ For more information, please visit [RPC Reference](https://docs.reown.com/advanc
 .... 
 
 <div> 
-  <button id="open-connect-modal">Open AppKit Core</button>
+  <button id="open-connect-modal">Open WalletConnect modal</button>
 </div>
 
 ```
@@ -267,7 +322,7 @@ function Components() {
 <Tab title="Solana">
   [@Solana/web3.js](https://solana.com/docs/clients/javascript) library allows for seamless interaction with wallets and smart contracts on the Solana blockchain.
 
-For a practical example of how it works, you can refer to our [lab dApp](https://appkit-lab.reown.com/library/solana/).
+For a practical example of how it works, you can refer to our [lab dApp](https://lab.reown.com/appkit/?name=solana).
 
 ```tsx
 import {
