@@ -38,11 +38,12 @@
                 "pages": ["wallet-sdk/features/verify", "wallet-sdk/features/link-mode", "wallet-sdk/features/one-click-auth"]
               },
               {
-                                "group": "Chain Support",
-                                "pages": [
-                                  "wallet-sdk/chain-support/overview",
-                                  "wallet-sdk/chain-support/evm",
-                                  "wallet-sdk/chain-support/solana",
+                                                  "group": "Chain Support",
+                                                  "pages": [
+                                                    "wallet-sdk/chain-support/overview",
+                                                    "wallet-sdk/chain-support/evm",
+                                                    "wallet-sdk/chain-support/adi",
+                                                    "wallet-sdk/chain-support/solana",
                                   "wallet-sdk/chain-support/bitcoin",
                                   "wallet-sdk/chain-support/sui",
                                   "wallet-sdk/chain-support/stacks",

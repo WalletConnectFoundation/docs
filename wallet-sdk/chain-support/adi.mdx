@@ -1,0 +1,31 @@
+---
+title: ADI Chain
+description: "Overview of ADI Chain integration with Wallet SDK."
+---
+
+ADI Chain is a fully EVM-compatible blockchain. It uses the standard Ethereum JSON-RPC methods for all wallet interactions.
+
+## Network / Chain Information
+
+| CAIP-2         | Chain ID | Name      | RPC Endpoint                    | Explorer                          | Namespace |
+| -------------- | -------- | --------- | ------------------------------- | --------------------------------- | --------- |
+| `eip155:36900` | `36900`  | ADI Chain | `https://rpc.adifoundation.ai`  | `https://explorer.adifoundation.ai` | `eip155`  |
+
+## RPC Methods
+
+As an EVM-compatible chain, ADI Chain supports all standard Ethereum JSON-RPC methods. Wallets implementing ADI Chain support should refer to the [EVM RPC documentation](/wallet-sdk/chain-support/evm) for the complete list of supported methods, including:
+
+- `personal_sign` - Sign a message
+- `eth_sign` - Sign data
+- `eth_signTypedData` / `eth_signTypedData_v4` - Sign typed data (EIP-712)
+- `eth_sendTransaction` - Send a transaction
+- `eth_signTransaction` - Sign a transaction without broadcasting
+- `eth_sendRawTransaction` - Broadcast a signed transaction
+
+For detailed method specifications and examples, see the [EVM Chain Support](/wallet-sdk/chain-support/evm) page.
+
+## Additional Resources
+
+- [ADI Explorer](https://explorer.adifoundation.ai)
+- [ADI Bridge](https://bridge.adifoundation.ai)
+- [ADI RPC Endpoint](https://rpc.adifoundation.ai)
