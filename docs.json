@@ -283,24 +283,6 @@
             "pages": ["contracts"]
           }
         ]
-      },
-      {
-        "tab": "Payments",
-        "icon": "credit-card",
-        "groups": [
-          {
-            "group": "Introduction",
-            "pages": ["payments/overview"]
-          },
-          {
-            "group": "Point of Sale (POS) SDK",
-            "pages": [
-              "payments/point-of-sale",
-              "payments/flutter/installation",
-              "payments/kotlin/installation"
-            ]
-          }
-        ]
       }
     ],
     "global": {
