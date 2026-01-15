@@ -38,7 +38,7 @@
                 "pages": ["wallet-sdk/features/verify", "wallet-sdk/features/link-mode", "wallet-sdk/features/one-click-auth"]
               },
               {
-                                "group": "Chain Support",
+              "group": "Chain Support",
                                 "pages": [
                                   "wallet-sdk/chain-support/overview",
                                   "wallet-sdk/chain-support/evm",
@@ -47,7 +47,8 @@
                                   "wallet-sdk/chain-support/sui",
                                   "wallet-sdk/chain-support/stacks",
                                   "wallet-sdk/chain-support/ton",
-                                  "wallet-sdk/chain-support/tron"
+                                  "wallet-sdk/chain-support/tron",
+                                  "wallet-sdk/chain-support/adi"
                                 ]
               },
               {
