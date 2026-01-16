@@ -10,6 +10,14 @@
     {
       "source": "/guides/**",
       "destination": "/custodians/**"
+    },
+    {
+      "source": "/payments/wallet-implementation",
+      "destination": "https://docs.walletconnect.com/payments/wallets/overview"
+    },
+    {
+      "source": "/payments/**",
+      "destination": "https://docs.walletconnect.com/payments/"
     }
   ],
   "integrations": {
