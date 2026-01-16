@@ -16,8 +16,12 @@
       "destination": "https://docs.walletconnect.com/payments/wallets/overview"
     },
     {
+      "source": "/payments/overview",
+      "destination": "https://docs.walletconnect.com/payments/overview"
+    },
+    {
       "source": "/payments/**",
-      "destination": "https://docs.walletconnect.com/payments/"
+      "destination": "https://docs.walletconnect.com/"
     }
   ],
   "integrations": {
