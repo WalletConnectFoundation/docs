@@ -305,11 +305,6 @@
           "icon": "globe"
         },
         {
-          "anchor": "Community",
-          "href": "https://discord.walletconnect.network/",
-          "icon": "discord"
-        },
-        {
           "anchor": "Blog",
           "href": "https://walletconnect.network/blog",
           "icon": "newspaper"
