@@ -20,7 +20,7 @@
       "destination": "https://docs.walletconnect.com/payments/overview"
     },
     {
-      "source": "/payments/**",
+      "source": "/payments/",
       "destination": "https://docs.walletconnect.com/"
     }
   ],
@@ -317,6 +317,11 @@
           "anchor": "Whitepaper",
           "href": "https://whitepaper.walletconnect.network/",
           "icon": "book"
+        },
+        {
+          "anchor": "WalletConnect Specs",
+          "href": "https://specs.walletconnect.com/",
+          "icon": "code"
         }
       ]
     }
