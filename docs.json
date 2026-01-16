@@ -10,6 +10,18 @@
     {
       "source": "/guides/**",
       "destination": "/custodians/**"
+    },
+    {
+      "source": "/payments/wallet-implementation",
+      "destination": "https://docs.walletconnect.com/payments/wallets/overview"
+    },
+    {
+      "source": "/payments/overview",
+      "destination": "https://docs.walletconnect.com/payments/overview"
+    },
+    {
+      "source": "/payments/",
+      "destination": "https://docs.walletconnect.com/"
     }
   ],
   "integrations": {
@@ -306,6 +318,11 @@
           "anchor": "Whitepaper",
           "href": "https://whitepaper.walletconnect.network/",
           "icon": "book"
+        },
+        {
+          "anchor": "WalletConnect Specs",
+          "href": "https://specs.walletconnect.com/",
+          "icon": "code"
         }
       ]
     }
