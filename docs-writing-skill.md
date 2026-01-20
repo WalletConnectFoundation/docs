@@ -1,5 +1,5 @@
 ---
-name: documentation-writing
+name: walletconnect-docs-writing
 description: Write and review documentation for WalletConnect products using Mintlify. Use when writing docs, creating SDK guides, writing overview pages, reviewing documentation, or when the user mentions docs, documentation, Mintlify, or technical writing.
 ---
 
