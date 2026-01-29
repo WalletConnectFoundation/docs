@@ -256,7 +256,7 @@
           },
           {
             "group": "Installation",
-            "pages": ["app-sdk/react/installation", "app-sdk/next/installation", "app-sdk/vue/installation", "app-sdk/javascript/installation"]
+            "pages": ["app-sdk/react/installation", "app-sdk/next/installation", "app-sdk/vue/installation", "app-sdk/javascript/installation", "app-sdk/tonconnect/installation"]
           },
           {
             "group": "Guides",
