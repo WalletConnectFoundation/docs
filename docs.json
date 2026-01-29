@@ -256,11 +256,11 @@
           },
           {
             "group": "Installation",
-            "pages": ["app-sdk/react/installation", "app-sdk/next/installation", "app-sdk/vue/installation", "app-sdk/javascript/installation", "app-sdk/tonconnect/installation"]
+            "pages": ["app-sdk/react/installation", "app-sdk/next/installation", "app-sdk/vue/installation", "app-sdk/javascript/installation"]
           },
           {
             "group": "Guides",
-            "pages": ["guides/app-extended-sessions"]
+            "pages": ["guides/app-extended-sessions", "guides/tonconnect-walletconnect"]
           }
         ]
       },
