@@ -168,6 +168,37 @@ type TonSignDataParams =
 }
 ```
 
+## Session Properties
+
+<Warning>
+Wallets must include `ton_getPublicKey` and `ton_getStateInit` in the session properties when approving a session. This is mandatory for TON Connect compatibility.
+</Warning>
+
+When approving a session, wallets must serialize the following properties into `session.sessionProperties`:
+
+- `ton_getPublicKey`: The Ed25519 public key of the wallet (hex-encoded)
+- `ton_getStateInit`: The StateInit of the wallet contract (base64-encoded BoC)
+
+These properties are essential for TON Connect support because:
+- The public key is required for signature verification
+- The StateInit is needed to compute and verify the wallet address, as TON addresses are derived from the contract code and initial data
+
+### Example Session Approval
+
+```typescript
+// When approving a session, include the TON session properties
+const session = await walletKit.approveSession({
+  id: proposal.id,
+  namespaces: approvedNamespaces,
+  sessionProperties: {
+    ton_getPublicKey: "a1b2c3d4e5f6...", // hex-encoded Ed25519 public key
+    ton_getStateInit: "te6cckEBAQEA..." // base64-encoded StateInit BoC
+  }
+});
+```
+
+This allows dApps to consume an active session without requiring additional requests to retrieve the wallet's public key and state initialization data.
+
 ## Notes & Considerations
 
 * If `from` is omitted, the wallet should prompt the user to select an address.
