@@ -5,6 +5,14 @@ description: "Tron JSON-RPC Methods"
 
 These are the methods that wallets should implement to handle Tron transactions and messages via WalletConnect.
 
+## Network / Chain Information
+
+| CAIP-2            | Chain ID         | Name          | RPC Endpoint                | Namespace |
+| ----------------- | ---------------- | ------------- | --------------------------- | --------- |
+| `tron:0x2b6653dc` | `0x2b6653dc`     | Tron Mainnet  | `https://api.trongrid.io`   | `tron`    |
+| `tron:0xcd8690dc` | `0xcd8690dc`     | Tron Shasta   | `https://api.shasta.trongrid.io` | `tron` |
+| `tron:0x94a9059e` | `0x94a9059e`     | Tron Nile     | `https://nile.trongrid.io`  | `tron`    |
+
 ## Session Properties
 
 To enable the new simplified transaction structure, wallets should include `tron_method_version: "v1"` in their `sessionProperties` during the connection handshake:
