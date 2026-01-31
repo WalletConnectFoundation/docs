@@ -260,7 +260,7 @@
           },
           {
             "group": "Guides",
-            "pages": ["guides/app-extended-sessions"]
+            "pages": ["guides/app-extended-sessions", "guides/tonconnect-walletconnect"]
           }
         ]
       },
