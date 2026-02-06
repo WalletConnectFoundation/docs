@@ -1,0 +1,115 @@
+---
+title: TON Connect WalletConnect Integration
+sidebarTitle: TON Connect + WalletConnect
+description: "Learn how to enable WalletConnect support in your TON Connect application."
+---
+
+import CloudBanner from "/snippets/cloud-banner.mdx";
+
+This guide explains how to enable WalletConnect support in your [TON Connect](https://www.npmjs.com/package/@tonconnect/sdk) application, allowing users to connect with WalletConnect-compatible wallets.
+
+## Prerequisites
+
+Before enabling WalletConnect in your TON Connect application, ensure you have the following:
+
+### 1. TON Connect Project
+
+You should have an existing TON Connect project initialized with the [@tonconnect/sdk](https://www.npmjs.com/package/@tonconnect/sdk) package. If you haven't set up TON Connect yet, please refer to the [TON Connect documentation](https://docs.ton.org/develop/dapps/ton-connect/overview) to get started.
+
+### 2. WalletConnect Project ID
+
+Create a new project on the WalletConnect Dashboard at https://dashboard.walletconnect.com and obtain a new project ID. You will need this project ID to initialize WalletConnect in your application.
+
+<CloudBanner />
+
+### 3. Allowlist Your Domains
+
+To help prevent malicious use of your project ID, you are strongly encouraged to set an allowlist of [origins](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin) where your project ID is used. You can manage your allowlist in the [WalletConnect Dashboard](https://dashboard.walletconnect.com) under the project settings.
+
+The allowlist supports a list of origins in the format `[scheme://]<hostname[:port]>`. Using `localhost` (or `127.0.0.1`) is always permitted, and if the allowlist is empty, all origins are allowed. Updates take 15 minutes to apply.
+
+Examples of possible origins in the allowlist:
+- `example.com` - allows `https://example.com` or `http://example.com` but not `https://www.example.com`
+- `https://example.com` - allows `https://example.com` but not `http://example.com`
+- `https://*.example.com` - allows `https://www.example.com` but not `https://example.com`
+
+<Warning>
+Requests from origins not in the allowlist will be denied. Make sure to add all domains where your app will be deployed.
+</Warning>
+
+## Enable WalletConnect
+
+To enable WalletConnect in your TON Connect application, use the `initializeWalletConnect()` function from the `@tonconnect/sdk` package along with the `UniversalConnector` from `@reown/appkit-universal-connector`.
+
+```typescript
+import { initializeWalletConnect } from '@tonconnect/sdk';
+import { UniversalConnector } from '@reown/appkit-universal-connector';
+
+initializeWalletConnect(UniversalConnector, {
+  projectId: 'YOUR_PROJECT_ID',
+  metadata: {
+    name: 'My DApp',
+    description: 'My awesome DApp',
+    url: 'https://mydapp.com',
+    icons: ['https://mydapp.com/icon.png']
+  }
+});
+```
+
+### Configuration Options
+
+The `initializeWalletConnect` function accepts the following configuration options:
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `projectId` | `string` | Yes | Your WalletConnect project ID from the [Dashboard](https://dashboard.walletconnect.com) |
+| `metadata.name` | `string` | Yes | The name of your application |
+| `metadata.description` | `string` | Yes | A brief description of your application |
+| `metadata.url` | `string` | Yes | The URL of your application |
+| `metadata.icons` | `string[]` | Yes | An array of icon URLs for your application |
+
+### Example Implementation
+
+Here's a complete example of integrating WalletConnect into a TON Connect application:
+
+```typescript
+import { TonConnect } from '@tonconnect/sdk';
+import { initializeWalletConnect } from '@tonconnect/sdk';
+import { UniversalConnector } from '@reown/appkit-universal-connector';
+import {
+  TonConnectUIProvider,
+  TonConnectButton,
+} from '@tonconnect/ui-react';
+
+// Initialize WalletConnect support
+initializeWalletConnect(UniversalConnector, {
+  projectId: 'YOUR_PROJECT_ID',
+  metadata: {
+    name: 'My TON DApp',
+    description: 'A decentralized application on TON',
+    url: 'https://mytonapp.com',
+    icons: ['https://mytonapp.com/icon.png']
+  }
+});
+
+
+export function App() {
+  // Create TON Connect instance
+  const tonConnect = new TonConnect({
+    manifestUrl: 'https://mytonapp.com/tonconnect-manifest.json'
+  });
+
+  return (
+    <div className="pages">
+      <h1>WalletConnect + TON React Example</h1>
+      <TonConnectUIProvider connector={tonConnect}>
+        <TonConnectButton />
+      </TonConnectUIProvider>
+    </div>
+  )
+}
+```
+
+## Next Steps
+
+After integrating WalletConnect into your TON Connect application, users will be able to connect using any WalletConnect-compatible wallet. For more information about TON-specific RPC methods supported by WalletConnect, see the [TON Chain Support](/wallet-sdk/chain-support/ton) documentation.
