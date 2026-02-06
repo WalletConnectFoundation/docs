@@ -210,6 +210,52 @@ export async function getUniversalConnector() {
 }
 ```
 
+```tsx TRON Example
+import { UniversalConnector } from '@reown/appkit-universal-connector'
+
+export const projectId = import.meta.env.VITE_PROJECT_ID || "YOUR_PROJECT_ID_HERE" // Replace with your actual project ID
+
+if (!projectId || projectId === "YOUR_PROJECT_ID_HERE") {
+  throw new Error('Project ID is not defined. Please set your project ID from the WalletConnect Dashboard.')
+}
+
+const tronMainnet = {
+  id: '0x2b6653dc',
+  chainNamespace: 'tron',
+  caipNetworkId: 'tron:0x2b6653dc',
+  name: 'Tron Mainnet',
+  nativeCurrency: { name: 'TRX', symbol: 'TRX', decimals: 6 },
+  rpcUrls: { default: { http: ['https://api.trongrid.io'] } }
+}
+
+export const networks = [tronMainnet]
+
+export let universalConnector
+
+export async function getUniversalConnector() {
+  if (!universalConnector) {
+    universalConnector = await UniversalConnector.init({
+      projectId,
+      metadata: {
+        name: 'Universal Connector',
+        description: 'Universal Connector',
+        url: 'https://www.walletconnect.com',
+        icons: ['https://www.walletconnect.com/icon.png']
+      },
+      networks: [
+        {
+          methods: ['tron_signTransaction', 'tron_signMessage'],
+          chains: [tronMainnet],
+          events: [],
+          namespace: 'tron'
+        }
+      ]
+    })
+  }
+  return universalConnector
+}
+```
+
 </CodeGroup>
 
 In the main.js file you can add:
