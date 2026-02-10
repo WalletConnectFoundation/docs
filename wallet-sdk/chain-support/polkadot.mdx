@@ -1,0 +1,311 @@
+---
+title: "Polkadot"
+description: "Integrate WalletConnect into Polkadot wallets using the Wallet SDK, including session management, signing, and namespace configuration."
+sidebarTitle: "Polkadot"
+---
+
+This guide covers integrating the WalletConnect Wallet SDK into Polkadot-based wallets, including session proposals, request handling, and namespace configuration.
+
+## Wallet Integration Guide
+
+### Getting Started
+
+Generate a unique `projectId` by visiting and creating your project's profile on the WalletConnect Dashboard at [dashboard.walletconnect.com](https://dashboard.walletconnect.com/).
+
+### Setup
+
+Import Core and Wallet SDK from WalletConnect.
+
+```js
+import { Core } from "@walletconnect/core";
+import { WalletKit } from "@walletconnect/walletkit";
+```
+
+Instantiate and add Core and Wallet SDK to the state of the wallet.
+
+```js
+const core = new Core({ projectId: "YOUR_PROJECT_ID" });
+const walletKit = await WalletKit.init({
+  core: core,
+  metadata: {
+    name: "Example WalletConnect Wallet",
+    description: "Example WalletConnect Integration",
+    url: "myexamplewallet.com",
+    icons: [],
+  },
+});
+```
+
+Create a function to accept a session `uri` which will be passed from a dapp when a user either scans the dapp's WalletConnect QR code modal or manually copies and pastes the URI from the modal into the wallet's UI.
+
+```js
+const onConnect = async (uri: string) => {
+  const result = await walletKit.core.pairing.pair({ uri });
+};
+```
+
+Handle the `session_proposal` event on the `walletKit`. This event is triggered when the `pair` method is called on `walletKit.core.pairing` to create a pairing session.
+
+### Approving a Session Proposal
+
+When approving a session proposal, the wallet can perform any necessary checks such as ensuring that the proposal includes all required namespaces and any optional namespaces. The approval response also contains the approved accounts as part of the namespace.
+
+```js
+const substrateAccounts = [
+  "5CK8D1sKNwF473wbuBP6NuhQfPaWUetNsWUNAAzVwTfxqjfr",
+  "5F3sa2TJAWMqDhXG6jhV4N8ko9SxwGy8TpaNS1repo5EYjQX",
+];
+
+const walletConnectAccounts = accounts.map(
+  (account) => `polkadot:91b171bb158e2d3848fa23a9f1c25182:${account.address}`
+);
+
+walletKit.on("session_proposal", async (proposal) => {
+  showWalletConnectModal();
+
+  const session = await walletKit.approveSession({
+    id: proposal.id,
+    namespaces: {
+      polkadot: {
+        accounts: walletConnectAccounts,
+        methods: ["polkadot_signTransaction", "polkadot_signMessage"],
+        chains: ["polkadot:91b171bb158e2d3848fa23a9f1c25182"],
+        events: ["chainChanged", "accountsChanged"],
+      },
+    },
+  });
+
+  const response = {
+    id: proposal.id,
+    result: "session approved",
+    jsonrpc: "2.0",
+  };
+
+  await walletKit.respondSessionRequest({ topic: session.topic, response });
+});
+```
+
+### Rejecting a Session Proposal
+
+If the user does not approve the requested chains, methods, or accounts, or if the wallet does not support the requested chains or methods, the response should not be considered a success.
+
+```js
+import { getSdkError } from "@walletconnect/utils";
+
+walletKit.on("session_proposal", async (proposal) => {
+  showWalletConnectModal();
+
+  await walletKit.rejectSession({
+    id: proposal.id,
+    reason: getSdkError("USER_REJECTED"),
+  });
+});
+```
+
+### Handling Session Request Events
+
+A dapp triggers an event when it requires the wallet to carry out a specific action, such as signing a transaction. The event includes a topic and a request object, which will differ based on the requested action. Two common use cases in Polkadot are signing messages and signing transactions, represented as `polkadot_signMessage` and `polkadot_signTransaction` respectively.
+
+```js
+walletKit.on("session_request", async (requestEvent) => {
+  const { params, id } = requestEvent;
+  const { request } = params;
+  const address = request.params?.address;
+
+  const wallet = getPolkadotWallet(address);
+
+  if (!wallet) {
+    throw new Error("Polkadot wallet does not exist");
+  }
+
+  switch (request.method) {
+    case "polkadot_signMessage":
+      const msgSignature = await wallet.signMessage(request.params.message);
+      const msgResponse = { id, result: { signature: msgSignature }, jsonrpc: "2.0" };
+      await walletKit.respondSessionRequest({ topic, response: msgResponse });
+      break;
+
+    case "polkadot_signTransaction":
+      const txSignature = await wallet.signTransaction(
+        request.params.transactionPayload
+      );
+      const txResponse = { id, result: { signature: txSignature }, jsonrpc: "2.0" };
+      await walletKit.respondSessionRequest({ topic, response: txResponse });
+      break;
+
+    default:
+      throw new Error(getSdkError("INVALID_METHOD").message);
+  }
+});
+```
+
+### Session Persistence and Management
+
+- Sessions can be saved/stored so users don't have to pair repeatedly.
+- Sessions can be disconnected using `await walletKit.disconnectSession({ topic: topic });`.
+- Sessions can be extended using `await walletKit.extendSession({ topic: topic });`.
+- Default session lifetime is 7 days for WalletConnect v2.0.
+
+## Namespaces Guide
+
+### Understanding Namespaces
+
+Pairing sessions use specific methods, events, and chains during their lifetimes. These arguments constitute what is known as a `namespace`. Namespaces are used to specify the chains, methods, and events that are intended to be used in a particular session. They establish the minimal requirement for a wallet and a dapp to get paired. There are two types of namespaces: `proposal namespaces` and `session namespaces`.
+
+### Proposal Namespaces
+
+A dapp sends a proposal namespace to the wallet for pairing. The proposal namespace contains the list of `chains`, `methods`, and `events` that the dapp intends to make use of. The wallet validates if the received proposal namespaces are valid and returns a session with its approved namespaces as a response.
+
+Example Proposal Namespace for a dapp which supports connecting to Polkadot, Ethereum, Polygon, and Cosmos:
+
+```js
+{
+  "polkadot": {
+    "chains": [
+        "polkadot:91b171bb158e2d3848fa23a9f1c25182",
+        "polkadot:b0a8d493285c2df73290dfb7e61f870f",
+        ],
+    "methods": ["polkadot_signMessage"],
+    "events": ["accountsChanged"]
+  },
+  "eip155": {
+    "chains": [
+        "eip155:1",
+        "eip155:137"
+        ],
+    "methods": ["eth_sign"],
+    "events": ["accountsChanged"]
+  },
+  "cosmos": {
+    "chains": ["cosmos:cosmoshub-4"],
+    "methods": ["cosmos_signDirect"],
+    "events": ["someCosmosEvent"]
+  }
+}
+```
+
+### Session Namespaces
+
+The wallet validates if the received proposal namespaces match with the session namespaces it supports. The wallet session can also choose to provide access to more chains, methods, or events that were not a part of the proposal namespaces.
+
+```js
+{
+  "polkadot": {
+    "accounts": [
+        "polkadot:91b171bb158e2d3848fa23a9f1c25182:AZBEwbZhYeiofodZnM2iAoshP3pXRPNSJEKFqEPDmvv1mY7"
+    ],
+    "methods": ["polkadot_signMessage", "polkadot_signTransaction"],
+    "events": ["accountsChanged"]
+  },
+  "eip155": {
+    "accounts": [
+      "eip155:137:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdb",
+      "eip155:1:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdb"
+    ],
+    "methods": ["eth_sign"],
+    "events": ["accountsChanged"]
+  },
+  "cosmos": {
+    "accounts": [
+      "cosmos:cosmoshub-4:cosmos1t2uflqwqe0fsj0shcfkrvpukewcw40yjj6hdc0"
+    ],
+    "methods": ["cosmos_signDirect", "personal_sign"],
+    "events": ["someCosmosEvent", "proofFinalized"]
+  }
+}
+```
+
+### Chains
+
+`chains` is an array of chain IDs which represent the chains the session will be using during its lifetime. For Polkadot, the format for each chain ID is the chain-agnostic namespace (e.g. `polkadot`, `eip155`, `cosmos`) followed by a colon and the genesis hash for the chain (e.g. `91b171bb158e2d3848fa23a9f1c25182` for Polkadot).
+
+### Methods
+
+`methods` is represented as an array of wallet-defined methods that a session supports. These are not pre-defined or centrally implemented and can be modified/extended as needed by a wallet.
+
+In the above Polkadot session namespace example there are two given methods: `polkadot_signMessage` and `polkadot_signTransaction`. [An example for each method](https://github.com/WalletConnect/web-examples/blob/main/advanced/wallets/react-wallet-v2/src/lib/PolkadotLib.ts).
+
+Wallets can also define additional methods. For example, adding a `polkadot_getSignedHex` method:
+
+```js
+{
+  "polkadot": {
+    "accounts": [
+        "polkadot:91b171bb158e2d3848fa23a9f1c25182:AZBEwbZhYeiofodZnM2iAoshP3pXRPNSJEKFqEPDmvv1mY7"
+    ],
+    "methods": [
+        "polkadot_signMessage",
+        "polkadot_signTransaction",
+        "polkadot_getSignedHex"
+    ],
+    "events": ["accountsChanged"]
+  }
+}
+```
+
+### Events
+
+`events` represent specific changes in a session's state that a dapp or wallet may want to take action on. For example, emitting an `accountsChanged` event:
+
+```js
+await signClient.emit({
+  topic,
+  event: {
+    name: "accountsChanged",
+    data: ["AZBEwbZhYeiofodZnM2iAoshP3pXRPNSJEKFqEPDmvv1mY7"],
+  },
+  chainId: "polkadot:91b171bb158e2d3848fa23a9f1c25182",
+});
+```
+
+### Dapps: Universal Provider and Namespaces
+
+The connect method on the universal provider expects an object that matches the `ConnectParams` interface:
+
+```js
+interface ConnectParams {
+  requiredNamespaces?: ProposalTypes.RequiredNamespaces;
+  optionalNamespaces?: ProposalTypes.OptionalNamespaces;
+  sessionProperties?: ProposalTypes.SessionProperties;
+  pairingTopic?: string;
+  relays?: RelayerTypes.ProtocolOptions[];
+}
+```
+
+Example using only the `requiredNamespaces` field:
+
+```js
+const proposalNamespace = {
+  requiredNamespaces: {
+    polkadot: {
+      methods: ["polkadot_signTransaction", "polkadot_signMessage"],
+      chains: ["polkadot:91b171bb158e2d3848fa23a9f1c25182"],
+      events: ["chainChanged", "accountsChanged"],
+    },
+  },
+};
+
+const { uri, approval } = await provider.client.connect(proposalNamespace);
+```
+
+### Wallets: Wallet SDK and Namespaces
+
+When the Wallet SDK approves and creates a session, it must provide the session proposal `id` as well as the session `namespaces` which are approved for use in the session:
+
+```js
+const session = await walletKit.approveSession({
+  id: proposal.id,
+  namespaces: {
+    polkadot: {
+      accounts: [
+        "polkadot:91b171bb158e2d3848fa23a9f1c25182:AZBEwbZhYeiofodZnM2iAoshP3pXRPNSJEKFqEPDmvv1mY7",
+      ],
+      methods: ["polkadot_signTransaction", "polkadot_signMessage"],
+      chains: ["polkadot:91b171bb158e2d3848fa23a9f1c25182"],
+      events: ["chainChanged", "accountsChanged"],
+    },
+  },
+});
+```
+
+More information on namespaces can be found in the [WalletConnect specification](https://docs.walletconnect.com/specs/clients/sign/namespaces#controller-side-validation-of-incoming-proposal-namespaces-wallet).
