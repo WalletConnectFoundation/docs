@@ -114,6 +114,23 @@ The following test cases only apply for wallets supporting a particular set of c
 </Tab>
 </Tabs>
 
+## FAQ
+
+<Accordion title="What exactly should we set for the Reverse Domain field?">
+You should set the EIP-6963 RDNS (Reverse Domain Name System) value of your wallet.
+This value uniquely identifies your wallet and allows us to properly detect and discover it when it is installed in the user's browser.
+</Accordion>
+
+<Accordion title="What is the purpose of the reverse domain in the context of a browser extension?">
+In the context of a browser extension, the reverse domain (RDNS):
+
+- Serves as a unique identifier for your wallet
+- Enables wallet discovery via the EIP-6963 standard
+- Allows our system to detect when your wallet extension is installed
+
+Without the correct RDNS value, your wallet may not be discoverable.
+</Accordion>
+
 ## What's Next?
 
 Now depending on whether or not your submission met all parameters, you will receive an email from the Reown team with the status of your submission. This change will also be reflected with more directions in the "Explorer" tab of your project.
