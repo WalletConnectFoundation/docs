@@ -19,7 +19,7 @@ dApps should **not** hardcode specific chain IDs in the session proposal. Instea
 
 ```typescript  theme={null}
 const CANTON_WC_METHODS = [
-    'prepareSignExecute',
+    'canton_prepareSignExecute',
     'listAccounts',
     'getPrimaryAccount',
     'getActiveNetwork',
@@ -42,7 +42,7 @@ Read-only methods are auto-approved by the wallet. Methods that mutate the ledge
 | `getActiveNetwork`   | Auto-approve |
 | `status`             | Auto-approve |
 | `ledgerApi`          | Auto-approve |
-| `prepareSignExecute` | Manual       |
+| `canton_prepareSignExecute` | Manual       |
 | `signMessage`        | Manual       |
 
 ## Method Name Mapping (dApp SDK)
@@ -51,14 +51,14 @@ The dApp SDK's `WalletConnectTransport` maps SDK method names before sending ove
 
 | SDK method               | WC method (on the wire)  |
 | ------------------------ | ------------------------ |
-| `prepareExecute`         | `prepareSignExecute`     |
-| `prepareExecuteAndWait`  | `prepareSignExecute`     |
+| `prepareExecute`         | `canton_prepareSignExecute`     |
+| `prepareExecuteAndWait`  | `canton_prepareSignExecute`     |
 
 All other methods (`listAccounts`, `status`, `ledgerApi`, etc.) are sent as-is. Both SDK methods resolve with the same response — over WalletConnect, every submission blocks until the transaction completes.
 
 ## RPC Methods
 
-### prepareSignExecute
+### canton_prepareSignExecute
 
 Prepare, sign, and execute a Canton ledger transaction. This is the primary method for submitting commands that mutate ledger state. The wallet performs the full prepare → sign → execute cycle and responds when the transaction is complete.
 
@@ -66,7 +66,7 @@ Prepare, sign, and execute a Canton ledger transaction. This is the primary meth
 
 ```typescript  theme={null}
 interface PrepareSignExecuteRequest {
-    method: 'prepareSignExecute';
+    method: 'canton_prepareSignExecute';
     params: PrepareParams;
 }
 
@@ -92,7 +92,7 @@ interface PrepareParams {
     "topic": "<session-topic>",
     "chainId": "canton:devnet",
     "request": {
-        "method": "prepareSignExecute",
+        "method": "canton_prepareSignExecute",
         "params": {
             "commands": {
                 "0": {
@@ -560,7 +560,7 @@ The wallet builds approved namespaces including the CAIP-10 account with the URL
     "canton": {
         "chains": ["canton:devnet"],
         "accounts": ["canton:devnet:operator%3A%3A1220abc..."],
-        "methods": ["prepareSignExecute", "listAccounts", "getPrimaryAccount", "getActiveNetwork", "status", "ledgerApi", "signMessage"],
+        "methods": ["canton_prepareSignExecute", "listAccounts", "getPrimaryAccount", "getActiveNetwork", "status", "ledgerApi", "signMessage"],
         "events": ["accountsChanged", "statusChanged", "chainChanged"]
     }
 }
@@ -581,5 +581,5 @@ The wallet builds approved namespaces including the CAIP-10 account with the URL
 - Canton uses Ed25519 signing for transaction authentication.
 - The `ledgerApi` method acts as a transparent proxy — the wallet handles authentication with the Canton Ledger API. Only `GET` and `POST` are supported; other HTTP methods will return a `5001` error.
 - Party IDs in CAIP-10 accounts are URL-encoded (e.g. `operator::1220abc...` becomes `operator%3A%3A1220abc...`).
-- The `prepareSignExecute` method always performs the full prepare → sign → execute cycle synchronously, responding only when the transaction is complete.
+- The `canton_prepareSignExecute` method always performs the full prepare → sign → execute cycle synchronously, responding only when the transaction is complete.
 - The WC session `chainId` (e.g. `canton:devnet`) may differ from the `networkId` in wallet/network records (e.g. `canton:production`). The `chainId` identifies the chain at pairing time, while `networkId` reflects the wallet's internal network configuration.
