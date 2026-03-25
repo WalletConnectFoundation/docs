@@ -112,7 +112,7 @@ export function App() {
 
 ## Handling `ton_proof`
 
-When using TON Connect with WalletConnect, `ton_proof` authentication works differently than with injected wallets. With injected wallets, the proof is returned automatically as part of the connect response items. With WalletConnect, `ton_proof` is handled via the [CAIP-222](https://chainagnostic.org/CAIPs/caip-222) authentication flow.
+When using TON Connect with WalletConnect, `ton_proof` is requested and returned as part of the connection response using the [CAIP-222](https://chainagnostic.org/CAIPs/caip-222) authentication flow. The proof payload is passed via the `authentication` parameter during `connect()`, and the signed proof is available on `session.authentication` after the connection is established.
 
 ### Requesting `ton_proof` During Connection
 
