@@ -110,6 +110,70 @@ export function App() {
 }
 ```
 
+## Handling `ton_proof`
+
+When using TON Connect with WalletConnect, `ton_proof` authentication works differently than with injected wallets. With injected wallets, the proof is returned automatically as part of the connect response items. With WalletConnect, `ton_proof` is handled via the [CAIP-222](https://chainagnostic.org/CAIPs/caip-222) authentication flow.
+
+### Requesting `ton_proof` During Connection
+
+To request `ton_proof` during the WalletConnect session establishment, pass the `authentication` parameter when calling `connect()` on the underlying `UniversalConnector` provider:
+
+```typescript
+import { UniversalConnector } from '@reown/appkit-universal-connector';
+
+const connector = await UniversalConnector.init({
+  projectId: 'YOUR_PROJECT_ID',
+  metadata: {
+    name: 'My TON DApp',
+    description: 'A decentralized application on TON',
+    url: 'https://mytonapp.com',
+    icons: ['https://mytonapp.com/icon.png']
+  },
+  networks: [{
+    namespace: 'ton',
+    chains: [tonMainnet],
+    methods: ['ton_sendMessage', 'ton_signData'],
+    events: []
+  }]
+});
+
+const session = await connector.provider.connect({
+  optionalNamespaces: {
+    ton: {
+      methods: ['ton_sendMessage', 'ton_signData'],
+      chains: ['ton:-239'],
+      events: []
+    }
+  },
+  authentication: [{
+    uri: 'https://mytonapp.com',
+    domain: 'mytonapp.com',
+    chains: ['ton:-239'],
+    nonce: '<random_nonce>',
+    ttl: 86400,
+    statement: '<ton_proof_payload>'
+  }]
+});
+```
+
+### Reading the Proof Result
+
+After a successful connection, the proof result is available on `session.authentication` as an array of [CAIP-222 Cacao](https://chainagnostic.org/CAIPs/caip-222) objects:
+
+```typescript
+const authenticationResults = session?.authentication;
+
+if (authenticationResults && authenticationResults.length > 0) {
+  // Each result is a Cacao object containing the signed proof
+  const proof = authenticationResults[0];
+  console.log('ton_proof result:', proof);
+}
+```
+
+<Warning>
+The `ton_proof` result is **not** available in `onStatusChange` when using WalletConnect. You must read it from `session.authentication` directly after the connection is established.
+</Warning>
+
 ## Next Steps
 
 After integrating WalletConnect into your TON Connect application, users will be able to connect using any WalletConnect-compatible wallet. For more information about TON-specific RPC methods supported by WalletConnect, see the [TON Chain Support](/wallet-sdk/chain-support/ton) documentation.
