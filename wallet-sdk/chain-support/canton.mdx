@@ -1,0 +1,585 @@
+---
+title: Canton
+description: "Overview of the Canton JSON-RPC methods supported by Wallet SDK."
+---
+
+These are the methods that wallets should implement to handle Canton transactions and messages via WalletConnect.
+
+## Network / Chain Information
+
+- **Namespace:** `canton`
+- **CAIP-2:** `canton:<network-id>` (e.g. `canton:devnet`, `canton:production`)
+- **CAIP-10 Account:** `canton:<network-id>:<url-encoded-party-id>` (e.g. `canton:devnet:operator%3A%3A1220abc...`)
+
+Unlike most chains, Canton does not have fixed mainnet/testnet identifiers. Network IDs are **operator-defined** — each wallet is configured with one or more networks, and the `network-id` used in CAIP-2 identifiers comes from that configuration.
+
+dApps should **not** hardcode specific chain IDs in the session proposal. Instead, request the `canton` namespace without specifying `chains`, and work with whatever network the wallet provides in the approved session. The network ID and party ID are available directly from the session's `canton.accounts` array as CAIP-10 strings (e.g. `canton:production:operator%3A%3A1220abc...`). For full network details, use [`getActiveNetwork`](#getactivenetwork).
+
+## Registered Methods & Events
+
+```typescript  theme={null}
+const CANTON_WC_METHODS = [
+    'canton_prepareSignExecute',
+    'listAccounts',
+    'getPrimaryAccount',
+    'getActiveNetwork',
+    'status',
+    'ledgerApi',
+    'signMessage',
+]
+
+const CANTON_WC_EVENTS = ['accountsChanged', 'statusChanged', 'chainChanged']
+```
+
+### Auto-Approve vs Manual-Approve
+
+Read-only methods are auto-approved by the wallet. Methods that mutate the ledger or perform sensitive operations require explicit user approval.
+
+| Method               | Approval     |
+| -------------------- | ------------ |
+| `listAccounts`       | Auto-approve |
+| `getPrimaryAccount`  | Auto-approve |
+| `getActiveNetwork`   | Auto-approve |
+| `status`             | Auto-approve |
+| `ledgerApi`          | Auto-approve |
+| `canton_prepareSignExecute` | Manual       |
+| `signMessage`        | Manual       |
+
+## Method Name Mapping (dApp SDK)
+
+The dApp SDK's `WalletConnectTransport` maps SDK method names before sending over WC:
+
+| SDK method               | WC method (on the wire)  |
+| ------------------------ | ------------------------ |
+| `prepareExecute`         | `canton_prepareSignExecute`     |
+| `prepareExecuteAndWait`  | `canton_prepareSignExecute`     |
+
+All other methods (`listAccounts`, `status`, `ledgerApi`, etc.) are sent as-is. Both SDK methods resolve with the same response — over WalletConnect, every submission blocks until the transaction completes.
+
+## RPC Methods
+
+### canton_prepareSignExecute
+
+Prepare, sign, and execute a Canton ledger transaction. This is the primary method for submitting commands that mutate ledger state. The wallet performs the full prepare → sign → execute cycle and responds when the transaction is complete.
+
+#### Request
+
+```typescript  theme={null}
+interface PrepareSignExecuteRequest {
+    method: 'canton_prepareSignExecute';
+    params: PrepareParams;
+}
+
+interface PrepareParams {
+    commandId?: string;          // auto-generated (UUIDv4) if omitted
+    commands?: { [k: string]: unknown };
+    actAs?: string[];            // defaults to [primaryWallet.partyId] if omitted
+    readAs?: string[];           // defaults to [] if omitted
+    disclosedContracts?: Array<{
+        templateId?: string;
+        contractId?: string;
+        createdEventBlob: string;
+        synchronizerId?: string;
+    }>;
+    packageIdSelectionPreference?: string[];
+}
+```
+
+#### Example Request
+
+```json  theme={null}
+{
+    "topic": "<session-topic>",
+    "chainId": "canton:devnet",
+    "request": {
+        "method": "canton_prepareSignExecute",
+        "params": {
+            "commands": {
+                "0": {
+                    "ExerciseCommand": {
+                        "templateId": "#<package-id>:Module:Template",
+                        "contractId": "00abcdef...",
+                        "choice": "Transfer",
+                        "choiceArgument": {
+                            "receiver": "bob::1220..."
+                        }
+                    }
+                }
+            },
+            "commandId": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+            "actAs": ["operator::1220abc..."],
+            "readAs": [],
+            "disclosedContracts": [
+                {
+                    "templateId": "#<package-id>:Module:Template",
+                    "contractId": "00abcdef...",
+                    "createdEventBlob": "<base64-encoded-blob>",
+                    "synchronizerId": "wallet::1220e7b..."
+                }
+            ],
+            "packageIdSelectionPreference": ["<package-id>"]
+        }
+    }
+}
+```
+
+#### Signing Providers
+
+Wallets support multiple signing backends. The signing provider determines the Ledger API flow used:
+
+| Provider         | Flow                                                                 |
+| ---------------- | -------------------------------------------------------------------- |
+| `participant`    | Single call to `POST /v2/commands/submit-and-wait` (participant signs internally) |
+| `wallet-kernel`  | `POST /v2/interactive-submission/prepare` → local Ed25519 sign → `POST /v2/interactive-submission/execute` |
+| `blockdaemon`    | `POST /v2/interactive-submission/prepare` → sign via Blockdaemon API → `POST /v2/interactive-submission/execute` |
+
+#### Success Response
+
+```json  theme={null}
+{
+    "id": 1234,
+    "jsonrpc": "2.0",
+    "result": {
+        "status": "executed",
+        "commandId": "d290f1ee-...",
+        "payload": {
+            "updateId": "tx-update-id",
+            "completionOffset": 42
+        }
+    }
+}
+```
+
+#### Error Response
+
+```json  theme={null}
+{
+    "id": 1234,
+    "jsonrpc": "2.0",
+    "error": {
+        "code": 5001,
+        "message": "Transaction execution failed: INVALID_ARGUMENT: ..."
+    }
+}
+```
+
+#### User Rejected Response
+
+```json  theme={null}
+{
+    "id": 1234,
+    "jsonrpc": "2.0",
+    "error": {
+        "code": 5000,
+        "message": "User rejected"
+    }
+}
+```
+
+---
+
+### listAccounts
+
+Retrieve all configured wallet accounts.
+
+#### Request
+
+```json  theme={null}
+{
+    "topic": "<session-topic>",
+    "chainId": "canton:devnet",
+    "request": {
+        "method": "listAccounts",
+        "params": {}
+    }
+}
+```
+
+#### Response
+
+```json  theme={null}
+{
+    "id": 1235,
+    "jsonrpc": "2.0",
+    "result": [
+        {
+            "primary": true,
+            "partyId": "operator::1220abc...",
+            "status": "allocated",
+            "hint": "operator",
+            "publicKey": "<base64-ed25519-pubkey>",
+            "namespace": "1220abc...",
+            "networkId": "canton:production",
+            "signingProviderId": "participant",
+            "disabled": false
+        }
+    ]
+}
+```
+
+#### Wallet Type
+
+```typescript  theme={null}
+interface Wallet {
+    primary: boolean;
+    partyId: string;
+    status: 'initialized' | 'allocated' | 'removed';
+    hint: string;
+    publicKey: string;
+    namespace: string;
+    networkId: string;
+    signingProviderId: string;
+    externalTxId?: string;
+    topologyTransactions?: string;
+    disabled?: boolean;
+    reason?: string;
+}
+```
+
+---
+
+### getPrimaryAccount
+
+Retrieve the primary wallet account (where `primary === true`).
+
+#### Request
+
+```json  theme={null}
+{
+    "topic": "<session-topic>",
+    "chainId": "canton:devnet",
+    "request": {
+        "method": "getPrimaryAccount",
+        "params": {}
+    }
+}
+```
+
+#### Response
+
+```json  theme={null}
+{
+    "id": 1236,
+    "jsonrpc": "2.0",
+    "result": {
+        "primary": true,
+        "partyId": "operator::1220abc...",
+        "status": "allocated",
+        "hint": "operator",
+        "publicKey": "<base64-ed25519-pubkey>",
+        "namespace": "1220abc...",
+        "networkId": "canton:production",
+        "signingProviderId": "participant"
+    }
+}
+```
+
+---
+
+### getActiveNetwork
+
+Retrieve the currently active network configuration.
+
+#### Request
+
+```json  theme={null}
+{
+    "topic": "<session-topic>",
+    "chainId": "canton:devnet",
+    "request": {
+        "method": "getActiveNetwork",
+        "params": {}
+    }
+}
+```
+
+#### Response
+
+```json  theme={null}
+{
+    "id": 1237,
+    "jsonrpc": "2.0",
+    "result": {
+        "networkId": "canton:production",
+        "ledgerApi": "http://127.0.0.1:5003"
+    }
+}
+```
+
+---
+
+### status
+
+Check the wallet's connectivity to the Canton ledger.
+
+#### Request
+
+```json  theme={null}
+{
+    "topic": "<session-topic>",
+    "chainId": "canton:devnet",
+    "request": {
+        "method": "status",
+        "params": {}
+    }
+}
+```
+
+#### Response (ledger reachable)
+
+```json  theme={null}
+{
+    "id": 1238,
+    "jsonrpc": "2.0",
+    "result": {
+        "provider": {
+            "id": "remote-da",
+            "version": "3.4.0",
+            "providerType": "remote"
+        },
+        "connection": {
+            "isConnected": true,
+            "isNetworkConnected": true
+        },
+        "network": {
+            "networkId": "canton:production",
+            "ledgerApi": "http://127.0.0.1:5003"
+        }
+    }
+}
+```
+
+#### Response (ledger unreachable)
+
+```json  theme={null}
+{
+    "id": 1238,
+    "jsonrpc": "2.0",
+    "result": {
+        "provider": {
+            "id": "remote-da",
+            "version": "3.4.0",
+            "providerType": "remote"
+        },
+        "connection": {
+            "isConnected": true,
+            "isNetworkConnected": false,
+            "reason": "Ledger unreachable"
+        }
+    }
+}
+```
+
+---
+
+### ledgerApi
+
+Proxy raw Canton Ledger API requests through the wallet. The wallet authenticates and forwards the request.
+
+#### Request
+
+```typescript  theme={null}
+interface LedgerApiRequest {
+    method: 'ledgerApi';
+    params: LedgerApiParams;
+}
+
+interface LedgerApiParams {
+    requestMethod: 'GET' | 'POST';
+    resource: string;
+    body?: string | object;
+}
+```
+
+#### Example Request
+
+```json  theme={null}
+{
+    "topic": "<session-topic>",
+    "chainId": "canton:devnet",
+    "request": {
+        "method": "ledgerApi",
+        "params": {
+            "requestMethod": "POST",
+            "resource": "/v2/state/active-contracts",
+            "body": {
+                "filter": {
+                    "filtersByParty": {
+                        "operator::1220abc...": {
+                            "cumulative": {
+                                "templateFilters": []
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+#### Response
+
+```json  theme={null}
+{
+    "id": 1239,
+    "jsonrpc": "2.0",
+    "result": {
+        "response": {
+            "version": "3.4.0",
+            "features": {}
+        }
+    }
+}
+```
+
+<Note>
+The `response` field contains the raw Ledger API JSON response as-is.
+</Note>
+
+---
+
+### signMessage
+
+Sign an arbitrary message with the wallet's Ed25519 private key.
+
+#### Request
+
+```typescript  theme={null}
+interface SignMessageRequest {
+    method: 'signMessage';
+    params: {
+        message: string;
+    };
+}
+```
+
+#### Example Request
+
+```json  theme={null}
+{
+    "topic": "<session-topic>",
+    "chainId": "canton:devnet",
+    "request": {
+        "method": "signMessage",
+        "params": {
+            "message": "Please sign this message to verify your identity"
+        }
+    }
+}
+```
+
+#### Success Response
+
+```json  theme={null}
+{
+    "id": 1240,
+    "jsonrpc": "2.0",
+    "result": {
+        "signature": "<base64-ed25519-signature>",
+        "publicKey": "<base64-ed25519-pubkey>"
+    }
+}
+```
+
+## Events
+
+### accountsChanged
+
+Emitted when wallet accounts are added, removed, or modified.
+
+```json  theme={null}
+{
+    "name": "accountsChanged",
+    "data": [
+        {
+            "primary": true,
+            "partyId": "operator::1220abc...",
+            "status": "allocated",
+            "hint": "operator",
+            "publicKey": "...",
+            "namespace": "1220abc...",
+            "networkId": "canton:production",
+            "signingProviderId": "participant"
+        }
+    ]
+}
+```
+
+### statusChanged
+
+Emitted when the wallet's connectivity status changes.
+
+```json  theme={null}
+{
+    "name": "statusChanged",
+    "data": {
+        "provider": { "id": "remote-da", "providerType": "remote" },
+        "connection": { "isConnected": true, "isNetworkConnected": true },
+        "network": { "networkId": "canton:production" }
+    }
+}
+```
+
+### chainChanged
+
+Emitted when the wallet switches to a different network.
+
+```json  theme={null}
+{
+    "name": "chainChanged",
+    "data": {
+        "chainId": "canton:production"
+    }
+}
+```
+
+## Session Lifecycle
+
+### Pairing
+
+The dApp creates a pairing URI and delivers it to the wallet:
+
+```typescript
+const { uri, approval } = await signClient.connect({
+    optionalNamespaces: {
+        canton: {
+            methods: CANTON_WC_METHODS,
+            events: CANTON_WC_EVENTS,
+        },
+    },
+})
+```
+
+### Session Approval
+
+The wallet builds approved namespaces including the CAIP-10 account with the URL-encoded partyId:
+
+```json  theme={null}
+{
+    "canton": {
+        "chains": ["canton:devnet"],
+        "accounts": ["canton:devnet:operator%3A%3A1220abc..."],
+        "methods": ["canton_prepareSignExecute", "listAccounts", "getPrimaryAccount", "getActiveNetwork", "status", "ledgerApi", "signMessage"],
+        "events": ["accountsChanged", "statusChanged", "chainChanged"]
+    }
+}
+```
+
+## Error Codes
+
+| Code   | Meaning                                   |
+| ------ | ----------------------------------------- |
+| `5000` | User rejected                             |
+| `5001` | Execution / handler error                 |
+| `5100` | Canton namespace not found in proposal    |
+| `6000` | Wallet disconnected                       |
+
+## Notes & Considerations
+
+- All requests and responses comply with JSON-RPC structure (`id`, `jsonrpc`, etc.).
+- Canton uses Ed25519 signing for transaction authentication.
+- The `ledgerApi` method acts as a transparent proxy — the wallet handles authentication with the Canton Ledger API. Only `GET` and `POST` are supported; other HTTP methods will return a `5001` error.
+- Party IDs in CAIP-10 accounts are URL-encoded (e.g. `operator::1220abc...` becomes `operator%3A%3A1220abc...`).
+- The `canton_prepareSignExecute` method always performs the full prepare → sign → execute cycle synchronously, responding only when the transaction is complete.
+- The WC session `chainId` (e.g. `canton:devnet`) may differ from the `networkId` in wallet/network records (e.g. `canton:production`). The `chainId` identifies the chain at pairing time, while `networkId` reflects the wallet's internal network configuration.
