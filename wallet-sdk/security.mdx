@@ -1,0 +1,42 @@
+---
+title: "Security Information"
+description: "Security architecture, audits, and encryption details for the WalletConnect Wallet SDK."
+sidebarTitle: "Security"
+---
+
+Security is a fundamental aspect of the WalletConnect architecture. The infrastructure has undergone multiple rounds of third-party security reviews, audits, penetration testing, and threat modeling to ensure the highest standards of protection. Security is viewed as a continuously evolving discipline, with regular system audits to identify and address potential vulnerabilities.
+
+## Wallet SDK
+
+### Architecture
+
+The Wallet SDK provides an end-to-end encrypted solution for wallets to connect to applications and sign messages/transactions. As an open-source SDK, it supports multiple transport methods, from WebSockets to Universal Links.
+
+### Handshake & End-to-End Encryption
+
+For a detailed overview of the handshake and end-to-end encryption protocol, refer to the [technical specification](https://specs.walletconnect.com/2.0/specs/clients/sign/session-proposal).
+
+### Audits
+
+The Wallet SDK, including its encryption stack, was audited by Trail of Bits. The audit report is available [here](https://github.com/trailofbits/publications/blob/master/reviews/2023-03-walletconnectv2-securityreview.pdf). This comprehensive security review covered the source code and included a lightweight Threat Model covering upstream and downstream dependencies. The broader WalletConnect system underwent Threat Modeling by Spearbit. The threat model is available [here](https://drive.google.com/file/d/1QpPSLvCEMunaYHHBPN0g6kYd39uFxpPk/view).
+
+### Dependencies
+
+The Wallet SDK's design philosophy prioritizes minimizing third-party dependencies to reduce the attack surface area.
+
+## Third-Party Reviews
+
+The security infrastructure of WalletConnect has undergone multiple rounds of audits by independent security auditing firms, including Trail of Bits, Halborn, and Spearbit.
+
+| Audit Scope | Auditor | Report |
+| --- | --- | --- |
+| WalletConnect Comprehensive Threat Model | Spearbit | [View Report](https://drive.google.com/file/d/1QpPSLvCEMunaYHHBPN0g6kYd39uFxpPk/view) |
+| Wallet SDK Security Review & Lightweight Threat Model | Trail of Bits | [View Report](https://github.com/trailofbits/publications/blob/master/reviews/2023-03-walletconnectv2-securityreview.pdf) |
+
+## Bug Bounty Program
+
+WalletConnect maintains an active bug bounty program to encourage security researchers to responsibly disclose vulnerabilities and help strengthen the systems. For more information, visit the [security page](https://walletconnect.network/security).
+
+## Get in Touch
+
+For security-related inquiries, please visit the [security contact page](https://walletconnect.network/security).
