@@ -13,19 +13,19 @@ These are the methods that wallets should implement to handle Canton transaction
 
 Unlike most chains, Canton does not have fixed mainnet/testnet identifiers. Network IDs are **operator-defined** — each wallet is configured with one or more networks, and the `network-id` used in CAIP-2 identifiers comes from that configuration.
 
-dApps should **not** hardcode specific chain IDs in the session proposal. Instead, request the `canton` namespace without specifying `chains`, and work with whatever network the wallet provides in the approved session. The network ID and party ID are available directly from the session's `canton.accounts` array as CAIP-10 strings (e.g. `canton:production:operator%3A%3A1220abc...`). For full network details, use [`getActiveNetwork`](#getactivenetwork).
+dApps should **not** hardcode specific chain IDs in the session proposal. Instead, request the `canton` namespace without specifying `chains`, and work with whatever network the wallet provides in the approved session. The network ID and party ID are available directly from the session's `canton.accounts` array as CAIP-10 strings (e.g. `canton:production:operator%3A%3A1220abc...`). For full network details, use [`canton_getActiveNetwork`](#canton_getactivenetwork).
 
 ## Registered Methods & Events
 
 ```typescript  theme={null}
 const CANTON_WC_METHODS = [
     'canton_prepareSignExecute',
-    'listAccounts',
-    'getPrimaryAccount',
-    'getActiveNetwork',
-    'status',
-    'ledgerApi',
-    'signMessage',
+    'canton_listAccounts',
+    'canton_getPrimaryAccount',
+    'canton_getActiveNetwork',
+    'canton_status',
+    'canton_ledgerApi',
+    'canton_signMessage',
 ]
 
 const CANTON_WC_EVENTS = ['accountsChanged', 'statusChanged', 'chainChanged']
@@ -37,13 +37,13 @@ Read-only methods are auto-approved by the wallet. Methods that mutate the ledge
 
 | Method               | Approval     |
 | -------------------- | ------------ |
-| `listAccounts`       | Auto-approve |
-| `getPrimaryAccount`  | Auto-approve |
-| `getActiveNetwork`   | Auto-approve |
-| `status`             | Auto-approve |
-| `ledgerApi`          | Auto-approve |
+| `canton_listAccounts`       | Auto-approve |
+| `canton_getPrimaryAccount`  | Auto-approve |
+| `canton_getActiveNetwork`   | Auto-approve |
+| `canton_status`             | Auto-approve |
+| `canton_ledgerApi`          | Auto-approve |
 | `canton_prepareSignExecute` | Manual       |
-| `signMessage`        | Manual       |
+| `canton_signMessage`        | Manual       |
 
 ## Method Name Mapping (dApp SDK)
 
@@ -51,10 +51,10 @@ The dApp SDK's `WalletConnectTransport` maps SDK method names before sending ove
 
 | SDK method               | WC method (on the wire)  |
 | ------------------------ | ------------------------ |
-| `prepareExecute`         | `canton_prepareSignExecute`     |
-| `prepareExecuteAndWait`  | `canton_prepareSignExecute`     |
+| `canton_prepareExecute`         | `canton_prepareSignExecute`     |
+| `canton_prepareExecuteAndWait`  | `canton_prepareSignExecute`     |
 
-All other methods (`listAccounts`, `status`, `ledgerApi`, etc.) are sent as-is. Both SDK methods resolve with the same response — over WalletConnect, every submission blocks until the transaction completes.
+All other methods (`canton_listAccounts`, `canton_status`, `canton_ledgerApi`, etc.) are sent as-is. Both SDK methods resolve with the same response — over WalletConnect, every submission blocks until the transaction completes.
 
 ## RPC Methods
 
@@ -65,12 +65,12 @@ Prepare, sign, and execute a Canton ledger transaction. This is the primary meth
 #### Request
 
 ```typescript  theme={null}
-interface PrepareSignExecuteRequest {
+interface CantonPrepareSignExecuteRequest {
     method: 'canton_prepareSignExecute';
-    params: PrepareParams;
+    params: CantonPrepareParams;
 }
 
-interface PrepareParams {
+interface CantonPrepareParams {
     commandId?: string;          // auto-generated (UUIDv4) if omitted
     commands?: { [k: string]: unknown };
     actAs?: string[];            // defaults to [primaryWallet.partyId] if omitted
@@ -178,7 +178,7 @@ Wallets support multiple signing backends. The signing provider determines the L
 
 ---
 
-### listAccounts
+### canton_listAccounts
 
 Retrieve all configured wallet accounts.
 
@@ -189,7 +189,7 @@ Retrieve all configured wallet accounts.
     "topic": "<session-topic>",
     "chainId": "canton:devnet",
     "request": {
-        "method": "listAccounts",
+        "method": "canton_listAccounts",
         "params": {}
     }
 }
@@ -238,7 +238,7 @@ interface Wallet {
 
 ---
 
-### getPrimaryAccount
+### canton_getPrimaryAccount
 
 Retrieve the primary wallet account (where `primary === true`).
 
@@ -249,7 +249,7 @@ Retrieve the primary wallet account (where `primary === true`).
     "topic": "<session-topic>",
     "chainId": "canton:devnet",
     "request": {
-        "method": "getPrimaryAccount",
+        "method": "canton_getPrimaryAccount",
         "params": {}
     }
 }
@@ -276,7 +276,7 @@ Retrieve the primary wallet account (where `primary === true`).
 
 ---
 
-### getActiveNetwork
+### canton_getActiveNetwork
 
 Retrieve the currently active network configuration.
 
@@ -287,7 +287,7 @@ Retrieve the currently active network configuration.
     "topic": "<session-topic>",
     "chainId": "canton:devnet",
     "request": {
-        "method": "getActiveNetwork",
+        "method": "canton_getActiveNetwork",
         "params": {}
     }
 }
@@ -308,7 +308,7 @@ Retrieve the currently active network configuration.
 
 ---
 
-### status
+### canton_status
 
 Check the wallet's connectivity to the Canton ledger.
 
@@ -319,7 +319,7 @@ Check the wallet's connectivity to the Canton ledger.
     "topic": "<session-topic>",
     "chainId": "canton:devnet",
     "request": {
-        "method": "status",
+        "method": "canton_status",
         "params": {}
     }
 }
@@ -372,19 +372,19 @@ Check the wallet's connectivity to the Canton ledger.
 
 ---
 
-### ledgerApi
+### canton_ledgerApi
 
 Proxy raw Canton Ledger API requests through the wallet. The wallet authenticates and forwards the request.
 
 #### Request
 
 ```typescript  theme={null}
-interface LedgerApiRequest {
-    method: 'ledgerApi';
-    params: LedgerApiParams;
+interface CantonLedgerApiRequest {
+    method: 'canton_ledgerApi';
+    params: CantonLedgerApiParams;
 }
 
-interface LedgerApiParams {
+interface CantonLedgerApiParams {
     requestMethod: 'GET' | 'POST';
     resource: string;
     body?: string | object;
@@ -398,7 +398,7 @@ interface LedgerApiParams {
     "topic": "<session-topic>",
     "chainId": "canton:devnet",
     "request": {
-        "method": "ledgerApi",
+        "method": "canton_ledgerApi",
         "params": {
             "requestMethod": "POST",
             "resource": "/v2/state/active-contracts",
@@ -439,15 +439,15 @@ The `response` field contains the raw Ledger API JSON response as-is.
 
 ---
 
-### signMessage
+### canton_signMessage
 
 Sign an arbitrary message with the wallet's Ed25519 private key.
 
 #### Request
 
 ```typescript  theme={null}
-interface SignMessageRequest {
-    method: 'signMessage';
+interface CantonSignMessageRequest {
+    method: 'canton_signMessage';
     params: {
         message: string;
     };
@@ -461,7 +461,7 @@ interface SignMessageRequest {
     "topic": "<session-topic>",
     "chainId": "canton:devnet",
     "request": {
-        "method": "signMessage",
+        "method": "canton_signMessage",
         "params": {
             "message": "Please sign this message to verify your identity"
         }
@@ -560,7 +560,7 @@ The wallet builds approved namespaces including the CAIP-10 account with the URL
     "canton": {
         "chains": ["canton:devnet"],
         "accounts": ["canton:devnet:operator%3A%3A1220abc..."],
-        "methods": ["canton_prepareSignExecute", "listAccounts", "getPrimaryAccount", "getActiveNetwork", "status", "ledgerApi", "signMessage"],
+        "methods": ["canton_prepareSignExecute", "canton_listAccounts", "canton_getPrimaryAccount", "canton_getActiveNetwork", "canton_status", "canton_ledgerApi", "canton_signMessage"],
         "events": ["accountsChanged", "statusChanged", "chainChanged"]
     }
 }
