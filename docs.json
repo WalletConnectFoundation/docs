@@ -26,6 +26,10 @@
     {
       "source": "/token-dynamics/fees",
       "destination": "/token-dynamics/intro"
+    },
+    {
+      "source": "/token-dynamics/wallet-rewards",
+      "destination": "/token-dynamics/rewards"
     }
   ],
   "integrations": {
@@ -282,8 +286,7 @@
             "pages": [
               "token-dynamics/intro",
               "token-dynamics/rewards",
-              "token-dynamics/service-node-rewards",
-              "token-dynamics/wallet-rewards"
+              "token-dynamics/service-node-rewards"
             ]
           },
           {
