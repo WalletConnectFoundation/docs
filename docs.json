@@ -22,6 +22,14 @@
     {
       "source": "/payments/",
       "destination": "https://docs.walletconnect.com/"
+    },
+    {
+      "source": "/token-dynamics/fees",
+      "destination": "/token-dynamics/intro"
+    },
+    {
+      "source": "/token-dynamics/wallet-rewards",
+      "destination": "/token-dynamics/rewards"
     }
   ],
   "integrations": {
@@ -277,10 +285,8 @@
             "group": "WCT Token",
             "pages": [
               "token-dynamics/intro",
-              "token-dynamics/fees",
               "token-dynamics/rewards",
-              "token-dynamics/service-node-rewards",
-              "token-dynamics/wallet-rewards"
+              "token-dynamics/service-node-rewards"
             ]
           },
           {
