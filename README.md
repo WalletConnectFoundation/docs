@@ -1,6 +1,6 @@
 # WalletConnect Network Docs
 
-This repository is currently under development. If you come across any issues, please report them.
+This repository is currently under development. If you come across any issues, please report them. 
 
 ## Development
 
