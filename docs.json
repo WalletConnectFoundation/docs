@@ -69,7 +69,8 @@
                                   "wallet-sdk/chain-support/ton",
                                   "wallet-sdk/chain-support/tron",
                                   "wallet-sdk/chain-support/adi",
-                                  "wallet-sdk/chain-support/canton"
+                                  "wallet-sdk/chain-support/canton",
+                                  "wallet-sdk/chain-support/stellar"
                                 ]
               },
               {
