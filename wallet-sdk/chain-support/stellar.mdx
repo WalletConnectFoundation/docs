@@ -17,7 +17,7 @@ The Stellar RPC standard is a proposal still under review and specifications may
 | CAIP-10 | `stellar:pubnet:G…` — base32 StrKey account ID (56 chars, version byte `0x30`)                           |
 | CAIP-19 | `stellar:pubnet/slip44:148` (XLM) or `stellar:pubnet/asset:{code}-{issuer}` (issued assets)              |
 
-The CAIP-2 reference `pubnet` matches the [Stellar CAIP-2 namespace draft](https://github.com/ChainAgnostic/namespaces/blob/main/stellar/caip2.md). The network passphrase (`"Public Global Stellar Network ; September 2015"` for mainnet, `"Test SDF Network ; September 2015"` for testnet) is **not** the CAIP-2 reference — it is a separate signing-domain constant that wallets MUST bind into every signature (see [Signing semantics](#signing-semantics)).
+The CAIP-2 reference (`pubnet` / `testnet`) matches the [Stellar CAIP-2 namespace draft](https://github.com/ChainAgnostic/namespaces/blob/main/stellar/caip2.md). It is **not** the network passphrase — that is a separate signing-domain constant wallets bind into every signature, derived from the chain (see [Signing semantics](#signing-semantics)).
 
 ### Account format
 
@@ -41,7 +41,7 @@ All transaction payloads cross the wire as **base64-encoded XDR strings**, match
 - The envelope's discriminant determines tx version: `ENVELOPE_TYPE_TX_V0`, `ENVELOPE_TYPE_TX`, or `ENVELOPE_TYPE_TX_FEE_BUMP`.
 - Wallets MUST accept all three; wallets MAY emit signatures only on V1 and fee-bump envelopes (V0 is deprecated).
 
-## Session Properties
+## Session Proposal
 
 A standard WalletConnect session proposal for a Stellar-enabled dApp:
 
@@ -73,7 +73,7 @@ A standard WalletConnect session proposal for a Stellar-enabled dApp:
 
 ### stellar_signXDR
 
-Asks the wallet to attach a signature to a Stellar `TransactionEnvelope` and return the resulting envelope **without broadcasting it**. The dApp (or a relayer it trusts — e.g. pay-core's fee-payer) is responsible for submission.
+Asks the wallet to attach a signature to a Stellar `TransactionEnvelope` and return the resulting envelope **without broadcasting it**. The dApp (or a relayer it trusts) is responsible for submission.
 
 This is the **primary method** for fee-abstracted flows: the dApp constructs an inner transaction whose `source_account` is the buyer; the wallet signs as the buyer; a separate fee-source wraps the result in a `FeeBumpTransactionEnvelope` and submits.
 
@@ -186,10 +186,10 @@ Asks the wallet to sign an arbitrary message under a Stellar account's Ed25519 k
 To prevent a malicious dApp from getting a wallet to sign a payload that is also a valid transaction body, wallets MUST prepend a domain-separating prefix before signing:
 
 ```plain
-sign(Ed25519, sha256("StellarMessage" || 0x00 || message))
+sign(Ed25519, sha256("Stellar Signed Message:\n" || message))
 ```
 
-The literal byte string `"StellarMessage"` (14 bytes) followed by a `0x00` separator MUST be hashed alongside the message bytes. This matches the SEP-53 (in-draft) convention and ensures cross-context replay is impossible — a SEP-10 challenge transaction would never collide with a `stellar_signMessage` payload.
+The fixed UTF-8 prefix `"Stellar Signed Message:\n"` (with the trailing newline) is concatenated **directly** with the message bytes — no `0x00` separator and no length prefix — then SHA-256 hashed and Ed25519-signed. This matches the finalized [SEP-53](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md) convention (the same domain-separation approach as Bitcoin/Ethereum signed messages) and ensures cross-context replay is impossible — a SEP-10 challenge transaction would never collide with a `stellar_signMessage` payload.
 
 #### Parameters
 
@@ -313,7 +313,7 @@ The `signature` SCVal follows Stellar's account-contract signer convention: an `
 | Event             | Payload                              | Notes                                                                                        |
 | ----------------- | ------------------------------------ | -------------------------------------------------------------------------------------------- |
 | `accountsChanged` | `{ accounts: string[] }` (CAIP-10)   | Emitted when the user changes the active account in their wallet, or revokes access for an account. |
-| `chainChanged`    | `{ chainId: string }` (CAIP-2)       | Reserved for future testnet support. Today, only `stellar:pubnet` is emitted.                |
+| `chainChanged`    | `{ chainId: string }` (CAIP-2)       | Emitted when the wallet switches the active network (e.g. `stellar:pubnet` ↔ `stellar:testnet`). |
 
 ## Signing semantics
 
@@ -374,11 +374,9 @@ const txHash = tx.hash().toString("hex"); // 64-char hex
 
 ## Additional Resources
 
-- [WalletConnect Wallet SDK — Ethereum chain support](/wallet-sdk/chain-support/evm) — structural template for this document.
-- [WalletConnect Wallet SDK — Solana chain support](/wallet-sdk/chain-support/solana) — closest precedent for an Ed25519-based chain.
 - [CAIP-2](https://chainagnostic.org/CAIPs/caip-2) and [CAIP-10](https://chainagnostic.org/CAIPs/caip-10) — chain and account identifiers.
 - [Stellar CAIP-2 namespace draft](https://github.com/ChainAgnostic/namespaces/blob/main/stellar/caip2.md).
-- [Stellar SEP-7](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0007.md), [SEP-10](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0010.md).
-- [Freighter API reference](https://docs.freighter.app/docs/guide/usingFreighterWebApp).
+- [Stellar SEP-7](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0007.md), [SEP-10](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0010.md), [SEP-53](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md).
+- [Freighter — WalletConnect (mobile)](https://docs.freighter.app/mobile-walletconnect/mobile).
 - [Stellar XDR reference](https://developers.stellar.org/docs/encyclopedia/xdr).
 - [Fee-bump transactions](https://developers.stellar.org/docs/learn/encyclopedia/transactions-specialized/fee-bump-transactions).
