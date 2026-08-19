@@ -1,0 +1,382 @@
+---
+title: Stellar
+description: "Overview of the Stellar JSON-RPC methods supported by Wallet SDK."
+---
+
+These are the methods that wallets should implement to handle Stellar transactions and messages via WalletConnect.
+
+<Warning>
+The Stellar RPC standard is a proposal still under review and specifications may change. Implementation details and method signatures are subject to updates.
+</Warning>
+
+## Network / Chain Information
+
+| Item    | Form                                                                                                     |
+| ------- | -------------------------------------------------------------------------------------------------------- |
+| CAIP-2  | `stellar:pubnet` OR `stellar:testnet`                                                                     |
+| CAIP-10 | `stellar:pubnet:G…` — base32 StrKey account ID (56 chars, version byte `0x30`)                           |
+| CAIP-19 | `stellar:pubnet/slip44:148` (XLM) or `stellar:pubnet/asset:{code}-{issuer}` (issued assets)              |
+
+The CAIP-2 reference (`pubnet` / `testnet`) matches the [Stellar CAIP-2 namespace draft](https://github.com/ChainAgnostic/namespaces/blob/main/stellar/caip2.md). It is **not** the network passphrase — that is a separate signing-domain constant wallets bind into every signature, derived from the chain (see [Signing semantics](#signing-semantics)).
+
+### Account format
+
+Account IDs returned to the dApp are **CAIP-10 strings**, e.g.:
+
+```plain
+stellar:pubnet:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN
+```
+
+Wallets MUST return the **G… StrKey** form (Ed25519 public key + CRC16 checksum, base32-encoded). Wallets MUST NOT return:
+
+- Muxed account (`M…`) IDs — these require a separate spec (CAP-27) and are not universally supported.
+- Pre-auth (`T…`) or signer-hash (`X…`) StrKey forms — these are not accounts.
+- Raw 32-byte public keys without StrKey encoding.
+
+### XDR encoding convention
+
+All transaction payloads cross the wire as **base64-encoded XDR strings**, matching SDF's reference SDKs and Horizon's `/transactions?tx=…` parameter. Specifically:
+
+- `stellar_signXDR` and `stellar_signAndSubmitXDR` accept and return a base64-encoded **`TransactionEnvelope`** XDR.
+- The envelope's discriminant determines tx version: `ENVELOPE_TYPE_TX_V0`, `ENVELOPE_TYPE_TX`, or `ENVELOPE_TYPE_TX_FEE_BUMP`.
+- Wallets MUST accept all three; wallets MAY emit signatures only on V1 and fee-bump envelopes (V0 is deprecated).
+
+## Session Proposal
+
+A standard WalletConnect session proposal for a Stellar-enabled dApp:
+
+```json
+{
+  "optionalNamespaces": {
+    "stellar": {
+      "chains": ["stellar:pubnet"],
+      "methods": [
+        "stellar_signXDR",
+        "stellar_signAndSubmitXDR",
+        "stellar_signMessage",
+        "stellar_signAuthEntry"
+      ],
+      "events": ["accountsChanged", "chainChanged"]
+    }
+  }
+}
+```
+
+| Property           | Optional methods            |
+| ------------------ | --------------------------- |
+| Sign transaction   | `stellar_signXDR`           |
+| Sign a message     | `stellar_signMessage`       |
+| Sign and Submit    | `stellar_signAndSubmitXDR`  |
+| Soroban            | `stellar_signAuthEntry`     |
+
+## RPC Methods
+
+### stellar_signXDR
+
+Asks the wallet to attach a signature to a Stellar `TransactionEnvelope` and return the resulting envelope **without broadcasting it**. The dApp (or a relayer it trusts) is responsible for submission.
+
+This is the **primary method** for fee-abstracted flows: the dApp constructs an inner transaction whose `source_account` is the buyer; the wallet signs as the buyer; a separate fee-source wraps the result in a `FeeBumpTransactionEnvelope` and submits.
+
+#### Parameters
+
+`Object`:
+
+| Field     | Type              | Required | Description                                                                                                                       |
+| --------- | ----------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `xdr`     | `string` (base64) | yes      | The unsigned (or partially-signed) `TransactionEnvelope` XDR to sign.                                                             |
+| `chain`   | `string` (CAIP-2) | yes      | Must equal the session's selected chain — `stellar:pubnet`. Wallet MUST reject signing if the encoded `network_id` inside the tx does not match this chain. |
+| `account` | `string` (CAIP-10)| yes      | The account that should sign. Wallet MUST reject if it doesn't custody this account.                                              |
+
+This method **signs only**. To sign and broadcast in a single round-trip, use [`stellar_signAndSubmitXDR`](#stellar-signandsubmitxdr).
+
+#### Returns
+
+`Object`:
+
+| Field           | Type               | Description                                                                        |
+| --------------- | ------------------ | --------------------------------------------------------------------------------- |
+| `signedXDR`     | `string` (base64)  | The signed `TransactionEnvelope` XDR. Existing signatures in the input are preserved. |
+| `signerAddress` | `string` (CAIP-10) | The account that signed (echoes `account`).                                       |
+
+#### Example
+
+```json
+// Request
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "stellar_signXDR",
+  "params": {
+    "xdr": "AAAAAgAAAACz/ZNn8sJpz0r1A/8mO0wQVjEPFNG8mU3sk1Wk7TPxIQAAAGQAGYGzAAAACgAAAAAAAAAAAAAAAQAAAAAAAAABAAAAAEsbESgFLrQc4j7yo2Up/EWNqQhgvBYGgYNCu9EuRRl+AAAAAVVTREMAAAAA...",
+    "chain": "stellar:pubnet",
+    "account": "stellar:pubnet:GCZ73GTH6LBGTT2K6UB76JR3JQIKMMIPCTI3ZGKN5SJVLJ65GPYSCIBQ"
+  }
+}
+
+// Response
+{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "result": {
+    "signedXDR": "AAAAAgAAAACz/ZNn8sJpz0r1A/8mO0wQVjEPFNG8mU3sk1Wk7TPxIQAAAGQAGYGzAAAACgAAAAAAAAAAAAAA...AAAAAEFNB7s=",
+    "signerAddress": "stellar:pubnet:GCZ73GTH6LBGTT2K6UB76JR3JQIKMMIPCTI3ZGKN5SJVLJ65GPYSCIBQ"
+  }
+}
+```
+
+### stellar_signAndSubmitXDR
+
+Asks the wallet to sign and submit a transaction in one step. The wallet broadcasts via its configured RPC (Horizon or Stellar RPC) and returns the resulting transaction hash.
+
+Use this method when the dApp does **not** operate a relayer (i.e. the buyer is paying their own XLM fee directly).
+
+#### Parameters
+
+`Object`:
+
+| Field              | Type               | Required | Description                                                                                                                                        |
+| ------------------ | ------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `xdr`              | `string` (base64)  | yes      | The unsigned `TransactionEnvelope` XDR.                                                                                                           |
+| `chain`            | `string` (CAIP-2)  | yes      | Must equal the session's selected chain.                                                                                                          |
+| `account`          | `string` (CAIP-10) | yes      | Signing account.                                                                                                                                  |
+| `waitForInclusion` | `boolean`          | no       | If `true`, wallet waits up to ledger-close time before responding and returns `successful`. If `false` (default), wallet responds as soon as it receives the submission ack from its RPC. |
+
+#### Returns
+
+`Object`:
+
+| Field        | Type               | Description                                                                                       |
+| ------------ | ------------------ | ------------------------------------------------------------------------------------------------ |
+| `tx_hash`    | `string` (hex, 64) | The hash of the submitted transaction.                                                           |
+| `signedXDR`  | `string` (base64)  | The final signed `TransactionEnvelope` XDR (so the dApp can independently verify the hash).       |
+| `successful` | `boolean`          | Optional. Present only when `waitForInclusion: true`. `true` if the tx landed and `successful=true` in its result envelope. |
+
+#### Example
+
+```json
+// Request
+{
+  "id": 2,
+  "jsonrpc": "2.0",
+  "method": "stellar_signAndSubmitXDR",
+  "params": {
+    "xdr": "AAAAAgAAAACz/ZNn8sJpz0r1A/8mO0wQVjEPFNG8mU3sk1Wk7TPxIQAAAGQAGYGzAAAA...",
+    "chain": "stellar:pubnet",
+    "account": "stellar:pubnet:GCZ73GTH6LBGTT2K6UB76JR3JQIKMMIPCTI3ZGKN5SJVLJ65GPYSCIBQ",
+    "waitForInclusion": true
+  }
+}
+
+// Response
+{
+  "id": 2,
+  "jsonrpc": "2.0",
+  "result": {
+    "tx_hash": "3389e9f0f1a54f04a78fd09a7e0fc0d44f1eecbe8c33a3d56a39c8b46d2a8b48",
+    "signedXDR": "AAAAAgAAAACz/ZNn8sJpz0r1...AAAAAEFNB7s=",
+    "successful": true
+  }
+}
+```
+
+### stellar_signMessage
+
+Asks the wallet to sign an arbitrary message under a Stellar account's Ed25519 key, **outside** the context of a Stellar transaction. This enables [SEP-10 web auth](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0010.md)-style sign-in flows and dApp session attestation.
+
+To prevent a malicious dApp from getting a wallet to sign a payload that is also a valid transaction body, wallets MUST prepend a domain-separating prefix before signing:
+
+```plain
+sign(Ed25519, sha256("Stellar Signed Message:\n" || message))
+```
+
+The fixed UTF-8 prefix `"Stellar Signed Message:\n"` (with the trailing newline) is concatenated **directly** with the message bytes — no `0x00` separator and no length prefix — then SHA-256 hashed and Ed25519-signed. This matches the finalized [SEP-53](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md) convention (the same domain-separation approach as Bitcoin/Ethereum signed messages) and ensures cross-context replay is impossible — a SEP-10 challenge transaction would never collide with a `stellar_signMessage` payload.
+
+#### Parameters
+
+`Object`:
+
+| Field             | Type                          | Required | Description                                                                                    |
+| ----------------- | ----------------------------- | -------- | --------------------------------------------------------------------------------------------- |
+| `message`         | `string` (utf-8 OR base64)    | yes      | The payload to sign. If `messageEncoding: "base64"`, decoded as raw bytes; default `"utf-8"`.  |
+| `messageEncoding` | `"utf-8"` \| `"base64"`       | no       | Defaults to `"utf-8"`.                                                                         |
+| `chain`           | `string` (CAIP-2)             | yes      | `stellar:pubnet` (signature is network-agnostic, but the session context is).                  |
+| `account`         | `string` (CAIP-10)            | yes      | Signing account.                                                                              |
+
+#### Returns
+
+`Object`:
+
+| Field           | Type               | Description                                    |
+| --------------- | ------------------ | ---------------------------------------------- |
+| `signature`     | `string` (base64)  | 64-byte Ed25519 signature, base64-encoded.     |
+| `signerAddress` | `string` (CAIP-10) | Signing account (echoes input).                |
+
+#### Example
+
+```json
+// Request
+{
+  "id": 3,
+  "jsonrpc": "2.0",
+  "method": "stellar_signMessage",
+  "params": {
+    "message": "pay-core://sign-in?nonce=8c4f1a2b&exp=1747746000",
+    "messageEncoding": "utf-8",
+    "chain": "stellar:pubnet",
+    "account": "stellar:pubnet:GCZ73GTH6LBGTT2K6UB76JR3JQIKMMIPCTI3ZGKN5SJVLJ65GPYSCIBQ"
+  }
+}
+
+// Response
+{
+  "id": 3,
+  "jsonrpc": "2.0",
+  "result": {
+    "signature": "iJ7rH9N2T5q3Vh8U8a3l1eC9bD0fK6mPq9R5/4tZv1c9Ek2y0sJgPpVxT8aBhYf3LqW1uAYR7s2qNlDe6cZyAA==",
+    "signerAddress": "stellar:pubnet:GCZ73GTH6LBGTT2K6UB76JR3JQIKMMIPCTI3ZGKN5SJVLJ65GPYSCIBQ"
+  }
+}
+```
+
+<Warning>
+**Anti-pattern:** Do NOT sign raw bytes without the domain prefix. Wallets that do so MUST be considered non-compliant — they expose users to transaction-impersonation attacks.
+</Warning>
+
+### stellar_signAuthEntry (Soroban)
+
+Signs a Soroban `SorobanAuthorizationEntry`, enabling Soroban contract authorizations to be co-signed by an address that is **not** the transaction's source account. This is the Stellar analogue to Ethereum's EIP-712 typed-data signing for permits / meta-transactions: a user authorizes a specific contract invocation tree, a separate party submits the transaction that consumes the authorization.
+
+The signing payload is the `HashIDPreimage::SOROBAN_AUTHORIZATION` preimage, computed as:
+
+```plain
+sign(Ed25519, sha256(xdr(HashIDPreimageSorobanAuthorization {
+  network_id,
+  nonce,
+  signature_expiration_ledger,
+  invocation,
+})))
+```
+
+All four fields are pulled from the `SorobanCredentials::SOROBAN_CREDENTIALS_ADDRESS` block inside the auth entry. `network_id` is bound by the wallet from the session's CAIP-2 chain (NOT trusted from the request).
+
+#### Parameters
+
+`Object`:
+
+| Field       | Type               | Required | Description                                                                                                                                                                                                                                                        |
+| ----------- | ------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `authEntry` | `string` (base64)  | yes      | The unsigned `SorobanAuthorizationEntry` XDR. Its `credentials` MUST be of type `SOROBAN_CREDENTIALS_ADDRESS` with an empty `signature` SCVal. `SOROBAN_CREDENTIALS_SOURCE_ACCOUNT` entries are not signable via this method — they are authorized implicitly by signing the enclosing transaction. |
+| `chain`     | `string` (CAIP-2)  | yes      | Must equal the session's selected chain.                                                                                                                                                                                                                          |
+| `account`   | `string` (CAIP-10) | yes      | The account that should sign. Wallet MUST verify it matches `credentials.address` inside the entry; reject with `4302` otherwise.                                                                                                                                 |
+
+The wallet MUST also reject (`4304` — `AUTH_EXPIRED`) if `signature_expiration_ledger` is ≤ the current ledger sequence as known to the wallet, with a small safety margin to account for propagation.
+
+#### Returns
+
+`Object`:
+
+| Field             | Type               | Description                                                                                                            |
+| ----------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `signedAuthEntry` | `string` (base64)  | The updated `SorobanAuthorizationEntry` XDR with the `signature` SCVal populated. Other fields (nonce, expiration, invocation) MUST be byte-identical to the input. |
+| `signerAddress`   | `string` (CAIP-10) | Echoes `account`.                                                                                                     |
+
+The `signature` SCVal follows Stellar's account-contract signer convention: an `SCMap` with keys `"public_key"` (32-byte Ed25519 pubkey as `SCBytes`) and `"signature"` (64-byte Ed25519 signature as `SCBytes`). Wallets MUST NOT emit a raw 64-byte signature without the map wrapper — Soroban host code rejects it.
+
+#### Example
+
+```json
+// Request — dApp wants the user to authorize a transfer(from=user, to=merchant, amount=10_0000000) invocation
+{
+  "id": 4,
+  "jsonrpc": "2.0",
+  "method": "stellar_signAuthEntry",
+  "params": {
+    "authEntry": "AAAAAQAAAAAAAAAAs/2TZ/LCac9K9QP/JjtMEFYxDxTRvJlN7JNVpO0z8SEAAAAAAAAAAQAGgaUAAAAAAAAAAa1uVUtkbThwc1ZmTGdEYzVlbnVsbAAAAAAAAAAIdHJhbnNmZXIAAAADAAAAEgAAAAAAAAAAs/2TZ/LCac9K9QP/JjtMEFYxDxTRvJlN7JNVpO0z8SEAAAASAAAAAAAAAABLGxEoBS60HOI+8qNlKfxFjakIYLwWBoGDQrvRLkUZfgAAAAoAAAAAAAAAAAAAAAAF9eEAAAAAAAAAAAA=",
+    "chain": "stellar:pubnet",
+    "account": "stellar:pubnet:GCZ73GTH6LBGTT2K6UB76JR3JQIKMMIPCTI3ZGKN5SJVLJ65GPYSCIBQ"
+  }
+}
+
+// Response — same entry, signature SCVal now populated with the account-contract signer map
+{
+  "id": 4,
+  "jsonrpc": "2.0",
+  "result": {
+    "signedAuthEntry": "AAAAAQAAAAAAAAAAs/2TZ/LCac9K9QP/JjtMEFYxDxTRvJlN7JNVpO0z8SEAAAAAAAAAAQAGgaUAAAAAAAAAAa1uVUtkbThwc1ZmTGdEYzVlbnVsbAAAAAAAAAAIdHJhbnNmZXIAAAADAAAAEgAAAAAAAAAAs/2TZ/LCac9K9QP/JjtMEFYxDxTRvJlN7JNVpO0z8SEAAAASAAAAAAAAAABLGxEoBS60HOI+8qNlKfxFjakIYLwWBoGDQrvRLkUZfgAAAAoAAAAAAAAAAAAAAAAF9eEAAAARAAAAAQAAAAIAAAAPAAAACnB1YmxpY19rZXkAAAAAAA0AAAAgs/2TZ/LCac9K9QP/JjtMEFYxDxTRvJlN7JNVpO0z8SEAAAAPAAAACXNpZ25hdHVyZQAAAAAAAA0AAABAi3hvR9N+a5q1Vh8U8a3l1eC9bD0fK6mPq9R5/4tZv1c9Ek2y0sJgPpVxT8aBhYf3LqW1uAYR7s2qNlDe6cZyAA==",
+    "signerAddress": "stellar:pubnet:GCZ73GTH6LBGTT2K6UB76JR3JQIKMMIPCTI3ZGKN5SJVLJ65GPYSCIBQ"
+  }
+}
+```
+
+## Events
+
+| Event             | Payload                              | Notes                                                                                        |
+| ----------------- | ------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `accountsChanged` | `{ accounts: string[] }` (CAIP-10)   | Emitted when the user changes the active account in their wallet, or revokes access for an account. |
+| `chainChanged`    | `{ chainId: string }` (CAIP-2)       | Emitted when the wallet switches the active network (e.g. `stellar:pubnet` ↔ `stellar:testnet`). |
+
+## Signing semantics
+
+### Network passphrase binding
+
+Every Stellar transaction signature is computed over:
+
+```plain
+sign(Ed25519, sha256(network_id || envelope_payload))
+```
+
+where `network_id = sha256("Public Global Stellar Network ; September 2015")` for pubnet. This is **inside** the XDR envelope and is the protocol-level replay protection across networks. Wallets MUST:
+
+1. Decode the envelope's signing payload, **not** the wire bytes, before signing.
+2. Compute `network_id` from the network the session belongs to (`stellar:pubnet` → pubnet passphrase). Wallets MUST NOT trust a `network_id` embedded in the request — only the CAIP-2 chain identifier.
+3. Refuse to sign if the decoded envelope's internal network reference (when present, e.g. on fee-bump inner txs) does not match the session chain.
+
+### Fee-bump envelopes
+
+When the dApp passes a `FeeBumpTransactionEnvelope` to `stellar_signXDR`:
+
+- The wallet signs **only the inner tx**, not the outer fee-bump envelope. The outer envelope is signed by the `fee_source` account (typically a different party — the relayer).
+- Wallets MUST validate that the inner tx's `source_account` is in fact the `account` parameter.
+- Wallets MAY warn the user that fees are being paid by a different account (`fee_source`), and SHOULD display both the inner source and outer fee source in the signing UI.
+
+### Computing the tx hash and explorer discoverability
+
+The transaction hash is **deterministic from the signed envelope** — signatures are computed over the hash, they are not part of it. As soon as a dApp receives `signedXDR` from `stellar_signXDR`, it can derive the same hash the network will use.
+
+```plain
+tx_hash = sha256( network_id ‖ ENVELOPE_TYPE ‖ tx_payload_xdr )
+```
+
+| Component        | Value                                                                                                             |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `network_id`     | `sha256("Public Global Stellar Network ; September 2015")` — 32 bytes, fixed for pubnet                           |
+| `ENVELOPE_TYPE`  | XDR-encoded `EnvelopeType` enum (4 bytes, big-endian): `2` (`ENVELOPE_TYPE_TX`) for normal txs, `5` (`ENVELOPE_TYPE_TX_FEE_BUMP`) for fee-bump txs |
+| `tx_payload_xdr` | XDR-encoded **`Transaction`** struct (the inner body — NOT the full envelope with its signatures)                 |
+
+Adding, removing, or reordering signatures does NOT change the hash.
+
+Reference computation:
+
+```typescript
+import { TransactionBuilder, Networks } from "@stellar/stellar-sdk";
+
+const { signedXDR } = await session.request({
+  topic,
+  chainId: "stellar:pubnet",
+  request: { method: "stellar_signXDR", params: { xdr, chain, account } },
+});
+
+const tx = TransactionBuilder.fromXDR(signedXDR, Networks.PUBLIC);
+const txHash = tx.hash().toString("hex"); // 64-char hex
+```
+
+**Inner hash vs. fee-bump hash.** When `stellar_signXDR` is used inside a fee-abstraction flow (the wallet signs an inner tx, a relayer wraps it in a `FeeBumpTransaction` before submitting), the hash the dApp computes from the inner tx (`H_inner`) is **not** the hash that lands on-chain (`H_fb`). Horizon resolves **either hash** to the same transaction record — a `GET /transactions/{hash}` request works whether you pass `H_inner` or `H_fb`, and both are exposed on the returned fee-bump record. For stable UX, prefer `H_fb` for explorer links once submission is confirmed; `H_inner` works as an immediate optimistic identifier between sign-time and submission. Note that Horizon will **404** on an `H_inner` lookup until the wrapping fee-bump transaction has been submitted and included in a ledger.
+
+## Additional Resources
+
+- [CAIP-2](https://chainagnostic.org/CAIPs/caip-2) and [CAIP-10](https://chainagnostic.org/CAIPs/caip-10) — chain and account identifiers.
+- [Stellar CAIP-2 namespace draft](https://github.com/ChainAgnostic/namespaces/blob/main/stellar/caip2.md).
+- [Stellar SEP-7](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0007.md), [SEP-10](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0010.md), [SEP-53](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md).
+- [Freighter — WalletConnect (mobile)](https://docs.freighter.app/mobile-walletconnect/mobile).
+- [Stellar XDR reference](https://developers.stellar.org/docs/encyclopedia/xdr).
+- [Fee-bump transactions](https://developers.stellar.org/docs/learn/encyclopedia/transactions-specialized/fee-bump-transactions).
