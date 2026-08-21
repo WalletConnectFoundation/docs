@@ -326,6 +326,11 @@
           "anchor": "WalletConnect Specs",
           "href": "https://specs.walletconnect.com/",
           "icon": "code"
+        },
+        {
+          "anchor": "Report an Issue",
+          "href": "/report-an-issue",
+          "icon": "bug"
         }
       ]
     }
