@@ -309,17 +309,17 @@
       "anchors": [
         {
           "anchor": "WalletConnect",
-          "href": "https://walletconnect.network",
+          "href": "https://walletconnect.com/network",
           "icon": "globe"
         },
         {
           "anchor": "Blog",
-          "href": "https://walletconnect.network/blog",
+          "href": "https://walletconnect.com/blog",
           "icon": "newspaper"
         },
         {
           "anchor": "Whitepaper",
-          "href": "https://whitepaper.walletconnect.network/",
+          "href": "https://whitepaper.walletconnect.com/WalletConnect%20Whitepaper.pdf",
           "icon": "book"
         },
         {
@@ -357,9 +357,9 @@
   },
   "footer": {
     "socials": {
-      "website": "https://walletconnect.network",
+      "website": "https://walletconnect.com/network",
       "x": "https://x.com/walletconnect",
-      "discord": "https://discord.walletconnect.network",
+      "discord": "https://discord.walletconnect.com",
       "github": "https://github.com/WalletConnect",
       "linkedin": "https://www.linkedin.com/company/walletconnectnetwork/"
     }
