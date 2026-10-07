@@ -21,5 +21,5 @@ View your local preview at `http://localhost:3000`.
 ## Need help?
 
 ### Resources
-- [WalletConnect Docs](https://docs.walletconnect.network/)
-- [WalletConnect Community](https://discord.walletconnect.network/)
+- [WalletConnect Docs](https://docs.walletconnect.com/)
+- [WalletConnect Community](https://discord.walletconnect.com/)
